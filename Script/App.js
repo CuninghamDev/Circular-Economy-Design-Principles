@@ -11,11 +11,12 @@ function getWidthHeight() {
 }
 let data = CeDiagramData
 let widthHeight = getWidthHeight()
-let svgId = '#circular-economy-diagram'
-let diagram = new CircularEconomyDiagram(data, widthHeight, widthHeight, svgId)
+let svgId = 'circular-economy-diagram-svg'
+let divId = 'circular-economy-diagram-div'
+let containerId = 'svg-container'
+let diagram = new CircularEconomyDiagram(data, svgId, divId, containerId)
 
 function resizeDiagram() {
-    let newWidthHeight = getWidthHeight()
-    diagram.resizeDiagram(newWidthHeight, newWidthHeight)
+    diagram.resizeDiagram()
 }
 window.onresize = resizeDiagram

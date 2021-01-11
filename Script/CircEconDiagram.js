@@ -1,19 +1,40 @@
 class CircularEconomyDiagram {
-    constructor(_data, _width, _height, _svgId) {
+    constructor(_data, _svgId, _divId, _containerId) {
         console.log('diagram constructed')
         this.data = _data
-        this.width = _width
-        this.height = _height
-        this.getControllingDim()
-        this.svg = d3.select(_svgId)
-        this.svg.attr('width', this.width)
-        this.svg.attr('height', this.height)
+
+        this.svg = d3.select('#' + _svgId)
+        this.div = d3.select('#' + _divId)
+        this.container = document.getElementById(_containerId)
+
+        this.structureData()
+
+        this.resizeDiagram(this.width, this.height)
+        this.div.style('background', '#EBEBEB')
 
         this.svg.append('g').attr('class', 'stage')
         this.svg.append('g').attr('class', 'category-ring')
         this.svg.append('g').attr('class', 'actors')
 
-        this.structureData()
+        this.generalUpdate()
+    }
+    resizeDiagram() {
+        console.log('diagram resized')
+        this.containerBounds = this.container.getBoundingClientRect()
+        this.containerLeft = this.containerBounds.left
+        this.containerTop = this.containerBounds.top
+        this.width = this.containerBounds.right - this.containerLeft
+        this.height = this.containerBounds.bottom - this.containerTop
+        this.getControllingDim()
+        this.getControllingDim()
+        this.svg.attr('width', this.width)
+        this.svg.attr('height', this.height)
+        this.div.style('position', 'absolute')
+        this.div.style('left', (this.width - this.controllingDim) / 2 + 'px')
+        this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
+        this.div.style('width', this.controllingDim + 'px')
+        this.div.style('height', this.controllingDim + 'px')
+        this.calcGeoms()
         this.generalUpdate()
     }
     getControllingDim() {
@@ -62,16 +83,7 @@ class CircularEconomyDiagram {
         this.structuredData.geometry.stageRadius =
             (this.controllingDim / 2) * (1 / 5)
     }
-    resizeDiagram(_width, _height) {
-        console.log('diagram resized')
-        this.width = _width
-        this.height = _height
-        this.getControllingDim()
-        this.svg.attr('width', this.width)
-        this.svg.attr('height', this.height)
-        this.calcGeoms()
-        this.generalUpdate()
-    }
+
     generalUpdate() {
         console.log('general update pattern run')
         let self = this
@@ -92,29 +104,5 @@ class CircularEconomyDiagram {
             .style('fill', function (d) {
                 return d.color
             })
-
-        d3.selectAll('.stage-text')
-            .data(data.stageData)
-            .join('div')
-            .text(function (d) {
-                return d.text
-            })
-            .attr('class', 'stage-text')
-            .style('position', 'absolute')
-            .style('left', function () {
-                console.log(geomData.centerX - geomData.stageRadius + 'px')
-                return geomData.centerX - geomData.stageRadius + 'px'
-            })
-            .style('top', function () {
-                return geomData.centerY - geomData.stageRadius + 'px'
-            })
-            .style('width', function () {
-                return geomData.stageRadius * 2 + 'px'
-            })
-            .style('height', function () {
-                return geomData.stageRadius * 2 + 'px'
-            })
-            .style('vertical-align', 'middle')
-            .style('padding-top', geomData.stageRadius * 0.6 + 'px')
     }
 }
