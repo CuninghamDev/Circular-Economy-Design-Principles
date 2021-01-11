@@ -6,7 +6,7 @@ class CircularEconomyDiagram {
         this.svg = d3.select('#' + _svgId)
         this.div = d3.select('#' + _divId)
         this.container = document.getElementById(_containerId)
-
+        this.padding = 10
         this.structureData()
         this.resizeDiagram(this.width, this.height)
         this.div.style('background', '#EBEBEB')
@@ -47,8 +47,6 @@ class CircularEconomyDiagram {
         console.log('diagram data structured')
         this.structuredData = {}
 
-        this.structuredData.actors = []
-
         this.structuredData.stageData = [
             {
                 active: false,
@@ -77,8 +75,12 @@ class CircularEconomyDiagram {
                 cat.startAngle + this.structuredData.geometry.catRotArc
             cat.textAngle =
                 cat.startAngle + this.structuredData.geometry.halfCatArc
+            cat.active = true
+            cat.selected = false
             this.structuredData.categories.push(cat)
         }
+
+        this.structuredData.actors = []
     }
     calcGeoms() {
         //used for calculating geometries that are dependant on the canvas size
@@ -87,7 +89,7 @@ class CircularEconomyDiagram {
         this.structuredData.geometry.radius =
             (this.controllingDim / 2) * (3 / 5)
         this.structuredData.geometry.radiusWidth =
-            (this.controllingDim / 2) * (3 / 8)
+            (this.controllingDim / 2) * (5 / 16)
         this.structuredData.geometry.stageRadius =
             (this.controllingDim / 2) * (1 / 5)
     }
@@ -99,6 +101,7 @@ class CircularEconomyDiagram {
         let div = self.div
         let data = self.structuredData
         console.log('data', data)
+        console.log(this)
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
@@ -108,10 +111,16 @@ class CircularEconomyDiagram {
             .data(data.stageData)
             .join('div')
             .attr('class', 'stage circular-economy-bubble no-select small-text')
-            .style('left', geomData.centerX - geomData.stageRadius + 'px')
-            .style('top', geomData.centerY - geomData.stageRadius + 'px')
-            .style('width', data.geometry.stageRadius * 2 + 'px')
-            .style('height', data.geometry.stageRadius * 2 + 'px')
+            .style(
+                'left',
+                geomData.centerX - geomData.stageRadius - self.padding + 'px',
+            )
+            .style(
+                'top',
+                geomData.centerY - geomData.stageRadius - self.padding + 'px',
+            )
+            .style('width', geomData.stageRadius * 2 + 'px')
+            .style('height', geomData.stageRadius * 2 + 'px')
             .style('background', function (d) {
                 return d.color
             })
@@ -138,6 +147,7 @@ class CircularEconomyDiagram {
                 return (
                     geomData.centerX +
                     relativeX -
+                    self.padding -
                     geomData.radiusWidth / 2 +
                     'px'
                 )
@@ -147,6 +157,7 @@ class CircularEconomyDiagram {
                 return (
                     geomData.centerY +
                     relativeY -
+                    self.padding -
                     geomData.radiusWidth / 2 +
                     'px'
                 )
