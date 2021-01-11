@@ -35,7 +35,8 @@ class CircularEconomyDiagram {
             {
                 active: false,
                 color: '#269FD3',
-                text: 'Temporary Stand In Text',
+                text:
+                    'Temporary Stand In Text Temporary Stand In Text Temporary Stand In Text Temporary Stand In Text',
             },
         ]
 
@@ -91,19 +92,29 @@ class CircularEconomyDiagram {
             .style('fill', function (d) {
                 return d.color
             })
-        stage
-            .selectAll('text')
+
+        d3.selectAll('.stage-text')
             .data(data.stageData)
-            .join('text')
-            .attr('text-anchor', 'middle')
-            .attr('x', function (d) {
-                return geomData.centerX
-            })
-            .attr('y', function (d) {
-                return geomData.centerY
-            })
+            .join('div')
             .text(function (d) {
                 return d.text
             })
+            .attr('class', 'stage-text')
+            .style('position', 'absolute')
+            .style('left', function () {
+                console.log(geomData.centerX - geomData.stageRadius + 'px')
+                return geomData.centerX - geomData.stageRadius + 'px'
+            })
+            .style('top', function () {
+                return geomData.centerY - geomData.stageRadius + 'px'
+            })
+            .style('width', function () {
+                return geomData.stageRadius * 2 + 'px'
+            })
+            .style('height', function () {
+                return geomData.stageRadius * 2 + 'px'
+            })
+            .style('vertical-align', 'middle')
+            .style('padding-top', geomData.stageRadius * 0.6 + 'px')
     }
 }
