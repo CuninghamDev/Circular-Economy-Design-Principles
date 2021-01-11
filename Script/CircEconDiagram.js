@@ -8,9 +8,9 @@ class CircularEconomyDiagram {
         this.container = document.getElementById(_containerId)
 
         this.structureData()
-
         this.resizeDiagram(this.width, this.height)
         this.div.style('background', '#EBEBEB')
+        this.calcGeoms()
 
         this.svg.append('g').attr('class', 'stage')
         this.svg.append('g').attr('class', 'category-ring')
@@ -25,7 +25,6 @@ class CircularEconomyDiagram {
         this.containerTop = this.containerBounds.top
         this.width = this.containerBounds.right - this.containerLeft
         this.height = this.containerBounds.bottom - this.containerTop
-        this.getControllingDim()
         this.getControllingDim()
         this.svg.attr('width', this.width)
         this.svg.attr('height', this.height)
@@ -69,13 +68,11 @@ class CircularEconomyDiagram {
             (Math.PI * 2) / Object.keys(this.data.categories).length
         this.structuredData.geometry.halfCatArc =
             this.structuredData.geometry.catRotArc / 2
-
-        this.calcGeoms()
     }
     calcGeoms() {
         //used for calculating geometries that are dependant on the canvas size
-        this.structuredData.geometry.centerX = this.width / 2
-        this.structuredData.geometry.centerY = this.height / 2
+        this.structuredData.geometry.centerX = this.controllingDim / 2
+        this.structuredData.geometry.centerY = this.controllingDim / 2
         this.structuredData.geometry.radius =
             (this.controllingDim / 2) * (4 / 5)
         this.structuredData.geometry.radiusWidth =
@@ -88,21 +85,31 @@ class CircularEconomyDiagram {
         console.log('general update pattern run')
         let self = this
         let svg = self.svg
+        let div = self.div
         let data = self.structuredData
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
 
-        let stage = svg.select('.stage')
-        stage
-            .selectAll('circle')
+        let stage = div
+            .selectAll('.stage')
             .data(data.stageData)
-            .join('circle')
-            .attr('cx', data.geometry.centerX)
-            .attr('cy', data.geometry.centerY)
-            .attr('r', data.geometry.stageRadius)
-            .style('fill', function (d) {
+            .join('div')
+            .attr('class', 'stage')
+            .style('position', 'absolute')
+            .style('border-radius', '50%')
+            .style('left', geomData.centerX - geomData.stageRadius + 'px')
+            .style('top', geomData.centerY - geomData.stageRadius + 'px')
+            .style('width', data.geometry.stageRadius * 2 + 'px')
+            .style('height', data.geometry.stageRadius * 2 + 'px')
+            .style('background', function (d) {
                 return d.color
             })
+            .text((d) => {
+                return d.text
+            })
+            .style('text-align', 'center')
+            .style('align-items', 'center')
+            .style('display', 'flex')
     }
 }
