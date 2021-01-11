@@ -47,8 +47,6 @@ class CircularEconomyDiagram {
         console.log('diagram data structured')
         this.structuredData = {}
 
-        this.structuredData.categories = []
-
         this.structuredData.actors = []
 
         this.structuredData.stageData = [
@@ -56,7 +54,7 @@ class CircularEconomyDiagram {
                 active: false,
                 color: '#269FD3',
                 text:
-                    'Temporary Stand In Text Temporary Stand In Text Temporary Stand In Text Temporary Stand In Text',
+                    'Temporary Stand In Text Temporary Stand In Text Some More Text',
             },
         ]
 
@@ -68,15 +66,28 @@ class CircularEconomyDiagram {
             (Math.PI * 2) / Object.keys(this.data.categories).length
         this.structuredData.geometry.halfCatArc =
             this.structuredData.geometry.catRotArc / 2
+
+        this.structuredData.categories = []
+        for (let i in this.data.categories) {
+            let cat = this.data.categories[i]
+            cat.startAngle =
+                this.structuredData.geometry.startRotation +
+                this.structuredData.geometry.catRotArc * i
+            cat.endAngle =
+                cat.startAngle + this.structuredData.geometry.catRotArc
+            cat.textAngle =
+                cat.startAngle + this.structuredData.geometry.halfCatArc
+            this.structuredData.categories.push(cat)
+        }
     }
     calcGeoms() {
         //used for calculating geometries that are dependant on the canvas size
         this.structuredData.geometry.centerX = this.controllingDim / 2
         this.structuredData.geometry.centerY = this.controllingDim / 2
         this.structuredData.geometry.radius =
-            (this.controllingDim / 2) * (4 / 5)
+            (this.controllingDim / 2) * (3 / 5)
         this.structuredData.geometry.radiusWidth =
-            (this.controllingDim / 2) * (1 / 8)
+            (this.controllingDim / 2) * (3 / 8)
         this.structuredData.geometry.stageRadius =
             (this.controllingDim / 2) * (1 / 5)
     }
@@ -87,6 +98,7 @@ class CircularEconomyDiagram {
         let svg = self.svg
         let div = self.div
         let data = self.structuredData
+        console.log('data', data)
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
@@ -95,9 +107,7 @@ class CircularEconomyDiagram {
             .selectAll('.stage')
             .data(data.stageData)
             .join('div')
-            .attr('class', 'stage')
-            .style('position', 'absolute')
-            .style('border-radius', '50%')
+            .attr('class', 'stage circular-economy-bubble no-select small-text')
             .style('left', geomData.centerX - geomData.stageRadius + 'px')
             .style('top', geomData.centerY - geomData.stageRadius + 'px')
             .style('width', data.geometry.stageRadius * 2 + 'px')
@@ -108,8 +118,46 @@ class CircularEconomyDiagram {
             .text((d) => {
                 return d.text
             })
-            .style('text-align', 'center')
-            .style('align-items', 'center')
-            .style('display', 'flex')
+
+        let categoryText = div
+            .selectAll('.temp-category-reps')
+            .data(data.categories)
+            .join('div')
+            .attr(
+                'class',
+                'temp-category-reps circular-economy-bubble no-select medium-text',
+            )
+            .attr('x', function (d) {
+                return Math.cos(d.textAngle) * geomData.radius
+            })
+            .attr('y', function (d) {
+                return Math.sin(d.textAngle) * geomData.radius
+            })
+            .style('left', function (d) {
+                let relativeX = Math.cos(d.textAngle) * geomData.radius
+                return (
+                    geomData.centerX +
+                    relativeX -
+                    geomData.radiusWidth / 2 +
+                    'px'
+                )
+            })
+            .style('top', function (d) {
+                let relativeY = Math.sin(d.textAngle) * geomData.radius
+                return (
+                    geomData.centerY +
+                    relativeY -
+                    geomData.radiusWidth / 2 +
+                    'px'
+                )
+            })
+            .style('width', geomData.radiusWidth + 'px')
+            .style('height', geomData.radiusWidth + 'px')
+            .style('background', function (d) {
+                return d.color
+            })
+            .text((d) => {
+                return d.text
+            })
     }
 }
