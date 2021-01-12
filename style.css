@@ -2,6 +2,13 @@
     border: solid 0.4px black;
     margin: 0;
 }
+#svg-container {
+    position: absolute;
+    width: 90%;
+    height: 99%;
+    left: 5%;
+    z-index: -4;
+}
 .body-class {
     padding: 0;
     margin: 0;
@@ -29,7 +36,9 @@
 .medium-text {
     font-size: larger;
 }
-
+.stroked {
+    border: 0.5px solid white;
+}
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */

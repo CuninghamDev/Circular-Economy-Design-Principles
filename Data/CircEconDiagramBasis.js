@@ -1,8 +1,6 @@
 const CeDiagramData = {
     actors: {
         'Utilizing and contributing to open source design (wikihouse / shared solutions)': {
-            name:
-                'Utilizing and contributing to open source design (wikihouse / shared solutions)',
             details: '',
             buttons: [],
             category: 'Exchange',
@@ -74,12 +72,6 @@ const CeDiagramData = {
         'Maximizing space utilization': {
             details:
                 'Making sure that building program is designed to maximize use of all spaces.',
-            buttons: [],
-            category: 'Design and Deliver',
-        },
-        'Designing for longevity': {
-            details:
-                'The more adaptable the structure is, the more chances there are for it to survive changes in societal and user needs and therefore prevent premature end of life.',
             buttons: [],
             category: 'Design and Deliver',
         },
