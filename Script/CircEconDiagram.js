@@ -60,7 +60,7 @@ class CircularEconomyDiagram {
         this.structuredData.geometry = {}
         this.structuredData.geometry
 
-        this.structuredData.geometry.startRotation = (-1 * Math.PI) / 4
+        this.structuredData.geometry.startRotation = this.data.geometry.startRotation
         // this.structuredData.geometry.startRotation = (Math.PI / 2) * -1
         this.structuredData.geometry.catRotArc =
             (Math.PI * 2) / Object.keys(this.data.categories).length

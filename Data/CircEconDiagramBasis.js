@@ -154,9 +154,11 @@ const CeDiagramData = {
     //note the order of the categories matters and is based on the unit circle
     categories: [
         { text: 'Design and Deliver', color: '#358BB0' },
-        { text: 'Exchange', color: '#61BAE0' },
-        { text: 'End of Design Life', color: '#A6D08F' },
         { text: 'Intelligent Built Environment', color: '#90B47D' },
+        { text: 'End of Design Life', color: '#A6D08F' },
+        { text: 'Exchange', color: '#61BAE0' },
     ],
-    geometry: {},
+    geometry: {
+        startRotation: (-1 * Math.PI) / 4,
+    },
 }
