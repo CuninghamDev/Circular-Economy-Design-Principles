@@ -1,1 +1,3 @@
-Resources/
+/Resources/
+.prettierrc.json
+*.code-workspace
