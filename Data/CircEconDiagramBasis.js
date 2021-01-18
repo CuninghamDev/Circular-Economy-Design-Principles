@@ -1,7 +1,8 @@
 const CeDiagramData = {
     actors: {
-        'Utilizing and contributing to open source design (wikihouse / shared solutions)': {
-            details: '',
+        'Participating in open source design': {
+            details:
+                'Open source solutions can help propagate circular concepts to a larger audience (e.g. wikihouse/shared solutions)',
             buttons: [],
             category: 'Exchange',
         },
@@ -17,7 +18,7 @@ const CeDiagramData = {
             buttons: ['Upcycling'],
             category: 'Exchange',
         },
-        'Connecting salvaged material supply and demand via online platforms': {
+        'Connecting salvage supply and demand via online platforms': {
             details:
                 'By-passing physical warehouse, an online platform can connect supply and demand of salvaged materials directly from site to site.',
             buttons: [],
@@ -95,14 +96,15 @@ const CeDiagramData = {
             ],
             category: 'Intelligent Built Environment',
         },
-        'Utilizing online platform to facilitate space sharing': {
+        'Utilizing online platforms to facilitate space sharing': {
             details:
                 'Web-based platforms can help to match underutilized spaces (e.g. office, homes) with potential users (e.g. Airbnb, WeWork).',
             buttons: [],
             category: 'Intelligent Built Environment',
         },
         Upcycling: {
-            details: '',
+            details:
+                'Materials/elements can be designed with future upcycling in mind therefore designing a longer material lifespan. Upcycling commences when these elements reach their end of design life and are considered for their next use.',
             buttons: [
                 'Designing for future recovery',
                 'Low impact materials – cradle to cradle',
@@ -119,38 +121,33 @@ const CeDiagramData = {
             category: 'End of Design Life',
         },
     },
-    buttons: {
-        Upcycling: {
-            actorKey: '',
+    buttons: [
+        {
+            title: 'Tracking material passports',
+            sourceActor: 'Tracking material passports',
+            destinationActor: 'Internet of Things/BIM for Operations',
+            stage: 'Intelligent Built Environment',
+            details:
+                'passports can be folded into BIM during the lifespan of a building.',
         },
-        'Take-back services': {
-            actorKey: '',
+        {
+            title: 'Tracking material passports',
+            sourceActor: 'Tracking material passports',
+            destinationActor: undefined,
+            stage: 'Deconstruct',
+            details:
+                'at the end of life passports allow the materials to not get lost in transition.',
         },
-        'Product as service systems': {
-            actorKey: '',
+        {
+            title: 'Storage and distribution services for salvaged materials',
+            sourceActor: 'Tracking material passports',
+            destinationActor: undefined,
+            stage: 'Deconstruct',
+            details:
+                'During deconstruction these services are relevant as they are used to bring the disassemble pieces back into the exchange realm.',
         },
-        'Multispace and mixed-use': {
-            actorKey: '',
-        },
-        'Space sharing': {
-            actorKey: '',
-        },
-        'Adaptive reuse of existing building': {
-            actorKey: '',
-        },
-        'Tracking material passports': {
-            actorKey: '',
-        },
-        'Designing for future recovery': {
-            actorKey: '',
-        },
-        'Low impact materials – cradle to cradle': {
-            actorKey: '',
-        },
-        'Leased building materials from manufacturer/supplier': {
-            actorKey: '',
-        },
-    },
+    ],
+
     //note the order of the categories matters and is based on the unit circle
     categories: [
         { text: 'Design and Deliver', color: '#358BB0' },
@@ -160,5 +157,6 @@ const CeDiagramData = {
     ],
     geometry: {
         startRotation: (-1 * Math.PI) / 4,
+        arrowRotation: Math.PI * 0.04,
     },
 }

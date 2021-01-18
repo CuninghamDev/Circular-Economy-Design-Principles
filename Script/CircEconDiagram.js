@@ -9,7 +9,7 @@ class CircularEconomyDiagram {
         this.padding = 10
         this.structureData()
         this.resizeDiagram(this.width, this.height)
-        this.div.style('background', '#EBEBEB')
+        // this.div.style('background', '#EBEBEB')
         this.calcGeoms()
 
         this.svg.append('g').attr('class', 'stage')
@@ -26,8 +26,11 @@ class CircularEconomyDiagram {
         this.width = this.containerBounds.right - this.containerLeft
         this.height = this.containerBounds.bottom - this.containerTop
         this.getControllingDim()
-        this.svg.attr('width', this.width)
-        this.svg.attr('height', this.height)
+        this.svg.style('position', 'absolute')
+        this.svg.attr('width', this.controllingDim)
+        this.svg.attr('height', this.controllingDim)
+        this.svg.style('left', (this.width - this.controllingDim) / 2 + 'px')
+        this.svg.style('top', (this.height - this.controllingDim) / 2 + 'px')
         this.div.style('position', 'absolute')
         this.div.style('left', (this.width - this.controllingDim) / 2 + 'px')
         this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
@@ -62,6 +65,7 @@ class CircularEconomyDiagram {
 
         this.structuredData.geometry.startRotation = this.data.geometry.startRotation
         // this.structuredData.geometry.startRotation = (Math.PI / 2) * -1
+        this.structuredData.geometry.arrowRotation = this.data.geometry.arrowRotation
         this.structuredData.geometry.catRotArc =
             (Math.PI * 2) / Object.keys(this.data.categories).length
         this.structuredData.geometry.halfCatArc =
@@ -118,15 +122,15 @@ class CircularEconomyDiagram {
         this.structuredData.geometry.centerX = this.controllingDim / 2
         this.structuredData.geometry.centerY = this.controllingDim / 2
         this.structuredData.geometry.radius =
-            (this.controllingDim / 2) * (7 / 11)
+            (this.controllingDim / 2) * (7 / 12)
         this.structuredData.geometry.radiusWidth =
-            (this.controllingDim / 2) * (5 / 16)
+            (this.controllingDim / 2) * (4 / 17)
         this.structuredData.geometry.stageRadius =
-            (this.controllingDim / 2) * (2 / 7)
+            (this.controllingDim / 2) * (1 / 7)
         this.structuredData.geometry.actorRingRadius =
             (this.controllingDim / 2) * (9 / 10)
         this.structuredData.geometry.actorRadius =
-            (this.controllingDim / 2) * (1 / 10)
+            (this.controllingDim / 2) * (1 / 11)
     }
 
     generalUpdate() {
@@ -174,7 +178,7 @@ class CircularEconomyDiagram {
             .join('div')
             .attr(
                 'class',
-                'temp-category-reps circular-economy-bubble no-select medium-text',
+                'temp-category-reps circular-economy-square no-select medium-text',
             )
             .attr('x', (d) => {
                 return Math.cos(d.textAngle) * geomData.radius
@@ -183,7 +187,9 @@ class CircularEconomyDiagram {
                 return Math.sin(d.textAngle) * geomData.radius
             })
             .style('left', (d) => {
-                let relativeX = Math.cos(d.textAngle) * geomData.radius
+                let relativeX =
+                    Math.cos(d.textAngle) *
+                    (geomData.radius + geomData.radiusWidth / 2)
                 return (
                     geomData.centerX +
                     relativeX -
@@ -193,7 +199,9 @@ class CircularEconomyDiagram {
                 )
             })
             .style('top', (d) => {
-                let relativeY = Math.sin(d.textAngle) * geomData.radius
+                let relativeY =
+                    Math.sin(d.textAngle) *
+                    (geomData.radius + geomData.radiusWidth / 2)
                 return (
                     geomData.centerY +
                     relativeY -
@@ -204,9 +212,7 @@ class CircularEconomyDiagram {
             })
             .style('width', geomData.radiusWidth + 'px')
             .style('height', geomData.radiusWidth + 'px')
-            .style('background', (d) => {
-                return d.color
-            })
+            .style('background', 'none')
             .text((d) => {
                 return d.text
             })
@@ -227,7 +233,6 @@ class CircularEconomyDiagram {
                     }
                 })
             d3.selectAll('.actors')
-                // console.log(allActors.data())
                 .transition()
                 .style('opacity', (d) => {
                     if (d['actor data'].category == thisData.text) {
@@ -243,6 +248,65 @@ class CircularEconomyDiagram {
                 .style('opacity', '1')
             d3.selectAll('.actors').transition().style('opacity', '1')
         })
+
+        let buildCategoryPath = function (catData) {
+            console.log('data to build path', catData)
+            console.log('geometry data', geomData)
+            let startAngle = catData.startAngle
+            let endAngle = catData.endAngle
+            let arrowRotation = geomData.arrowRotation
+            let radius = geomData.radius
+            let exteriorRadius = radius + geomData.radiusWidth
+            let centerX = geomData.centerX
+            let centerY = geomData.centerY
+            let x1 = Math.cos(startAngle) * radius + centerX
+            let y1 = Math.sin(startAngle) * radius + centerY
+            let x2 =
+                Math.cos(startAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerX
+            let y2 =
+                Math.sin(startAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerY
+            let x3 =
+                Math.cos(endAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerX
+            let y3 =
+                Math.sin(endAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerY
+
+            let path = d3.path()
+            path.moveTo(x1, y1)
+            path.lineTo(x2, y2)
+            path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle)
+            path.lineTo(x3, y3)
+            path.arc(centerX, centerY, radius, endAngle, startAngle, true)
+            let pathData = path.toString()
+
+            return pathData
+        }
+
+        let categoryShapes = svg
+            .select('.category-ring')
+            .selectAll('.category-shape')
+            .data(catData)
+            .join('path')
+            .attr('class', function () {
+                return 'category-shape'
+            })
+            .attr('d', function (d) {
+                let pathData = buildCategoryPath(d)
+                console.log('path data', pathData)
+                return pathData
+            })
+            .attr('fill', function (d) {
+                return d.color
+            })
+            .attr('stroke-width', '3')
+            .attr('stroke', 'white')
 
         let actors = div
             .selectAll('.actors')
