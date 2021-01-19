@@ -17,38 +17,6 @@ class CircularEconomyDiagram {
         this.svg.append('g').attr('class', 'actors-group')
         this.svg.append('defs')
 
-        let dropShadowFilter = this.svg
-            .select('defs')
-            .append('filter')
-            .attr('id', 'dropshadow')
-        dropShadowFilter
-            .append('feGaussianBlur')
-            .attr('in', 'SourceAlpha')
-            .attr('stdDeviation', 4)
-            .attr('result', 'blur')
-        dropShadowFilter
-            .append('feOffset')
-            .attr('in', 'blur')
-            .attr('dx', 5)
-            .attr('dy', 8)
-            .attr('result', 'offsetBlur')
-        dropShadowFilter
-            .append('feFlood')
-            .attr('in', 'offsetBlur')
-            // .attr('flood-color', '#93864d')
-            .attr('flood-opacity', '0.5')
-            .attr('result', 'offsetColor')
-        dropShadowFilter
-            .append('feComposite')
-            .attr('in', 'offsetColor')
-            .attr('in2', 'offsetBlur')
-            .attr('operator', 'in')
-            .attr('result', 'offsetBlur')
-
-        let feMerge = dropShadowFilter.append('feMerge')
-        feMerge.append('feMergeNode').attr('in', 'offsetBlur')
-        feMerge.append('feMergeNode').attr('in', 'SourceGraphic')
-
         this.generalUpdate()
     }
     resizeDiagram() {
@@ -530,8 +498,12 @@ class CircularEconomyDiagram {
                     }
                 })
         }
-
+        let dropShadowFilter = svg
+            .select('defs')
+            .append('filter')
+            .attr('id', 'dropshadow')
         let categoryClick = function (d, e, selected) {
+            // console.log('this data', d)
             let thisData = d
             let thisEvent = e
             let thisCategory = d3.select(selected)
@@ -540,9 +512,6 @@ class CircularEconomyDiagram {
                 d3.selectAll('.category-hover')
                     .classed('selected-category', false)
                     .classed('receding-category', false)
-                    .transition()
-                    .attr('filter', 'none')
-                    .attr('transform', 'translate(0,0)')
             } else {
                 d3.selectAll('.category-hover')
                     .classed('selected-category', function (d) {
@@ -562,14 +531,8 @@ class CircularEconomyDiagram {
                     })
             }
             d3.selectAll('.receding-category')
-                .transition()
-                .attr('filter', 'none')
-                .attr('transform', 'translate(0,0)')
+
             d3.selectAll('.selected-category')
-                .raise()
-                .transition()
-                .attr('filter', 'url(#dropshadow)')
-                .attr('transform', 'translate(1,-4)')
         }
 
         let categoryLeave = function (d, e, selected) {

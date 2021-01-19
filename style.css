@@ -45,6 +45,9 @@
     line-height: 95%;
     padding: 10px;
 }
+.category-hover {
+    cursor: pointer;
+}
 
 .small-text {
     font-size: x-small;
