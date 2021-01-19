@@ -49,7 +49,7 @@ class CircularEconomyDiagram {
         feMerge.append('feMergeNode').attr('in', 'offsetBlur')
         feMerge.append('feMergeNode').attr('in', 'SourceGraphic')
 
-        this.generalUpdate()
+        this.generalUpdatePattern()
     }
     resizeDiagram() {
         console.log('diagram resized')
@@ -70,7 +70,7 @@ class CircularEconomyDiagram {
         this.div.style('width', this.controllingDim + 'px')
         this.div.style('height', this.controllingDim + 'px')
         this.calcGeoms()
-        this.generalUpdate()
+        this.generalUpdatePattern()
     }
     getControllingDim() {
         if (this.width < this.height) {
@@ -171,7 +171,7 @@ class CircularEconomyDiagram {
             (this.controllingDim / 2) * (1 / 11)
     }
 
-    generalUpdate() {
+    generalUpdatePattern() {
         console.log('general update pattern run')
         let self = this
         let svg = self.svg
@@ -216,10 +216,12 @@ class CircularEconomyDiagram {
             .selectAll('.category-text')
             .data(data.categories)
             .join('div')
-            .attr(
-                'class',
-                'category-text category-hover circular-economy-square no-select medium-text',
-            )
+            .classed('category-text', true)
+            .classed('category-hover', true)
+            .classed('circular-economy-square', true)
+            .classed('no-select', true)
+            .classed('medium-text', true)
+            .classed('pointer', true)
             .attr('x', (d) => {
                 return Math.cos(d.textAngle) * geomData.radius
             })
@@ -258,12 +260,6 @@ class CircularEconomyDiagram {
             })
             .style('z-index', '2')
 
-        categoryText.on('mouseenter', function (e, d) {
-            categoryHover(d, e, this)
-        })
-        categoryText.on('mouseleave', function (e, d) {
-            categoryLeave(d, e, this)
-        })
         categoryText.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -313,9 +309,9 @@ class CircularEconomyDiagram {
             .selectAll('.category-shape')
             .data(catData)
             .join('path')
-            .attr('class', function () {
-                return 'category-shape category-hover'
-            })
+            .classed('category-shape', true)
+            .classed('category-hover', true)
+            .classed('pointer', true)
             .attr('d', function (d) {
                 let pathData = buildCategoryPath(d)
                 // console.log('path data', pathData)
@@ -330,9 +326,6 @@ class CircularEconomyDiagram {
         categoryShapes.on('mouseenter', function (e, d) {
             categoryHover(d, e, this)
         })
-        categoryShapes.on('mouseleave', function (e, d) {
-            categoryLeave(d, e, this)
-        })
         categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -341,10 +334,12 @@ class CircularEconomyDiagram {
             .selectAll('.actors')
             .data(actorData)
             .join('div')
-            .attr(
-                'class',
-                'actors circular-economy-bubble no-select small-text stroked',
-            )
+            .classed('actors', true)
+            .classed('circular-economy-bubble', true)
+            .classed('no-select', true)
+            .classed('small-text', true)
+            .classed('stroked', true)
+            .classed('pointer', true)
             .style('left', (d) => {
                 let relativeX =
                     Math.cos(d.actorAngle) * geomData.actorRingRadius
@@ -382,11 +377,15 @@ class CircularEconomyDiagram {
             })
             .style('z-index', '4')
             .style('opacity', function (d) {
-                // console.log('opacity testing', this)
-                if (d.categoryActive) {
-                    return '1'
+                let loopActor = d3.select(this)
+                let catSelect = loopActor.classed('category-selected-actors')
+                let tempCatSelect = loopActor.classed(
+                    'temp-category-selected-actors',
+                )
+                if (catSelect || tempCatSelect) {
+                    return 1
                 } else {
-                    return '0'
+                    return 0
                 }
             })
         actors.on('mouseenter', function (e, d) {
@@ -406,19 +405,39 @@ class CircularEconomyDiagram {
             let thisData = d
             let thisEvent = e
             let thisCategory = d3.select(selected)
+            let formerTempSelection = d3
+                .selectAll('.temp-category-selected-actors')
+                .classed('temp-category-selected-actors', false)
             let actors = d3
                 .selectAll('.actors')
+
+                .classed('temp-category-selected-actors', function (d) {
+                    let loopActor = d3.select(this)
+                    let isSelected = loopActor.classed(
+                        'category-selected-actors',
+                    )
+                    if (
+                        d['actor data'].category == thisData.text &&
+                        !isSelected
+                    ) {
+                        return true
+                    } else {
+                        return false
+                    }
+                })
                 .transition()
+                .duration(100)
                 .style('opacity', function (d) {
-                    if (d['actor data'].category == thisData.text) {
+                    let loopActor = d3.select(this)
+                    let isSelected = loopActor.classed(
+                        'category-selected-actors',
+                    )
+                    let isTempSelected = loopActor.classed(
+                        'temp-category-selected-actors',
+                    )
+                    if (isSelected || isTempSelected) {
                         return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
+                    } else {
                         return 0
                     }
                 })
@@ -430,10 +449,11 @@ class CircularEconomyDiagram {
             let thisCategory = d3.select(selected)
 
             if (thisCategory.classed('selected-category')) {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    false,
-                )
+                d3.selectAll('.actors')
+                    .classed('category-selected-actors', false)
+                    .classed('temp-category-selected-actors', false)
+                    .transition()
+                    .style('opacity', '0')
 
                 d3.selectAll('.category-hover')
                     .classed('selected-category', false)
@@ -443,16 +463,15 @@ class CircularEconomyDiagram {
                     .attr('transform', 'translate(0,0)')
                     .attr('opacity', 1)
             } else {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    (d) => {
+                d3.selectAll('.actors')
+                    .classed('category-selected-actors', (d) => {
                         if (d['actor data'].category == thisData.text) {
                             return true
                         } else {
                             return false
                         }
-                    },
-                )
+                    })
+                    .classed('temp-category-selected-actors', false)
 
                 d3.selectAll('.category-hover')
                     .classed('selected-category', function (d) {
@@ -482,37 +501,28 @@ class CircularEconomyDiagram {
                 .attr('filter', 'url(#dropshadow)')
                 .attr('transform', 'translate(1,-4)')
                 .attr('opacity', 1)
-        }
-
-        let categoryLeave = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-
-            let actors = d3
+            let allActors = d3
                 .selectAll('.actors')
                 .transition()
                 .style('opacity', function (d) {
-                    if (d['actor data'].category == thisData.text) {
+                    let loopActor = d3.select(this)
+                    let isSelected = loopActor.classed(
+                        'category-selected-actors',
+                    )
+                    if (isSelected) {
                         return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
+                    } else {
                         return 0
                     }
                 })
         }
 
-        let actorHover = function (d, e, selected) {
+        let actorClick = function (d, e, selected) {
             let thisData = d
             let thisEvent = e
             let thisActor = d3.select(selected)
             let allActors = d3.selectAll('.actors')
-            console.log(allActors)
+            // console.log(allActors)
             allActors.transition().style('opacity', 0.5)
             thisActor.transition().style('opacity', 1)
             d3.selectAll('.temp-category-reps')
@@ -616,10 +626,32 @@ class CircularEconomyDiagram {
             }
         }
 
-        let actorClick = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
+        let actorHover = function (_d, _e, _selected) {
+            let thisData = _d
+            console.log('this data', thisData)
+            let thisEvent = _e
+            let thisActor = d3.select(_selected)
+
+            let catActors = d3
+                .selectAll('.category-selected-actors')
+                .transition()
+                .style('opacity', function (d) {
+                    if (d.actor == thisData.actor) {
+                        return 1
+                    } else {
+                        return 0.47
+                    }
+                })
+            let tempCatActors = d3
+                .selectAll('.temp-category-selected-actors')
+                .transition()
+                .style('opacity', function (d) {
+                    if (d.actor == thisData.actor) {
+                        return 1
+                    } else {
+                        return 0.47
+                    }
+                })
         }
 
         let actorLeave = function (d, e, selected) {
@@ -627,10 +659,8 @@ class CircularEconomyDiagram {
             let thisEvent = e
             let thisCategory = d3.select(selected)
 
-            let allActors = d3.selectAll('.actors').transition()
-            let allCategories = d3.selectAll('.temp-category-reps').transition()
-            allActors.style('opacity', 1)
-            allCategories.style('opacity', 1)
+            d3.selectAll('.temp-category-selected-actors').style('opacity', 1)
+            d3.selectAll('.category-selected-actors').style('opacity', 1)
         }
     }
 }
