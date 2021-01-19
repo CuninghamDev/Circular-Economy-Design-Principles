@@ -15,6 +15,7 @@ class CircularEconomyDiagram {
         this.svg.append('g').attr('class', 'stage')
         this.svg.append('g').attr('class', 'category-ring')
         this.svg.append('g').attr('class', 'actors-group')
+        this.svg.append('g').attr('class', 'activities-ring')
         this.svg.append('defs')
 
         let dropShadowFilter = this.svg
@@ -117,6 +118,21 @@ class CircularEconomyDiagram {
             this.structuredData.categories.push(cat)
         }
 
+        this.structuredData.activities = []
+        for (let i in this.data.activities) {
+            let act = this.data.activities[i]
+            act.startAngle =
+                this.structuredData.geometry.startRotation +
+                this.structuredData.geometry.catRotArc * i
+            act.endAngle =
+                act.startAngle + this.structuredData.geometry.catRotArc
+            act.textAngle =
+                act.startAngle + this.structuredData.geometry.halfCatArc
+            act.active = true
+            act.selected = false
+            this.structuredData.activities.push(act)
+        }
+
         this.structuredData.actors = []
         let categorizedActorData = []
         for (let cat of this.structuredData.categories) {
@@ -155,19 +171,22 @@ class CircularEconomyDiagram {
     }
     calcGeoms() {
         //used for calculating geometries that are dependant on the canvas size
-        this.structuredData.geometry.centerX = this.controllingDim / 2
-        this.structuredData.geometry.centerY = this.controllingDim / 2
-        this.structuredData.geometry.actorSelectRadiusIncrease = 20
-        this.structuredData.geometry.radius =
-            (this.controllingDim / 2) * (7 / 12)
-        this.structuredData.geometry.radiusWidth =
-            (this.controllingDim / 2) * (4 / 17)
-        this.structuredData.geometry.stageRadius =
-            (this.controllingDim / 2) * (1 / 7)
-        this.structuredData.geometry.actorRingRadius =
-            (this.controllingDim / 2) * (9 / 10)
-        this.structuredData.geometry.actorRadius =
-            (this.controllingDim / 2) * (1 / 11)
+        let geo = this.structuredData.geometry
+        geo.centerX = this.controllingDim / 2
+        geo.centerY = this.controllingDim / 2
+        geo.actorSelectRadiusIncrease = 20
+        geo.stagePadding = 20
+        geo.activitiesPadding = 5
+        geo.radius = (this.controllingDim / 2) * (7 / 12)
+        geo.radiusWidth = (this.controllingDim / 2) * (4 / 17)
+        geo.stageRadius = (this.controllingDim / 2) * (1 / 7)
+        geo.actorRingRadius = (this.controllingDim / 2) * (9 / 10)
+        geo.actorRadius = (this.controllingDim / 2) * (1 / 11)
+        geo.activitiesWidth =
+            geo.radius -
+            geo.activitiesPadding -
+            geo.stageRadius -
+            geo.stagePadding
     }
 
     generalUpdatePattern() {
@@ -179,9 +198,11 @@ class CircularEconomyDiagram {
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
+        let activityData = data.activities
         console.log('actor data', actorData)
         console.log('category data', catData)
         console.log('geometry data', geomData)
+        console.log('activity data', activityData)
 
         let stage = div
             .selectAll('.stage')
@@ -193,11 +214,19 @@ class CircularEconomyDiagram {
             )
             .style(
                 'left',
-                geomData.centerX - geomData.stageRadius - self.padding + 'px',
+                geomData.centerX -
+                    geomData.stageRadius -
+                    self.padding -
+                    3 +
+                    'px',
             )
             .style(
                 'top',
-                geomData.centerY - geomData.stageRadius - self.padding + 'px',
+                geomData.centerY -
+                    geomData.stageRadius -
+                    self.padding -
+                    3 +
+                    'px',
             )
             .style('width', geomData.stageRadius * 2 + 'px')
             .style('height', geomData.stageRadius * 2 + 'px')
@@ -219,12 +248,6 @@ class CircularEconomyDiagram {
             .classed('no-select', true)
             .classed('medium-text', true)
             .classed('pointer', true)
-            .attr('x', (d) => {
-                return Math.cos(d.textAngle) * geomData.radius
-            })
-            .attr('y', (d) => {
-                return Math.sin(d.textAngle) * geomData.radius
-            })
             .style('left', (d) => {
                 let relativeX =
                     Math.cos(d.textAngle) *
@@ -269,6 +292,110 @@ class CircularEconomyDiagram {
             categoryClick(d, e, this)
         })
 
+        let activityText = div
+            .selectAll('.activity-text')
+            .data(activityData)
+            .join('div')
+            .classed('activity-text', true)
+            .classed('activity-hover', true)
+            .classed('circular-economy-square', true)
+            .classed('no-select', true)
+            .classed('medium-text', true)
+            .classed('pointer', false)
+            .style('position', 'absolute')
+            .style('left', (d) => {
+                let relativeX =
+                    Math.cos(d.textAngle) *
+                    (geomData.activitiesWidth / 2 +
+                        (geomData.stageRadius + geomData.stagePadding))
+                return (
+                    geomData.centerX +
+                    relativeX -
+                    self.padding +
+                    self.categoryOffset -
+                    geomData.activitiesWidth / 2 +
+                    'px'
+                )
+            })
+            .style('top', (d) => {
+                let relativeY =
+                    Math.sin(d.textAngle) *
+                    (geomData.activitiesWidth / 2 +
+                        (geomData.stageRadius + geomData.stagePadding))
+                return (
+                    geomData.centerY +
+                    relativeY -
+                    self.padding +
+                    self.categoryOffset -
+                    geomData.activitiesWidth / 2 +
+                    'px'
+                )
+            })
+            .style(
+                'width',
+                geomData.activitiesWidth - self.categoryOffset * 2 + 'px',
+            )
+            .style(
+                'height',
+                geomData.activitiesWidth - self.categoryOffset * 2 + 'px',
+            )
+            .style('background', 'none')
+            .text((d) => {
+                return d.text
+            })
+            .style('z-index', '2')
+
+        let buildActivityPath = function (actData) {
+            let startAngle = actData.startAngle
+            let endAngle = actData.endAngle
+            let interiorRadius = geomData.stageRadius + geomData.stagePadding
+            let exteriorRadius = geomData.radius - geomData.activitiesPadding
+            let centerX = geomData.centerX
+            let centerY = geomData.centerY
+            let x1 = Math.cos(startAngle) * interiorRadius + centerX
+            let y1 = Math.sin(startAngle) * interiorRadius + centerY
+            let x2 = Math.cos(startAngle) * exteriorRadius + centerX
+            let y2 = Math.sin(startAngle) * exteriorRadius + centerY
+            let x3 = Math.cos(endAngle) * interiorRadius + centerX
+            let y3 = Math.sin(endAngle) * interiorRadius + centerY
+
+            let path = d3.path()
+            path.moveTo(x1, y1)
+            path.lineTo(x2, y2)
+            path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle)
+            path.lineTo(x3, y3)
+            path.arc(
+                centerX,
+                centerY,
+                interiorRadius,
+                endAngle,
+                startAngle,
+                true,
+            )
+            let pathData = path.toString()
+            return pathData
+        }
+
+        let activitiesShapes = svg
+            .select('.activities-ring')
+            .selectAll('.activity-shapes')
+            .data(activityData)
+            .join('path')
+            .classed('activity-shapes', true)
+            // .classed('pointer', true)
+            .attr('d', function (d) {
+                let pathData = buildActivityPath(d)
+                return pathData
+            })
+            .attr('fill', function (d) {
+                return d.color
+            })
+            .attr('stroke-width', '3')
+            .attr('stroke', 'white')
+            .attr('filter', 'none')
+            .attr('transform', 'translate(0,0)')
+            .attr('opacity', 0.7)
+
         let buildCategoryPath = function (catData) {
             let startAngle = catData.startAngle
             let endAngle = catData.endAngle
@@ -309,10 +436,10 @@ class CircularEconomyDiagram {
 
         let categoryShapes = svg
             .select('.category-ring')
-            .selectAll('.category-shape')
+            .selectAll('.category-shapes')
             .data(catData)
             .join('path')
-            .classed('category-shape', true)
+            .classed('category-shapes', true)
             .classed('category-hover', true)
             .classed('pointer', true)
             .attr('d', function (d) {
@@ -327,7 +454,7 @@ class CircularEconomyDiagram {
             .attr('stroke', 'white')
             .attr('filter', 'none')
             .attr('transform', 'translate(0,0)')
-            .attr('opacity', 0.9)
+            .attr('opacity', 1)
 
         categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
@@ -639,14 +766,16 @@ class CircularEconomyDiagram {
                         'left',
                         geomData.centerX -
                             geomData.stageRadius -
-                            self.padding +
+                            self.padding -
+                            3 + //taking border thickness into consideration
                             'px',
                     )
                     .style(
                         'top',
                         geomData.centerY -
                             geomData.stageRadius -
-                            self.padding +
+                            self.padding -
+                            3 + //taking border thickness into consideration
                             'px',
                     )
                     .style('width', geomData.stageRadius * 2 + 'px')
