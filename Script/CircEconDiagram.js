@@ -7,6 +7,7 @@ class CircularEconomyDiagram {
         this.div = d3.select('#' + _divId)
         this.container = document.getElementById(_containerId)
         this.padding = 10
+        this.categoryOffset = 20
         this.structureData()
         this.resizeDiagram(this.width, this.height)
         // this.div.style('background', '#EBEBEB')
@@ -192,7 +193,7 @@ class CircularEconomyDiagram {
             .join('div')
             .attr(
                 'class',
-                'stage circular-economy-bubble no-select small-text stroked',
+                'stage circular-economy-bubble no-select medium-text stroked',
             )
             .style(
                 'left',
@@ -235,7 +236,8 @@ class CircularEconomyDiagram {
                 return (
                     geomData.centerX +
                     relativeX -
-                    self.padding -
+                    self.padding +
+                    self.categoryOffset -
                     geomData.radiusWidth / 2 +
                     'px'
                 )
@@ -247,13 +249,20 @@ class CircularEconomyDiagram {
                 return (
                     geomData.centerY +
                     relativeY -
-                    self.padding -
+                    self.padding +
+                    self.categoryOffset -
                     geomData.radiusWidth / 2 +
                     'px'
                 )
             })
-            .style('width', geomData.radiusWidth + 'px')
-            .style('height', geomData.radiusWidth + 'px')
+            .style(
+                'width',
+                geomData.radiusWidth - self.categoryOffset * 2 + 'px',
+            )
+            .style(
+                'height',
+                geomData.radiusWidth - self.categoryOffset * 2 + 'px',
+            )
             .style('background', 'none')
             .text((d) => {
                 return d.text
@@ -521,24 +530,12 @@ class CircularEconomyDiagram {
             let thisData = d
             let thisEvent = e
             let thisActor = d3.select(selected)
-            let allActors = d3.selectAll('.actors')
-            // console.log(allActors)
-            allActors.transition().style('opacity', 0.5)
-            thisActor.transition().style('opacity', 1)
-            d3.selectAll('.temp-category-reps')
-                .transition()
-                .style('opacity', (d) => {
-                    if (d.text == thisData['actor data'].category) {
-                        return 1
-                    } else {
-                        return 0.5
-                    }
-                })
+
             let fadeOutTime = 150
             let moveTime = 10
             let opaqueTime = 10
             let takeStageTime = 500
-            if (d3.select('.stage').text() != thisData['actor data'].details) {
+            if (d3.select('.stage').text() != thisData.actor) {
                 d3.select('.stage')
                     .transition()
                     .duration(fadeOutTime)
@@ -574,7 +571,7 @@ class CircularEconomyDiagram {
                     .style('width', geomData.actorRadius * 2 + 'px')
                     .style('height', geomData.actorRadius * 2 + 'px')
                     .text(function () {
-                        return thisData['actor data'].details
+                        return thisData.actor
                     })
                     .style('background', function () {
                         for (let cat of catData) {
@@ -613,7 +610,7 @@ class CircularEconomyDiagram {
                     .style('height', geomData.stageRadius * 2 + 'px')
 
                     .text(function () {
-                        return thisData['actor data'].details
+                        return thisData.actor
                     })
                     .style('background', function () {
                         for (let cat of catData) {
