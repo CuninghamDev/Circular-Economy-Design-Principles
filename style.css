@@ -56,7 +56,7 @@
     font-size: medium;
 }
 .stroked {
-    border: 0.5px solid white;
+    border: solid white;
 }
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */

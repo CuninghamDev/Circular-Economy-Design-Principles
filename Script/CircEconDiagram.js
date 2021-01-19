@@ -160,6 +160,7 @@ class CircularEconomyDiagram {
         //used for calculating geometries that are dependant on the canvas size
         this.structuredData.geometry.centerX = this.controllingDim / 2
         this.structuredData.geometry.centerY = this.controllingDim / 2
+        this.structuredData.geometry.actorSelectRadiusIncrease = 20
         this.structuredData.geometry.radius =
             (this.controllingDim / 2) * (7 / 12)
         this.structuredData.geometry.radiusWidth =
@@ -331,10 +332,13 @@ class CircularEconomyDiagram {
             })
             .attr('stroke-width', '3')
             .attr('stroke', 'white')
+            .attr('filter', 'none')
+            .attr('transform', 'translate(0,0)')
+            .attr('opacity', 0.9)
 
-        categoryShapes.on('mouseenter', function (e, d) {
-            categoryHover(d, e, this)
-        })
+        // categoryShapes.on('mouseenter', function (e, d) {
+        //     categoryHover(d, e, this)
+        // })
         categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -346,9 +350,9 @@ class CircularEconomyDiagram {
             .classed('actors', true)
             .classed('circular-economy-bubble', true)
             .classed('no-select', true)
-            .classed('small-text', true)
             .classed('stroked', true)
             .classed('pointer', true)
+            .style('font-size', 'x-small')
             .style('left', (d) => {
                 let relativeX =
                     Math.cos(d.actorAngle) * geomData.actorRingRadius
@@ -397,6 +401,7 @@ class CircularEconomyDiagram {
                     return 0
                 }
             })
+            .style('border-width', '2px')
         actors.on('mouseenter', function (e, d) {
             actorHover(d, e, this)
         })
@@ -410,47 +415,47 @@ class CircularEconomyDiagram {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        let categoryHover = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-            let formerTempSelection = d3
-                .selectAll('.temp-category-selected-actors')
-                .classed('temp-category-selected-actors', false)
-            let actors = d3
-                .selectAll('.actors')
+        // let categoryHover = function (d, e, selected) {
+        //     let thisData = d
+        //     let thisEvent = e
+        //     let thisCategory = d3.select(selected)
+        //     let formerTempSelection = d3
+        //         .selectAll('.temp-category-selected-actors')
+        //         .classed('temp-category-selected-actors', false)
+        //     let actors = d3
+        //         .selectAll('.actors')
 
-                .classed('temp-category-selected-actors', function (d) {
-                    let loopActor = d3.select(this)
-                    let isSelected = loopActor.classed(
-                        'category-selected-actors',
-                    )
-                    if (
-                        d['actor data'].category == thisData.text &&
-                        !isSelected
-                    ) {
-                        return true
-                    } else {
-                        return false
-                    }
-                })
-                .transition()
-                .duration(100)
-                .style('opacity', function (d) {
-                    let loopActor = d3.select(this)
-                    let isSelected = loopActor.classed(
-                        'category-selected-actors',
-                    )
-                    let isTempSelected = loopActor.classed(
-                        'temp-category-selected-actors',
-                    )
-                    if (isSelected || isTempSelected) {
-                        return 1
-                    } else {
-                        return 0
-                    }
-                })
-        }
+        //         .classed('temp-category-selected-actors', function (d) {
+        //             let loopActor = d3.select(this)
+        //             let isSelected = loopActor.classed(
+        //                 'category-selected-actors',
+        //             )
+        //             if (
+        //                 d['actor data'].category == thisData.text &&
+        //                 !isSelected
+        //             ) {
+        //                 return true
+        //             } else {
+        //                 return false
+        //             }
+        //         })
+        //         .transition()
+        //         .duration(100)
+        //         .style('opacity', function (d) {
+        //             let loopActor = d3.select(this)
+        //             let isSelected = loopActor.classed(
+        //                 'category-selected-actors',
+        //             )
+        //             let isTempSelected = loopActor.classed(
+        //                 'temp-category-selected-actors',
+        //             )
+        //             if (isSelected || isTempSelected) {
+        //                 return 1
+        //             } else {
+        //                 return 0
+        //             }
+        //         })
+        // }
 
         let categoryClick = function (d, e, selected) {
             let thisData = d
@@ -529,13 +534,103 @@ class CircularEconomyDiagram {
         let actorClick = function (d, e, selected) {
             let thisData = d
             let thisEvent = e
-            let thisActor = d3.select(selected)
+            let thisActor = d3.select(selected).raise()
 
-            let fadeOutTime = 150
+            let fadeOutTime = 20
             let moveTime = 10
             let opaqueTime = 10
             let takeStageTime = 500
-            if (d3.select('.stage').text() != thisData.actor) {
+            let thisActorActive =
+                thisActor.classed('temp-category-selected-actors') ||
+                thisActor.classed('category-selected-actors')
+            if (
+                d3.select('.stage').text() != thisData.actor &&
+                thisActorActive
+            ) {
+                d3.selectAll('.actors')
+                    .transition()
+                    .duration(120)
+                    .style('left', (d) => {
+                        let relativeX =
+                            Math.cos(d.actorAngle) * geomData.actorRingRadius
+                        if (d.actor == thisData.actor) {
+                            return (
+                                geomData.centerX +
+                                relativeX -
+                                geomData.actorSelectRadiusIncrease -
+                                self.padding -
+                                geomData.actorRadius +
+                                'px'
+                            )
+                        } else {
+                            return (
+                                geomData.centerX +
+                                relativeX -
+                                self.padding -
+                                geomData.actorRadius +
+                                'px'
+                            )
+                        }
+                    })
+                    .style('top', (d) => {
+                        let relativeY =
+                            Math.sin(d.actorAngle) * geomData.actorRingRadius
+                        if (d.actor == thisData.actor) {
+                            return (
+                                geomData.centerY +
+                                relativeY -
+                                geomData.actorSelectRadiusIncrease -
+                                self.padding -
+                                geomData.actorRadius +
+                                'px'
+                            )
+                        } else {
+                            return (
+                                geomData.centerY +
+                                relativeY -
+                                self.padding -
+                                geomData.actorRadius +
+                                'px'
+                            )
+                        }
+                    })
+                    .style('width', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return (
+                                geomData.actorRadius * 2 +
+                                geomData.actorSelectRadiusIncrease * 2 +
+                                'px'
+                            )
+                        } else {
+                            return geomData.actorRadius * 2 + 'px'
+                        }
+                    })
+                    .style('height', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return (
+                                geomData.actorRadius * 2 +
+                                geomData.actorSelectRadiusIncrease * 2 +
+                                'px'
+                            )
+                        } else {
+                            return geomData.actorRadius * 2 + 'px'
+                        }
+                    })
+                    .style('border-width', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return '5px'
+                        } else {
+                            return '2px'
+                        }
+                    })
+                    .style('font-size', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return 'medium'
+                        } else {
+                            return 'x-small'
+                        }
+                    })
+
                 d3.select('.stage')
                     .transition()
                     .duration(fadeOutTime)
@@ -625,30 +720,34 @@ class CircularEconomyDiagram {
 
         let actorHover = function (_d, _e, _selected) {
             let thisData = _d
-            console.log('this data', thisData)
+            // console.log('this data', thisData)
             let thisEvent = _e
             let thisActor = d3.select(_selected)
-
-            let catActors = d3
-                .selectAll('.category-selected-actors')
-                .transition()
-                .style('opacity', function (d) {
-                    if (d.actor == thisData.actor) {
-                        return 1
-                    } else {
-                        return 0.47
-                    }
-                })
-            let tempCatActors = d3
-                .selectAll('.temp-category-selected-actors')
-                .transition()
-                .style('opacity', function (d) {
-                    if (d.actor == thisData.actor) {
-                        return 1
-                    } else {
-                        return 0.47
-                    }
-                })
+            let thisActorActive =
+                thisActor.classed('temp-category-selected-actors') ||
+                thisActor.classed('category-selected-actors')
+            if (thisActorActive) {
+                let catActors = d3
+                    .selectAll('.category-selected-actors')
+                    .transition()
+                    .style('opacity', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return 1
+                        } else {
+                            return 0.47
+                        }
+                    })
+                let tempCatActors = d3
+                    .selectAll('.temp-category-selected-actors')
+                    .transition()
+                    .style('opacity', function (d) {
+                        if (d.actor == thisData.actor) {
+                            return 1
+                        } else {
+                            return 0.47
+                        }
+                    })
+            }
         }
 
         let actorLeave = function (d, e, selected) {
