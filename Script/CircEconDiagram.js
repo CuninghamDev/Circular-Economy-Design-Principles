@@ -10,7 +10,6 @@ class CircularEconomyDiagram {
         this.categoryOffset = 20
         this.structureData()
         this.resizeDiagram(this.width, this.height)
-        // this.div.style('background', '#EBEBEB')
         this.calcGeoms()
 
         this.svg.append('g').attr('class', 'stage')
@@ -36,7 +35,6 @@ class CircularEconomyDiagram {
         dropShadowFilter
             .append('feFlood')
             .attr('in', 'offsetBlur')
-            // .attr('flood-color', '#93864d')
             .attr('flood-opacity', '0.5')
             .attr('result', 'offsetColor')
         dropShadowFilter
@@ -98,7 +96,6 @@ class CircularEconomyDiagram {
         this.structuredData.geometry
 
         this.structuredData.geometry.startRotation = this.data.geometry.startRotation
-        // this.structuredData.geometry.startRotation = (Math.PI / 2) * -1
         this.structuredData.geometry.arrowRotation = this.data.geometry.arrowRotation
         this.structuredData.geometry.catRotArc =
             (Math.PI * 2) / Object.keys(this.data.categories).length
@@ -179,8 +176,6 @@ class CircularEconomyDiagram {
         let svg = self.svg
         let div = self.div
         let data = self.structuredData
-        // console.log('data', data)
-        // console.log(this)
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
@@ -275,8 +270,6 @@ class CircularEconomyDiagram {
         })
 
         let buildCategoryPath = function (catData) {
-            // console.log('data to build path', catData)
-            // console.log('geometry data', geomData)
             let startAngle = catData.startAngle
             let endAngle = catData.endAngle
             let arrowRotation = geomData.arrowRotation
@@ -324,7 +317,7 @@ class CircularEconomyDiagram {
             .classed('pointer', true)
             .attr('d', function (d) {
                 let pathData = buildCategoryPath(d)
-                // console.log('path data', pathData)
+
                 return pathData
             })
             .attr('fill', function (d) {
@@ -336,9 +329,6 @@ class CircularEconomyDiagram {
             .attr('transform', 'translate(0,0)')
             .attr('opacity', 0.9)
 
-        // categoryShapes.on('mouseenter', function (e, d) {
-        //     categoryHover(d, e, this)
-        // })
         categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -415,47 +405,6 @@ class CircularEconomyDiagram {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // let categoryHover = function (d, e, selected) {
-        //     let thisData = d
-        //     let thisEvent = e
-        //     let thisCategory = d3.select(selected)
-        //     let formerTempSelection = d3
-        //         .selectAll('.temp-category-selected-actors')
-        //         .classed('temp-category-selected-actors', false)
-        //     let actors = d3
-        //         .selectAll('.actors')
-
-        //         .classed('temp-category-selected-actors', function (d) {
-        //             let loopActor = d3.select(this)
-        //             let isSelected = loopActor.classed(
-        //                 'category-selected-actors',
-        //             )
-        //             if (
-        //                 d['actor data'].category == thisData.text &&
-        //                 !isSelected
-        //             ) {
-        //                 return true
-        //             } else {
-        //                 return false
-        //             }
-        //         })
-        //         .transition()
-        //         .duration(100)
-        //         .style('opacity', function (d) {
-        //             let loopActor = d3.select(this)
-        //             let isSelected = loopActor.classed(
-        //                 'category-selected-actors',
-        //             )
-        //             let isTempSelected = loopActor.classed(
-        //                 'temp-category-selected-actors',
-        //             )
-        //             if (isSelected || isTempSelected) {
-        //                 return 1
-        //             } else {
-        //                 return 0
-        //             }
-        //         })
-        // }
 
         let categoryClick = function (d, e, selected) {
             let thisData = d
@@ -489,7 +438,6 @@ class CircularEconomyDiagram {
 
                 d3.selectAll('.category-hover')
                     .classed('selected-category', function (d) {
-                        // console.log('category data', d)
                         if (thisData.text == d.text) {
                             return true
                         } else {
@@ -720,7 +668,6 @@ class CircularEconomyDiagram {
 
         let actorHover = function (_d, _e, _selected) {
             let thisData = _d
-            // console.log('this data', thisData)
             let thisEvent = _e
             let thisActor = d3.select(_selected)
             let thisActorActive =
