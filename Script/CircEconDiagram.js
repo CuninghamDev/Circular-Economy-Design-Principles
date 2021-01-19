@@ -187,6 +187,9 @@ class CircularEconomyDiagram {
             geo.activitiesPadding -
             geo.stageRadius -
             geo.stagePadding
+        geo.descriptionHeight = geo.activitiesWidth * 0.8
+        geo.descriptionWidth = geo.activitiesWidth
+        geo.descriptionYOffset = geo.stageRadius + geo.stagePadding + 10
     }
 
     generalUpdatePattern() {
@@ -237,6 +240,26 @@ class CircularEconomyDiagram {
                 return d.text
             })
             .style('opacity', '0')
+
+        let stageDescription = div
+            .selectAll('.stage-description')
+            .data(data.stageData)
+            .join('div')
+            .classed('stage-description', true)
+            .classed('no-select', true)
+            .classed('small-text', true)
+            .style('position', 'absolute')
+            .style(
+                'left',
+                geomData.centerX - geomData.descriptionWidth / 2 + 'px',
+            )
+            .style('top', geomData.centerY + geomData.descriptionYOffset + 'px')
+            .style('width', geomData.descriptionWidth + 'px')
+            .style('height', geomData.descriptionHeight + 'px')
+            .style('background', 'white')
+            .style('z-index', '100')
+            .text('something written here')
+            .style('opacity', 0)
 
         let categoryText = div
             .selectAll('.category-text')
@@ -791,6 +814,19 @@ class CircularEconomyDiagram {
                             }
                         }
                         return 'gray'
+                    })
+                d3.select('.stage-description').text('')
+                d3.select('.stage-description')
+                    .transition()
+                    .duration(fadeOutTime + moveTime + opaqueTime)
+                    .style('opacity', 0)
+                d3.select('.stage-description')
+                    .transition()
+                    .duration(takeStageTime)
+                    .delay(fadeOutTime + moveTime + opaqueTime)
+                    .style('opacity', 0.8)
+                    .text(function () {
+                        return thisData['actor data'].details
                     })
             }
         }
