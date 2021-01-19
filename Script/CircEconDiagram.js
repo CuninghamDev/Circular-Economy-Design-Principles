@@ -177,12 +177,14 @@ class CircularEconomyDiagram {
         let svg = self.svg
         let div = self.div
         let data = self.structuredData
-        console.log('data', data)
-        console.log(this)
+        // console.log('data', data)
+        // console.log(this)
         let geomData = data.geometry
         let catData = data.categories
         let actorData = data.actors
         console.log('actor data', actorData)
+        console.log('category data', catData)
+        console.log('geometry data', geomData)
 
         let stage = div
             .selectAll('.stage')
@@ -267,8 +269,8 @@ class CircularEconomyDiagram {
         })
 
         let buildCategoryPath = function (catData) {
-            console.log('data to build path', catData)
-            console.log('geometry data', geomData)
+            // console.log('data to build path', catData)
+            // console.log('geometry data', geomData)
             let startAngle = catData.startAngle
             let endAngle = catData.endAngle
             let arrowRotation = geomData.arrowRotation
@@ -316,7 +318,7 @@ class CircularEconomyDiagram {
             })
             .attr('d', function (d) {
                 let pathData = buildCategoryPath(d)
-                console.log('path data', pathData)
+                // console.log('path data', pathData)
                 return pathData
             })
             .attr('fill', function (d) {
@@ -388,9 +390,127 @@ class CircularEconomyDiagram {
                 }
             })
         actors.on('mouseenter', function (e, d) {
+            actorHover(d, e, this)
+        })
+        actors.on('mouseleave', function (e, d) {
+            actorLeave(d, e, this)
+        })
+        actors.on('click', function (e, d) {
+            actorClick(d, e, this)
+        })
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        let categoryHover = function (d, e, selected) {
             let thisData = d
             let thisEvent = e
-            let thisActor = d3.select(this)
+            let thisCategory = d3.select(selected)
+            let actors = d3
+                .selectAll('.actors')
+                .transition()
+                .style('opacity', function (d) {
+                    if (d['actor data'].category == thisData.text) {
+                        return 1
+                    } else if (
+                        d3.select(this).classed('category-selected-actors')
+                    ) {
+                        return 1
+                    } else if (
+                        !d3.select(this).classed('category-selected-actors')
+                    ) {
+                        return 0
+                    }
+                })
+        }
+
+        let categoryClick = function (d, e, selected) {
+            let thisData = d
+            let thisEvent = e
+            let thisCategory = d3.select(selected)
+
+            if (thisCategory.classed('selected-category')) {
+                d3.selectAll('.actors').classed(
+                    'category-selected-actors',
+                    false,
+                )
+
+                d3.selectAll('.category-hover')
+                    .classed('selected-category', false)
+                    .classed('receding-category', false)
+                    .transition()
+                    .attr('filter', 'none')
+                    .attr('transform', 'translate(0,0)')
+                    .attr('opacity', 1)
+            } else {
+                d3.selectAll('.actors').classed(
+                    'category-selected-actors',
+                    (d) => {
+                        if (d['actor data'].category == thisData.text) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    },
+                )
+
+                d3.selectAll('.category-hover')
+                    .classed('selected-category', function (d) {
+                        // console.log('category data', d)
+                        if (thisData.text == d.text) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    })
+                    .classed('receding-category', function (d) {
+                        if (thisData.text == d.text) {
+                            return false
+                        } else {
+                            return true
+                        }
+                    })
+            }
+            d3.selectAll('.receding-category')
+                .transition()
+                .attr('filter', 'none')
+                .attr('transform', 'translate(0,0)')
+                .attr('opacity', 0.9)
+            d3.selectAll('.selected-category')
+                .raise()
+                .transition()
+                .attr('filter', 'url(#dropshadow)')
+                .attr('transform', 'translate(1,-4)')
+                .attr('opacity', 1)
+        }
+
+        let categoryLeave = function (d, e, selected) {
+            let thisData = d
+            let thisEvent = e
+            let thisCategory = d3.select(selected)
+
+            let actors = d3
+                .selectAll('.actors')
+                .transition()
+                .style('opacity', function (d) {
+                    if (d['actor data'].category == thisData.text) {
+                        return 1
+                    } else if (
+                        d3.select(this).classed('category-selected-actors')
+                    ) {
+                        return 1
+                    } else if (
+                        !d3.select(this).classed('category-selected-actors')
+                    ) {
+                        return 0
+                    }
+                })
+        }
+
+        let actorHover = function (d, e, selected) {
+            let thisData = d
+            let thisEvent = e
+            let thisActor = d3.select(selected)
             let allActors = d3.selectAll('.actors')
             console.log(allActors)
             allActors.transition().style('opacity', 0.5)
@@ -494,120 +614,23 @@ class CircularEconomyDiagram {
                         return 'gray'
                     })
             }
-        })
-        actors.on('mouseleave', function () {
+        }
+
+        let actorClick = function (d, e, selected) {
+            let thisData = d
+            let thisEvent = e
+            let thisCategory = d3.select(selected)
+        }
+
+        let actorLeave = function (d, e, selected) {
+            let thisData = d
+            let thisEvent = e
+            let thisCategory = d3.select(selected)
+
             let allActors = d3.selectAll('.actors').transition()
             let allCategories = d3.selectAll('.temp-category-reps').transition()
             allActors.style('opacity', 1)
             allCategories.style('opacity', 1)
-        })
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        let categoryHover = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-            let actors = d3
-                .selectAll('.actors')
-                .transition()
-                .style('opacity', function (d) {
-                    if (d['actor data'].category == thisData.text) {
-                        return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 0
-                    }
-                })
-        }
-
-        let categoryClick = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-
-            if (thisCategory.classed('selected-category')) {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    false,
-                )
-
-                d3.selectAll('.category-hover')
-                    .classed('selected-category', false)
-                    .classed('receding-category', false)
-                    .transition()
-                    .attr('filter', 'none')
-                    .attr('transform', 'translate(0,0)')
-                    .attr('opacity', 1)
-            } else {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    (d) => {
-                        if (d['actor data'].category == thisData.text) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    },
-                )
-
-                d3.selectAll('.category-hover')
-                    .classed('selected-category', function (d) {
-                        console.log('category data', d)
-                        if (thisData.text == d.text) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    })
-                    .classed('receding-category', function (d) {
-                        if (thisData.text == d.text) {
-                            return false
-                        } else {
-                            return true
-                        }
-                    })
-            }
-            d3.selectAll('.receding-category')
-                .transition()
-                .attr('filter', 'none')
-                .attr('transform', 'translate(0,0)')
-                .attr('opacity', 0.9)
-            d3.selectAll('.selected-category')
-                .raise()
-                .transition()
-                .attr('filter', 'url(#dropshadow)')
-                .attr('transform', 'translate(1,-4)')
-                .attr('opacity', 1)
-        }
-
-        let categoryLeave = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-            // d3.selectAll('.category-hover').transition().style('opacity', '1')
-            let actors = d3
-                .selectAll('.actors')
-                .transition()
-                .style('opacity', function (d) {
-                    if (d['actor data'].category == thisData.text) {
-                        return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 0
-                    }
-                })
         }
     }
 }
