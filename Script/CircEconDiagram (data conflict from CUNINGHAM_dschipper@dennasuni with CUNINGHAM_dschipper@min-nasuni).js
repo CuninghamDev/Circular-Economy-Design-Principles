@@ -498,6 +498,7 @@ class CircularEconomyDiagram {
                     }
                 })
         }
+        svg.select('defs').selectAll('#dropshadow').remove()
         let dropShadowFilter = svg
             .select('defs')
             .append('filter')

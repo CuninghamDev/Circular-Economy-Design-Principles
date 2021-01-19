@@ -380,7 +380,6 @@ class CircularEconomyDiagram {
             })
             .style('z-index', '4')
             .style('opacity', function (d) {
-                // console.log('opacity testing', this)
                 if (d.categoryActive) {
                     return '1'
                 } else {
@@ -509,19 +508,24 @@ class CircularEconomyDiagram {
             let thisData = d
             let thisEvent = e
             let thisCategory = d3.select(selected)
-            let actors = d3
-                .selectAll('.actors')
+            // let allCategories = d3
+            //     .selectAll('.category-hover')
+            //     .transition()
+            //     .style('opacity', function (d) {
+            //         if (d.text == thisData.text) {
+            //             return 1
+            //         } else {
+            //             return 0.5
+            //         }
+            //     })
+            d3.selectAll('.actors')
                 .transition()
-                .style('opacity', function (d) {
+                .style('opacity', (d) => {
                     if (d['actor data'].category == thisData.text) {
                         return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
+                    } else if (d['actor data'].categoryActive) {
+                        return 0.5
+                    } else {
                         return 0
                     }
                 })
@@ -533,30 +537,13 @@ class CircularEconomyDiagram {
             let thisCategory = d3.select(selected)
 
             if (thisCategory.classed('selected-category')) {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    false,
-                )
-
                 d3.selectAll('.category-hover')
                     .classed('selected-category', false)
                     .classed('receding-category', false)
                     .transition()
                     .attr('filter', 'none')
                     .attr('transform', 'translate(0,0)')
-                    .attr('opacity', 1)
             } else {
-                d3.selectAll('.actors').classed(
-                    'category-selected-actors',
-                    (d) => {
-                        if (d['actor data'].category == thisData.text) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    },
-                )
-
                 d3.selectAll('.category-hover')
                     .classed('selected-category', function (d) {
                         console.log('category data', d)
@@ -578,33 +565,21 @@ class CircularEconomyDiagram {
                 .transition()
                 .attr('filter', 'none')
                 .attr('transform', 'translate(0,0)')
-                .attr('opacity', 0.9)
             d3.selectAll('.selected-category')
                 .raise()
                 .transition()
                 .attr('filter', 'url(#dropshadow)')
                 .attr('transform', 'translate(1,-4)')
-                .attr('opacity', 1)
         }
 
         let categoryLeave = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
             // d3.selectAll('.category-hover').transition().style('opacity', '1')
-            let actors = d3
-                .selectAll('.actors')
+            d3.selectAll('.actors')
                 .transition()
                 .style('opacity', function (d) {
-                    if (d['actor data'].category == thisData.text) {
+                    if (d['actor data'].categoryActive) {
                         return 1
-                    } else if (
-                        d3.select(this).classed('category-selected-actors')
-                    ) {
-                        return 1
-                    } else if (
-                        !d3.select(this).classed('category-selected-actors')
-                    ) {
+                    } else {
                         return 0
                     }
                 })
