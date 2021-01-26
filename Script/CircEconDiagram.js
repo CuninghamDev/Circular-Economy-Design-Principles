@@ -12,6 +12,12 @@ class CircularEconomyDiagram {
         this.resizeDiagram(this.width, this.height)
         this.calcGeoms()
 
+        //not necessary to instantiate the rotation here, but these are called and modified by the rotation
+        //method of this class to calculate and animate diagram rotations
+        this.rotationTracker = 0
+        this.previousRotation = 0
+        this.rotationTime = 0
+
         this.svg.append('g').attr('class', 'stage')
         this.svg.append('g').attr('class', 'category-ring')
         this.svg.append('g').attr('class', 'actors-group')
@@ -69,6 +75,7 @@ class CircularEconomyDiagram {
         this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
         this.div.style('width', this.controllingDim + 'px')
         this.div.style('height', this.controllingDim + 'px')
+        // this.structureData()
         this.calcGeoms()
         this.generalUpdatePattern()
     }
@@ -146,7 +153,7 @@ class CircularEconomyDiagram {
                 let actorData = this.data.actors[actor]
                 if (actorData.category == categorizedActors.category) {
                     let actorObj = {
-                        actor: actor,
+                        actor: actorData.actor,
                         'actor data': actorData,
                         categoryActive: false,
                         actorActive: false,
@@ -191,7 +198,12 @@ class CircularEconomyDiagram {
         geo.descriptionWidth = geo.activitiesWidth
         geo.descriptionYOffset = geo.stageRadius + geo.stagePadding + 10
     }
-
+    rotate(_rotation) {
+        this.rotationTracker += _rotation
+        this.rotationTime = (this.rotationTracker - this.previousRotation) * 500
+        this.previousRotation = this.rotationTracker
+        this.generalUpdatePattern()
+    }
     generalUpdatePattern() {
         console.log('general update pattern run')
         let self = this
@@ -271,9 +283,18 @@ class CircularEconomyDiagram {
             .classed('no-select', true)
             .classed('medium-text', true)
             .classed('pointer', true)
+
+            .style('background', 'none')
+            .text((d) => {
+                return d.text
+            })
+            .style('z-index', '2')
+        categoryText
+            .transition()
+            .duration(self.rotationTime)
             .style('left', (d) => {
                 let relativeX =
-                    Math.cos(d.textAngle) *
+                    Math.cos(d.textAngle + self.rotationTracker) *
                     (geomData.radius + geomData.radiusWidth / 2)
                 return (
                     geomData.centerX +
@@ -286,7 +307,7 @@ class CircularEconomyDiagram {
             })
             .style('top', (d) => {
                 let relativeY =
-                    Math.sin(d.textAngle) *
+                    Math.sin(d.textAngle + self.rotationTracker) *
                     (geomData.radius + geomData.radiusWidth / 2)
                 return (
                     geomData.centerY +
@@ -305,12 +326,6 @@ class CircularEconomyDiagram {
                 'height',
                 geomData.radiusWidth - self.categoryOffset * 2 + 'px',
             )
-            .style('background', 'none')
-            .text((d) => {
-                return d.text
-            })
-            .style('z-index', '2')
-
         categoryText.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -326,9 +341,18 @@ class CircularEconomyDiagram {
             .classed('medium-text', true)
             .classed('pointer', false)
             .style('position', 'absolute')
+            .style('background', 'none')
+            .text((d) => {
+                return d.text
+            })
+            .style('z-index', '2')
+
+        activityText
+            .transition()
+            .duration(self.rotationTime)
             .style('left', (d) => {
                 let relativeX =
-                    Math.cos(d.textAngle) *
+                    Math.cos(d.textAngle + self.rotationTracker) *
                     (geomData.activitiesWidth / 2 +
                         (geomData.stageRadius + geomData.stagePadding))
                 return (
@@ -342,7 +366,7 @@ class CircularEconomyDiagram {
             })
             .style('top', (d) => {
                 let relativeY =
-                    Math.sin(d.textAngle) *
+                    Math.sin(d.textAngle + self.rotationTracker) *
                     (geomData.activitiesWidth / 2 +
                         (geomData.stageRadius + geomData.stagePadding))
                 return (
@@ -362,19 +386,14 @@ class CircularEconomyDiagram {
                 'height',
                 geomData.activitiesWidth - self.categoryOffset * 2 + 'px',
             )
-            .style('background', 'none')
-            .text((d) => {
-                return d.text
-            })
-            .style('z-index', '2')
 
         let buildActivityPath = function (actData) {
             let startAngle = actData.startAngle
             let endAngle = actData.endAngle
             let interiorRadius = geomData.stageRadius + geomData.stagePadding
             let exteriorRadius = geomData.radius - geomData.activitiesPadding
-            let centerX = geomData.centerX
-            let centerY = geomData.centerY
+            let centerX = 0
+            let centerY = 0
             let x1 = Math.cos(startAngle) * interiorRadius + centerX
             let y1 = Math.sin(startAngle) * interiorRadius + centerY
             let x2 = Math.cos(startAngle) * exteriorRadius + centerX
@@ -399,10 +418,28 @@ class CircularEconomyDiagram {
             return pathData
         }
 
-        let activitiesShapes = svg
+        svg.select('.activities-ring').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+
+        let activityGroups = svg
             .select('.activities-ring')
-            .selectAll('.activity-shapes')
+            .selectAll('g')
             .data(activityData)
+            .join('g')
+        activityGroups
+            .transition()
+            .duration(self.rotationTime)
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
+            )
+        let activitiesShapes = activityGroups
+            .selectAll('.activity-shapes')
+            .data(function (d) {
+                return [d]
+            })
             .join('path')
             .classed('activity-shapes', true)
             // .classed('pointer', true)
@@ -425,8 +462,8 @@ class CircularEconomyDiagram {
             let arrowRotation = geomData.arrowRotation
             let radius = geomData.radius
             let exteriorRadius = radius + geomData.radiusWidth
-            let centerX = geomData.centerX
-            let centerY = geomData.centerY
+            let centerX = 0
+            let centerY = 0
             let x1 = Math.cos(startAngle) * radius + centerX
             let y1 = Math.sin(startAngle) * radius + centerY
             let x2 =
@@ -457,11 +494,30 @@ class CircularEconomyDiagram {
             return pathData
         }
 
-        let categoryShapes = svg
+        svg.select('.category-ring').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+        let categoryGroups = svg
             .select('.category-ring')
-            .selectAll('.category-shapes')
+            .selectAll('g')
             .data(catData)
+            .join('g')
+        categoryGroups
+            .transition()
+            .duration(self.rotationTime)
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
+            )
+        let categoryShapes = categoryGroups
+            .selectAll('.category-shapes')
+            .data(function (d) {
+                console.log(d)
+                return [d]
+            })
             .join('path')
+
             .classed('category-shapes', true)
             .classed('category-hover', true)
             .classed('pointer', true)
@@ -483,6 +539,9 @@ class CircularEconomyDiagram {
             categoryClick(d, e, this)
         })
 
+        ////////////////////////////////////////////
+        ///This div based approach is going to be depricated
+        ////////////////////////////////////////////
         let actors = div
             .selectAll('.actors')
             .data(actorData)
@@ -551,6 +610,11 @@ class CircularEconomyDiagram {
         actors.on('click', function (e, d) {
             actorClick(d, e, this)
         })
+
+        ////////////////////////////////////////////
+        ///End removal section
+        ///The functions that modify the actors will need to be changed as well
+        ////////////////////////////////////////////
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
@@ -632,7 +696,9 @@ class CircularEconomyDiagram {
         let actorClick = function (d, e, selected) {
             let thisData = d
             let thisEvent = e
-            let thisActor = d3.select(selected).raise()
+            self.rotate(Math.PI / 8)
+
+            let thisActor = d3.select(selected)
 
             let fadeOutTime = 20
             let moveTime = 10
@@ -646,8 +712,8 @@ class CircularEconomyDiagram {
                 thisActorActive
             ) {
                 d3.selectAll('.actors')
-                    .transition()
-                    .duration(120)
+                    // .transition()
+                    // .duration(120)
                     .style('left', (d) => {
                         let relativeX =
                             Math.cos(d.actorAngle) * geomData.actorRingRadius
@@ -842,6 +908,7 @@ class CircularEconomyDiagram {
                 let catActors = d3
                     .selectAll('.category-selected-actors')
                     .transition()
+                    .duration(80)
                     .style('opacity', function (d) {
                         if (d.actor == thisData.actor) {
                             return 1
@@ -852,6 +919,7 @@ class CircularEconomyDiagram {
                 let tempCatActors = d3
                     .selectAll('.temp-category-selected-actors')
                     .transition()
+                    .duration(80)
                     .style('opacity', function (d) {
                         if (d.actor == thisData.actor) {
                             return 1
