@@ -14,14 +14,16 @@ class CircularEconomyDiagram {
 
         //not necessary to instantiate the rotation here, but these are called and modified by the rotation
         //method of this class to calculate and animate diagram rotations
-        this.rotationTracker = 0
-        this.previousRotation = 0
-        this.rotationTime = 0
-
+        // this.rotationTracker = this.structuredData.geometry.startRotation
+        this.rotationTracker = this.structuredData.geometry.startRotation
+        this.previousRotation = this.structuredData.geometry.startRotation
+        this.rotationTime = 100
         this.svg.append('g').attr('class', 'stage')
+
         this.svg.append('g').attr('class', 'category-ring')
-        this.svg.append('g').attr('class', 'actors-group')
+
         this.svg.append('g').attr('class', 'activities-ring')
+        this.svg.append('g').attr('class', 'actors-group')
         this.svg.append('defs')
 
         let dropShadowFilter = this.svg
@@ -64,18 +66,26 @@ class CircularEconomyDiagram {
         this.containerTop = this.containerBounds.top
         this.width = this.containerBounds.right - this.containerLeft
         this.height = this.containerBounds.bottom - this.containerTop
+        this.rotationTime = 20
         this.getControllingDim()
         this.svg.style('position', 'absolute')
-        this.svg.attr('width', this.controllingDim)
-        this.svg.attr('height', this.controllingDim)
-        this.svg.style('left', (this.width - this.controllingDim) / 2 + 'px')
-        this.svg.style('top', (this.height - this.controllingDim) / 2 + 'px')
+        // this.svg.attr('width', this.controllingDim)
+        // this.svg.attr('height', this.controllingDim)
+        // this.svg.style('left', (this.width - this.controllingDim) / 2 + 'px')
+        // this.svg.style('top', (this.height - this.controllingDim) / 2 + 'px')
+        this.svg.attr('width', this.width)
+        this.svg.attr('height', this.height)
+        this.svg.style('left', '0px')
+        this.svg.style('top', '0px')
         this.div.style('position', 'absolute')
-        this.div.style('left', (this.width - this.controllingDim) / 2 + 'px')
-        this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
-        this.div.style('width', this.controllingDim + 'px')
-        this.div.style('height', this.controllingDim + 'px')
-        // this.structureData()
+        // this.div.style('left', (this.width - this.controllingDim) / 2 + 'px')
+        // this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
+        // this.div.style('width', this.controllingDim + 'px')
+        // this.div.style('height', this.controllingDim + 'px')
+        this.div.style('left', '0px')
+        this.div.style('top', '0px')
+        this.div.style('width', this.width)
+        this.div.style('height', this.height)
         this.calcGeoms()
         this.generalUpdatePattern()
     }
@@ -113,9 +123,7 @@ class CircularEconomyDiagram {
         this.structuredData.categories = []
         for (let i in this.data.categories) {
             let cat = this.data.categories[i]
-            cat.startAngle =
-                this.structuredData.geometry.startRotation +
-                this.structuredData.geometry.catRotArc * i
+            cat.startAngle = this.structuredData.geometry.catRotArc * i
             cat.endAngle =
                 cat.startAngle + this.structuredData.geometry.catRotArc
             cat.textAngle =
@@ -128,9 +136,7 @@ class CircularEconomyDiagram {
         this.structuredData.activities = []
         for (let i in this.data.activities) {
             let act = this.data.activities[i]
-            act.startAngle =
-                this.structuredData.geometry.startRotation +
-                this.structuredData.geometry.catRotArc * i
+            act.startAngle = this.structuredData.geometry.catRotArc * i
             act.endAngle =
                 act.startAngle + this.structuredData.geometry.catRotArc
             act.textAngle =
@@ -154,6 +160,7 @@ class CircularEconomyDiagram {
                 if (actorData.category == categorizedActors.category) {
                     let actorObj = {
                         actor: actorData.actor,
+                        short: actorData.short,
                         'actor data': actorData,
                         categoryActive: false,
                         actorActive: false,
@@ -179,16 +186,19 @@ class CircularEconomyDiagram {
     calcGeoms() {
         //used for calculating geometries that are dependant on the canvas size
         let geo = this.structuredData.geometry
-        geo.centerX = this.controllingDim / 2
-        geo.centerY = this.controllingDim / 2
+        geo.centerX = this.width / 2
+        geo.centerY = this.height / 2
         geo.actorSelectRadiusIncrease = 20
-        geo.stagePadding = 20
+        geo.stagePadding = 1
         geo.activitiesPadding = 5
-        geo.radius = (this.controllingDim / 2) * (7 / 12)
-        geo.radiusWidth = (this.controllingDim / 2) * (4 / 17)
-        geo.stageRadius = (this.controllingDim / 2) * (1 / 7)
+        geo.radius = (this.controllingDim / 2) * (6 / 15)
+        geo.radiusWidth = (this.controllingDim / 2) * (4 / 20)
+        geo.stageRadius = (this.controllingDim / 2) * (1 / 5)
         geo.actorRingRadius = (this.controllingDim / 2) * (9 / 10)
+        geo.actorArrowRadius =
+            geo.radius + geo.radiusWidth - ((this.controllingDim / 2) * 1) / 50
         geo.actorRadius = (this.controllingDim / 2) * (1 / 11)
+        geo.actorArrowLengths = this.controllingDim / 2 - geo.actorArrowRadius
         geo.activitiesWidth =
             geo.radius -
             geo.activitiesPadding -
@@ -200,7 +210,8 @@ class CircularEconomyDiagram {
     }
     rotate(_rotation) {
         this.rotationTracker += _rotation
-        this.rotationTime = (this.rotationTracker - this.previousRotation) * 500
+        this.rotationTime = 800
+
         this.previousRotation = this.rotationTracker
         this.generalUpdatePattern()
     }
@@ -214,81 +225,33 @@ class CircularEconomyDiagram {
         let catData = data.categories
         let actorData = data.actors
         let activityData = data.activities
-        console.log('actor data', actorData)
-        console.log('category data', catData)
-        console.log('geometry data', geomData)
-        console.log('activity data', activityData)
-
-        let stage = div
-            .selectAll('.stage')
-            .data(data.stageData)
-            .join('div')
-            .attr(
-                'class',
-                'stage circular-economy-bubble no-select medium-text stroked',
-            )
-            .style(
-                'left',
-                geomData.centerX -
-                    geomData.stageRadius -
-                    self.padding -
-                    3 +
-                    'px',
-            )
-            .style(
-                'top',
-                geomData.centerY -
-                    geomData.stageRadius -
-                    self.padding -
-                    3 +
-                    'px',
-            )
-            .style('width', geomData.stageRadius * 2 + 'px')
-            .style('height', geomData.stageRadius * 2 + 'px')
-            .style('background', (d) => {
-                return d.color
-            })
-            .text((d) => {
-                return d.text
-            })
-            .style('opacity', '0')
-
-        let stageDescription = div
-            .selectAll('.stage-description')
-            .data(data.stageData)
-            .join('div')
-            .classed('stage-description', true)
-            .classed('no-select', true)
-            .classed('small-text', true)
-            .style('position', 'absolute')
-            .style(
-                'left',
-                geomData.centerX - geomData.descriptionWidth / 2 + 'px',
-            )
-            .style('top', geomData.centerY + geomData.descriptionYOffset + 'px')
-            .style('width', geomData.descriptionWidth + 'px')
-            .style('height', geomData.descriptionHeight + 'px')
-            .style('background', 'white')
-            .style('z-index', '100')
-            .text('something written here')
-            .style('opacity', 0)
+        // console.log('actor data', actorData)
+        // console.log('category data', catData)
+        // console.log('geometry data', geomData)
+        // console.log('activity data', activityData)
 
         let categoryText = div
             .selectAll('.category-text')
             .data(data.categories)
-            .join('div')
-            .classed('category-text', true)
-            .classed('category-hover', true)
-            .classed('circular-economy-square', true)
-            .classed('no-select', true)
-            .classed('medium-text', true)
-            .classed('pointer', true)
+            // .join('div')
+            .join(
+                (enter) =>
+                    enter
+                        .append('div')
+                        .classed('category-text', true)
+                        .classed('category-hover', true)
+                        .classed('circular-economy-square', true)
+                        .classed('no-select', true)
+                        .classed('medium-text', true)
+                        .classed('pointer', true)
+                        .style('background', 'none')
+                        .text((d) => {
+                            return d.text
+                        })
+                        .style('z-index', '2'),
+                (update) => update,
+            )
 
-            .style('background', 'none')
-            .text((d) => {
-                return d.text
-            })
-            .style('z-index', '2')
         categoryText
             .transition()
             .duration(self.rotationTime)
@@ -326,6 +289,7 @@ class CircularEconomyDiagram {
                 'height',
                 geomData.radiusWidth - self.categoryOffset * 2 + 'px',
             )
+
         categoryText.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
@@ -333,19 +297,22 @@ class CircularEconomyDiagram {
         let activityText = div
             .selectAll('.activity-text')
             .data(activityData)
-            .join('div')
-            .classed('activity-text', true)
-            .classed('activity-hover', true)
-            .classed('circular-economy-square', true)
-            .classed('no-select', true)
-            .classed('medium-text', true)
-            .classed('pointer', false)
-            .style('position', 'absolute')
-            .style('background', 'none')
-            .text((d) => {
-                return d.text
-            })
-            .style('z-index', '2')
+            .join((enter) =>
+                enter
+                    .append('div')
+                    .classed('activity-text', true)
+                    .classed('activity-hover', true)
+                    .classed('circular-economy-square', true)
+                    .classed('no-select', true)
+                    .classed('medium-text', true)
+                    .classed('pointer', false)
+                    .style('position', 'absolute')
+                    .style('background', 'none')
+                    .text((d) => {
+                        return d.text
+                    })
+                    .style('z-index', '2'),
+            )
 
         activityText
             .transition()
@@ -435,26 +402,31 @@ class CircularEconomyDiagram {
                 'transform',
                 'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
             )
+
         let activitiesShapes = activityGroups
             .selectAll('.activity-shapes')
             .data(function (d) {
                 return [d]
             })
-            .join('path')
-            .classed('activity-shapes', true)
-            // .classed('pointer', true)
+            .join((enter) =>
+                enter
+                    .append('path')
+                    .classed('activity-shapes', true)
+                    // .classed('pointer', true)
+
+                    .attr('fill', function (d) {
+                        return d.color
+                    })
+                    .attr('stroke-width', '3')
+                    .attr('stroke', 'white')
+                    .attr('filter', 'none')
+                    .attr('transform', 'translate(0,0)')
+                    .attr('opacity', 0.7),
+            )
             .attr('d', function (d) {
                 let pathData = buildActivityPath(d)
                 return pathData
             })
-            .attr('fill', function (d) {
-                return d.color
-            })
-            .attr('stroke-width', '3')
-            .attr('stroke', 'white')
-            .attr('filter', 'none')
-            .attr('transform', 'translate(0,0)')
-            .attr('opacity', 0.7)
 
         let buildCategoryPath = function (catData) {
             let startAngle = catData.startAngle
@@ -513,108 +485,137 @@ class CircularEconomyDiagram {
         let categoryShapes = categoryGroups
             .selectAll('.category-shapes')
             .data(function (d) {
-                console.log(d)
                 return [d]
             })
-            .join('path')
+            .join((enter) =>
+                enter
+                    .append('path')
+                    .classed('category-shapes', true)
+                    .classed('category-hover', true)
+                    .classed('pointer', true)
 
-            .classed('category-shapes', true)
-            .classed('category-hover', true)
-            .classed('pointer', true)
+                    .attr('fill', function (d) {
+                        return d.color
+                    })
+                    .attr('stroke-width', '3')
+                    .attr('stroke', 'white')
+                    .attr('filter', 'none')
+                    .attr('transform', 'translate(0,0)')
+                    .attr('opacity', 1),
+            )
             .attr('d', function (d) {
                 let pathData = buildCategoryPath(d)
 
                 return pathData
             })
-            .attr('fill', function (d) {
-                return d.color
-            })
-            .attr('stroke-width', '3')
-            .attr('stroke', 'white')
-            .attr('filter', 'none')
-            .attr('transform', 'translate(0,0)')
-            .attr('opacity', 1)
 
         categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
 
-        ////////////////////////////////////////////
-        ///This div based approach is going to be depricated
-        ////////////////////////////////////////////
-        let actors = div
-            .selectAll('.actors')
+        svg.select('.actors-group').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+        let actorCenteringGroup = svg
+            .select('.actors-group')
+            .selectAll('.actor-centering-groups')
             .data(actorData)
-            .join('div')
-            .classed('actors', true)
-            .classed('circular-economy-bubble', true)
-            .classed('no-select', true)
-            .classed('stroked', true)
-            .classed('pointer', true)
-            .style('font-size', 'x-small')
-            .style('left', (d) => {
-                let relativeX =
-                    Math.cos(d.actorAngle) * geomData.actorRingRadius
-                return (
-                    geomData.centerX +
-                    relativeX -
-                    self.padding -
-                    geomData.actorRadius +
-                    'px'
-                )
+            .join('g')
+            .classed('actor-centering-groups', true)
+        actorCenteringGroup
+            .transition()
+            .duration(self.rotationTime)
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
+            )
+
+        let actorGroups = actorCenteringGroup
+            .selectAll('.actor-rotation-groups')
+            .data(function (d) {
+                return [d]
             })
-            .style('top', (d) => {
-                let relativeY =
-                    Math.sin(d.actorAngle) * geomData.actorRingRadius
-                return (
-                    geomData.centerY +
-                    relativeY -
-                    self.padding -
-                    geomData.actorRadius +
-                    'px'
-                )
-            })
-            .style('width', geomData.actorRadius * 2 + 'px')
-            .style('height', geomData.actorRadius * 2 + 'px')
-            .style('background', (d) => {
-                for (let cat of catData) {
-                    if (cat.text == d['actor data'].category) {
-                        return cat.color
-                    }
-                }
-                return 'gray'
-            })
-            .text((d) => {
-                return d.actor
-            })
-            .style('z-index', '4')
-            .style('opacity', function (d) {
-                let loopActor = d3.select(this)
-                let catSelect = loopActor.classed('category-selected-actors')
-                let tempCatSelect = loopActor.classed(
-                    'temp-category-selected-actors',
-                )
-                if (catSelect || tempCatSelect) {
-                    return 1
-                } else {
-                    return 0
-                }
-            })
-            .style('border-width', '2px')
-        actors.on('mouseenter', function (e, d) {
-            actorHover(d, e, this)
-        })
-        actors.on('mouseleave', function (e, d) {
-            actorLeave(d, e, this)
-        })
-        actors.on('click', function (e, d) {
+            .join((enter) =>
+                enter
+                    .append('g')
+                    .classed('actor-rotation-groups', true)
+                    .classed('pointer', true)
+                    .attr('transform', function (d) {
+                        return 'rotate(' + d.actorAngle * (180 / Math.PI) + ')'
+                    })
+                    .attr('opacity', 0)
+                    .classed('actor-selected', false),
+            )
+
+        actorGroups.on('click', function (e, d) {
             actorClick(d, e, this)
         })
 
-        ////////////////////////////////////////////
-        ///End removal section
-        ///The functions that modify the actors will need to be changed as well
-        ////////////////////////////////////////////
+        let actorRectangles = actorGroups
+            .selectAll('rect')
+            .data(function (d) {
+                return [d]
+            })
+            .join((enter) =>
+                enter
+                    .append('rect')
+                    .attr('x', geomData.actorArrowRadius)
+                    .attr('y', -18)
+                    .attr('height', 36)
+                    .attr('width', geomData.actorArrowLengths)
+                    .style('stroke', 'white')
+                    .style('stroke-width', '3px')
+                    .style('fill', (d) => {
+                        for (let cat of catData) {
+                            if (cat.text == d['actor data'].category) {
+                                return cat.color
+                            }
+                        }
+                        return 'gray'
+                    }),
+            )
+
+        let actorText = actorGroups
+            .selectAll('text')
+            .data(function (d) {
+                return [d]
+            })
+            .join((enter) =>
+                enter
+                    .append('text')
+                    .style('font-family', 'Arial, Helvetica, sans-serif')
+                    .style('fill', 'white')
+
+                    .attr('y', 0)
+                    .text(function (d) {
+                        return d.short
+                    })
+
+                    .attr('dominant-baseline', 'middle'),
+            )
+            .attr('x', function (d) {
+                let testAngle =
+                    (d.actorAngle + self.rotationTracker + Math.PI * 2) %
+                    (Math.PI * 2)
+                if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+                    return self.controllingDim / 2 - 5
+                } else {
+                    return geomData.actorArrowRadius + 10
+                }
+            })
+            .attr('transform', function (d) {
+                let testAngle =
+                    (d.actorAngle + self.rotationTracker + Math.PI * 2) %
+                    (Math.PI * 2)
+                if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+                    return (
+                        'rotate(180,' + (self.controllingDim / 2 - 10) + ',0)'
+                    )
+                } else {
+                    return 'rotate(0)'
+                }
+            })
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
@@ -626,7 +627,7 @@ class CircularEconomyDiagram {
             let thisCategory = d3.select(selected)
 
             if (thisCategory.classed('selected-category')) {
-                d3.selectAll('.actors')
+                d3.selectAll('.actor-rotation-groups')
                     .classed('category-selected-actors', false)
                     .classed('temp-category-selected-actors', false)
                     .transition()
@@ -640,7 +641,7 @@ class CircularEconomyDiagram {
                     .attr('transform', 'translate(0,0)')
                     .attr('opacity', 1)
             } else {
-                d3.selectAll('.actors')
+                d3.selectAll('.actor-rotation-groups')
                     .classed('category-selected-actors', (d) => {
                         if (d['actor data'].category == thisData.text) {
                             return true
@@ -672,13 +673,15 @@ class CircularEconomyDiagram {
                 .attr('transform', 'translate(0,0)')
                 .attr('opacity', 0.9)
             d3.selectAll('.selected-category')
+                .selectAll('.category-shapes')
                 .raise()
+            d3.selectAll('.selected-category')
                 .transition()
                 .attr('filter', 'url(#dropshadow)')
                 .attr('transform', 'translate(1,-4)')
                 .attr('opacity', 1)
             let allActors = d3
-                .selectAll('.actors')
+                .selectAll('.actor-rotation-groups')
                 .transition()
                 .style('opacity', function (d) {
                     let loopActor = d3.select(this)
@@ -694,249 +697,64 @@ class CircularEconomyDiagram {
         }
 
         let actorClick = function (d, e, selected) {
+            console.log(d, e, selected)
             let thisData = d
             let thisEvent = e
-            self.rotate(Math.PI / 8)
+            let rotateDiagram =
+                Math.PI * 2 -
+                ((d.actorAngle + self.rotationTracker) % (Math.PI * 2))
+            self.rotate(rotateDiagram)
 
             let thisActor = d3.select(selected)
+            let actorRects = d3
+                .selectAll('.actor-rotation-groups')
+                .selectAll('rect')
+                .classed('actor-selected', false)
+            thisActor.selectAll('rect').classed('actor-selected', true)
 
-            let fadeOutTime = 20
-            let moveTime = 10
-            let opaqueTime = 10
-            let takeStageTime = 500
-            let thisActorActive =
-                thisActor.classed('temp-category-selected-actors') ||
-                thisActor.classed('category-selected-actors')
-            if (
-                d3.select('.stage').text() != thisData.actor &&
-                thisActorActive
-            ) {
-                d3.selectAll('.actors')
-                    // .transition()
-                    // .duration(120)
-                    .style('left', (d) => {
-                        let relativeX =
-                            Math.cos(d.actorAngle) * geomData.actorRingRadius
-                        if (d.actor == thisData.actor) {
-                            return (
-                                geomData.centerX +
-                                relativeX -
-                                geomData.actorSelectRadiusIncrease -
-                                self.padding -
-                                geomData.actorRadius +
-                                'px'
-                            )
-                        } else {
-                            return (
-                                geomData.centerX +
-                                relativeX -
-                                self.padding -
-                                geomData.actorRadius +
-                                'px'
-                            )
-                        }
-                    })
-                    .style('top', (d) => {
-                        let relativeY =
-                            Math.sin(d.actorAngle) * geomData.actorRingRadius
-                        if (d.actor == thisData.actor) {
-                            return (
-                                geomData.centerY +
-                                relativeY -
-                                geomData.actorSelectRadiusIncrease -
-                                self.padding -
-                                geomData.actorRadius +
-                                'px'
-                            )
-                        } else {
-                            return (
-                                geomData.centerY +
-                                relativeY -
-                                self.padding -
-                                geomData.actorRadius +
-                                'px'
-                            )
-                        }
-                    })
-                    .style('width', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return (
-                                geomData.actorRadius * 2 +
-                                geomData.actorSelectRadiusIncrease * 2 +
-                                'px'
-                            )
-                        } else {
-                            return geomData.actorRadius * 2 + 'px'
-                        }
-                    })
-                    .style('height', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return (
-                                geomData.actorRadius * 2 +
-                                geomData.actorSelectRadiusIncrease * 2 +
-                                'px'
-                            )
-                        } else {
-                            return geomData.actorRadius * 2 + 'px'
-                        }
-                    })
-                    .style('border-width', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return '5px'
-                        } else {
-                            return '2px'
-                        }
-                    })
-                    .style('font-size', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return 'medium'
-                        } else {
-                            return 'x-small'
-                        }
-                    })
-
-                d3.select('.stage')
-                    .transition()
-                    .duration(fadeOutTime)
-                    .style('opacity', 0)
-                d3.select('.stage')
-                    .transition()
-                    .duration(moveTime)
-                    .delay(fadeOutTime)
-                    .style('left', function () {
-                        let relativeX =
-                            Math.cos(thisData.actorAngle) *
-                            geomData.actorRingRadius
-                        return (
-                            geomData.centerX +
-                            relativeX -
-                            self.padding -
-                            geomData.actorRadius +
-                            'px'
-                        )
-                    })
-                    .style('top', function () {
-                        let relativeY =
-                            Math.sin(thisData.actorAngle) *
-                            geomData.actorRingRadius
-                        return (
-                            geomData.centerY +
-                            relativeY -
-                            self.padding -
-                            geomData.actorRadius +
-                            'px'
-                        )
-                    })
-                    .style('width', geomData.actorRadius * 2 + 'px')
-                    .style('height', geomData.actorRadius * 2 + 'px')
-                    .text(function () {
-                        return thisData.actor
-                    })
-                    .style('background', function () {
-                        for (let cat of catData) {
-                            if (cat.text == thisData['actor data'].category) {
-                                return cat.color
-                            }
-                        }
-                        return 'gray'
-                    })
-                    .style('z-index', '3')
-
-                d3.select('.stage')
-                    .transition()
-                    .duration(opaqueTime)
-                    .delay(fadeOutTime + moveTime)
-                    .style('opacity', 1)
-                d3.select('.stage')
-                    .transition()
-                    .duration(takeStageTime)
-                    .delay(fadeOutTime + moveTime + opaqueTime)
-                    .style(
-                        'left',
-                        geomData.centerX -
-                            geomData.stageRadius -
-                            self.padding -
-                            3 + //taking border thickness into consideration
-                            'px',
-                    )
-                    .style(
-                        'top',
-                        geomData.centerY -
-                            geomData.stageRadius -
-                            self.padding -
-                            3 + //taking border thickness into consideration
-                            'px',
-                    )
-                    .style('width', geomData.stageRadius * 2 + 'px')
-                    .style('height', geomData.stageRadius * 2 + 'px')
-
-                    .text(function () {
-                        return thisData.actor
-                    })
-                    .style('background', function () {
-                        for (let cat of catData) {
-                            if (cat.text == thisData['actor data'].category) {
-                                return cat.color
-                            }
-                        }
-                        return 'gray'
-                    })
-                d3.select('.stage-description').text('')
-                d3.select('.stage-description')
-                    .transition()
-                    .duration(fadeOutTime + moveTime + opaqueTime)
-                    .style('opacity', 0)
-                d3.select('.stage-description')
-                    .transition()
-                    .duration(takeStageTime)
-                    .delay(fadeOutTime + moveTime + opaqueTime)
-                    .style('opacity', 0.8)
-                    .text(function () {
-                        return thisData['actor data'].details
-                    })
-            }
-        }
-
-        let actorHover = function (_d, _e, _selected) {
-            let thisData = _d
-            let thisEvent = _e
-            let thisActor = d3.select(_selected)
-            let thisActorActive =
-                thisActor.classed('temp-category-selected-actors') ||
-                thisActor.classed('category-selected-actors')
-            if (thisActorActive) {
-                let catActors = d3
-                    .selectAll('.category-selected-actors')
-                    .transition()
-                    .duration(80)
-                    .style('opacity', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return 1
-                        } else {
-                            return 0.47
-                        }
-                    })
-                let tempCatActors = d3
-                    .selectAll('.temp-category-selected-actors')
-                    .transition()
-                    .duration(80)
-                    .style('opacity', function (d) {
-                        if (d.actor == thisData.actor) {
-                            return 1
-                        } else {
-                            return 0.47
-                        }
-                    })
-            }
-        }
-
-        let actorLeave = function (d, e, selected) {
-            let thisData = d
-            let thisEvent = e
-            let thisCategory = d3.select(selected)
-
-            d3.selectAll('.temp-category-selected-actors').style('opacity', 1)
-            d3.selectAll('.category-selected-actors').style('opacity', 1)
+            d3.selectAll('.actor-rotation-groups')
+                .selectAll('rect')
+                .transition()
+                .attr('x', function (d) {
+                    let selected = d3.select(this).classed('actor-selected')
+                    if (selected) {
+                        return geomData.actorArrowRadius - 20
+                    } else {
+                        return geomData.actorArrowRadius
+                    }
+                })
+                .attr('y', function (d) {
+                    let selected = d3.select(this).classed('actor-selected')
+                    if (selected) {
+                        return -36
+                    } else {
+                        return -18
+                    }
+                })
+                .attr('height', function (d) {
+                    let selected = d3.select(this).classed('actor-selected')
+                    if (selected) {
+                        return 72
+                    } else {
+                        return 36
+                    }
+                })
+                .attr('width', function (d) {
+                    let selected = d3.select(this).classed('actor-selected')
+                    if (selected) {
+                        return geomData.actorArrowLengths + 40
+                    } else {
+                        return geomData.actorArrowLengths
+                    }
+                })
+                .attr('filter', function (d) {
+                    let selected = d3.select(this).classed('actor-selected')
+                    if (selected) {
+                        return 'url(#dropshadow)'
+                    } else {
+                        return 'none'
+                    }
+                })
         }
     }
 }

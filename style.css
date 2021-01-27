@@ -4,9 +4,9 @@
 }
 #svg-container {
     position: absolute;
-    width: 90%;
+    width: 98%;
     height: 99%;
-    left: 5%;
+    left: 1%;
     z-index: -4;
 }
 .body-class {
@@ -65,7 +65,7 @@
     font-size: x-small;
 }
 .medium-text {
-    font-size: medium;
+    font-size: large;
 }
 .stroked {
     border: solid white;
