@@ -290,6 +290,7 @@ class CircularEconomyDiagram {
                         .append('textPath')
                         .classed('category-text-to-path', true)
                         .classed('pointer', true)
+                        .classed('no-select', true)
                         .classed('category-hover', true)
                         .attr('xlink:href', (d) => {
                             let idTag = d.text.split(' ').join('-')
@@ -303,7 +304,8 @@ class CircularEconomyDiagram {
                         .style('font-family', 'Arial, Helvetica, sans-serif')
                         .style('fill', 'white')
                         .style('dominant-baseline', 'middle')
-                        .style('font-size', '2vmin'),
+                        .style('font-size', '2vmin')
+                        .style('opacity', 1),
                 // (update) => update.style('font-size', '3vmin'),
             )
         categoryText.on('click', function (e, d) {
@@ -395,7 +397,7 @@ class CircularEconomyDiagram {
             let interiorRadius = geomData.stageRadius + geomData.stagePadding
             let activitiesWidth =
                 geomData.radius - geomData.activitiesPadding - interiorRadius
-            let radius = interiorRadius + activitiesWidth / 3
+            let radius = interiorRadius + activitiesWidth / 2
             let centerX = 0
             let centerY = 0
             let startX = Math.cos(startAngle) * radius + centerX
@@ -454,6 +456,7 @@ class CircularEconomyDiagram {
                     .append('textPath')
                     .classed('activity-text-to-path', true)
                     .classed('pointer', true)
+                    .classed('no-select', true)
                     .attr('xlink:href', (d) => {
                         let idTag = d.text.split(' ').join('-')
                         let lowerCaseId = idTag.toLowerCase()
@@ -466,7 +469,8 @@ class CircularEconomyDiagram {
                     .style('font-family', 'Arial, Helvetica, sans-serif')
                     .style('fill', 'white')
                     .style('dominant-baseline', 'middle')
-                    .style('font-size', '1.7vmin'),
+                    .style('font-size', '1.7vmin')
+                    .style('opacity', 1),
             )
 
         let buildActivityPath = function (actData) {
@@ -568,7 +572,7 @@ class CircularEconomyDiagram {
                 enter
                     .append('g')
                     .classed('actor-rotation-groups', true)
-                    .classed('pointer', true)
+                    .classed('pointer', false)
                     .attr('transform', function (d) {
                         return 'rotate(' + d.actorAngle * (180 / Math.PI) + ')'
                     })
@@ -578,6 +582,7 @@ class CircularEconomyDiagram {
 
         actorGroups.on('click', function (e, d) {
             actorClick(d, e, this)
+            console.log('actor clicked')
         })
 
         let actorRectangles = actorGroups
@@ -661,6 +666,7 @@ class CircularEconomyDiagram {
             .join((enter) =>
                 enter
                     .append('text')
+                    .classed('no-select', true)
                     .style('font-family', 'Arial, Helvetica, sans-serif')
                     .style('font-size', '1.6vmin')
                     .style('fill', 'white')
@@ -726,6 +732,13 @@ class CircularEconomyDiagram {
                             return false
                         }
                     })
+                    .classed('pointer', (d) => {
+                        if (d['actor data'].category == thisData.text) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    })
                     .classed('temp-category-selected-actors', false)
 
                 d3.selectAll('.category-hover')
@@ -775,77 +788,80 @@ class CircularEconomyDiagram {
         }
 
         let actorClick = function (d, e, selected) {
-            console.log(d, e, selected)
-            let thisData = d
-            let thisEvent = e
-            let rotateDiagram =
-                Math.PI * 2 -
-                ((d.actorAngle + self.rotationTracker) % (Math.PI * 2))
-            self.rotate(rotateDiagram)
-
             let thisActor = d3.select(selected)
-            let actorRects = d3
-                .selectAll('.actor-rotation-groups')
-                .selectAll('rect')
-                .classed('actor-selected', false)
-            thisActor.selectAll('rect').classed('actor-selected', true)
+            let thisActorActive = thisActor.classed('category-selected-actors')
+            if (thisActorActive) {
+                console.log(d, e, selected)
+                let thisData = d
+                let thisEvent = e
+                let rotateDiagram =
+                    Math.PI * 2 -
+                    ((d.actorAngle + self.rotationTracker) % (Math.PI * 2))
+                self.rotate(rotateDiagram)
 
-            d3.selectAll('.actor-rotation-groups')
-                .selectAll('rect')
-                .transition()
-                .attr('x', function (d) {
-                    let selected = d3.select(this).classed('actor-selected')
-                    if (selected) {
-                        return (
-                            geomData.actorArrow.radius -
-                            geomData.actorArrow.growWidth
-                        )
-                    } else {
-                        return geomData.actorArrow.radius
-                    }
-                })
-                .attr('y', function (d) {
-                    let selected = d3.select(this).classed('actor-selected')
-                    if (selected) {
-                        return (
-                            (geomData.actorArrow.height / 2 +
-                                geomData.actorArrow.growHeight) *
-                            -1
-                        )
-                    } else {
-                        return (geomData.actorArrow.height / 2) * -1
-                    }
-                })
-                .attr('height', function (d) {
-                    let selected = d3.select(this).classed('actor-selected')
-                    if (selected) {
-                        return (
-                            geomData.actorArrow.height +
-                            geomData.actorArrow.growHeight * 2
-                        )
-                    } else {
-                        return geomData.actorArrow.height
-                    }
-                })
-                .attr('width', function (d) {
-                    let selected = d3.select(this).classed('actor-selected')
-                    if (selected) {
-                        return (
-                            geomData.actorArrow.width +
-                            geomData.actorArrow.growWidth * 2
-                        )
-                    } else {
-                        return geomData.actorArrow.width
-                    }
-                })
-                .attr('filter', function (d) {
-                    let selected = d3.select(this).classed('actor-selected')
-                    if (selected) {
-                        return 'url(#dropshadow)'
-                    } else {
-                        return 'none'
-                    }
-                })
+                let actorRects = d3
+                    .selectAll('.actor-rotation-groups')
+                    .selectAll('rect')
+                    .classed('actor-selected', false)
+                thisActor.selectAll('rect').classed('actor-selected', true)
+
+                d3.selectAll('.actor-rotation-groups')
+                    .selectAll('rect')
+                    .transition()
+                    .attr('x', function (d) {
+                        let selected = d3.select(this).classed('actor-selected')
+                        if (selected) {
+                            return (
+                                geomData.actorArrow.radius -
+                                geomData.actorArrow.growWidth
+                            )
+                        } else {
+                            return geomData.actorArrow.radius
+                        }
+                    })
+                    .attr('y', function (d) {
+                        let selected = d3.select(this).classed('actor-selected')
+                        if (selected) {
+                            return (
+                                (geomData.actorArrow.height / 2 +
+                                    geomData.actorArrow.growHeight) *
+                                -1
+                            )
+                        } else {
+                            return (geomData.actorArrow.height / 2) * -1
+                        }
+                    })
+                    .attr('height', function (d) {
+                        let selected = d3.select(this).classed('actor-selected')
+                        if (selected) {
+                            return (
+                                geomData.actorArrow.height +
+                                geomData.actorArrow.growHeight * 2
+                            )
+                        } else {
+                            return geomData.actorArrow.height
+                        }
+                    })
+                    .attr('width', function (d) {
+                        let selected = d3.select(this).classed('actor-selected')
+                        if (selected) {
+                            return (
+                                geomData.actorArrow.width +
+                                geomData.actorArrow.growWidth * 2
+                            )
+                        } else {
+                            return geomData.actorArrow.width
+                        }
+                    })
+                    .attr('filter', function (d) {
+                        let selected = d3.select(this).classed('actor-selected')
+                        if (selected) {
+                            return 'url(#dropshadow)'
+                        } else {
+                            return 'none'
+                        }
+                    })
+            }
         }
     }
 }
