@@ -585,16 +585,54 @@ class CircularEconomyDiagram {
             console.log('actor clicked')
         })
 
-        let actorRectangles = actorGroups
-            .selectAll('rect')
+        let actorShapeGenerator = function (selected) {
+            let arrowAdjust = 10
+            if (selected) {
+                arrowAdjust =
+                    (geomData.actorArrow.growHeight +
+                        geomData.actorArrow.growWidth) /
+                        2 +
+                    arrowAdjust / 2
+            }
+            let centerY = 0
+            let topY = geomData.actorArrow.height / 2
+            let bottomY = geomData.actorArrow.height / -2
+
+            let centerX = geomData.actorArrow.radius
+            let tailX = centerX - arrowAdjust
+            let pointX = centerX + geomData.actorArrow.width
+            let edgeX = pointX - arrowAdjust
+
+            let growY = geomData.actorArrow.growHeight
+            let growX = geomData.actorArrow.growWidth
+
+            if (selected) {
+                topY += growY
+                bottomY -= growY
+                centerX -= growX
+                tailX -= growX
+                pointX += growX
+                edgeX += growX
+            }
+
+            let path = d3.path()
+            path.moveTo(centerX, centerY)
+            path.lineTo(tailX, bottomY)
+            path.lineTo(edgeX, bottomY)
+            path.lineTo(pointX, centerY)
+            path.lineTo(edgeX, topY)
+            path.lineTo(tailX, topY)
+            path.lineTo(centerX, centerY)
+            let pathData = path.toString()
+            return pathData
+        }
+
+        let actorShapes = actorGroups
+            .selectAll('path')
             .data((d) => [d])
             .join((enter) =>
                 enter
-                    .append('rect')
-                    .attr('x', geomData.actorArrowRadius)
-                    .attr('y', -18)
-                    .attr('height', 36)
-                    .attr('width', geomData.actorArrowLengths)
+                    .append('path')
                     .style('stroke', 'white')
                     .style('stroke-width', '3px')
                     .style('fill', (d) => {
@@ -606,57 +644,21 @@ class CircularEconomyDiagram {
                         return 'gray'
                     }),
             )
-            .attr('x', function (d) {
-                let selected = d3.select(this).classed('actor-selected')
-                if (selected) {
-                    return (
-                        geomData.actorArrow.radius -
-                        geomData.actorArrow.growWidth
-                    )
-                } else {
-                    return geomData.actorArrow.radius
-                }
-            })
-            .attr('y', function (d) {
-                let selected = d3.select(this).classed('actor-selected')
-                if (selected) {
-                    return (
-                        (geomData.actorArrow.height / 2 +
-                            geomData.actorArrow.growHeight) *
-                        -1
-                    )
-                } else {
-                    return (geomData.actorArrow.height / 2) * -1
-                }
-            })
-            .attr('height', function (d) {
-                let selected = d3.select(this).classed('actor-selected')
-                if (selected) {
-                    return (
-                        geomData.actorArrow.height +
-                        geomData.actorArrow.growHeight * 2
-                    )
-                } else {
-                    return geomData.actorArrow.height
-                }
-            })
-            .attr('width', function (d) {
-                let selected = d3.select(this).classed('actor-selected')
-                if (selected) {
-                    return (
-                        geomData.actorArrow.width +
-                        geomData.actorArrow.growWidth * 2
-                    )
-                } else {
-                    return geomData.actorArrow.width
-                }
-            })
             .attr('filter', function (d) {
                 let selected = d3.select(this).classed('actor-selected')
                 if (selected) {
                     return 'url(#dropshadow)'
                 } else {
                     return 'none'
+                }
+            })
+            .transition()
+            .attr('d', function () {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return actorShapeGenerator(true)
+                } else {
+                    return actorShapeGenerator(false)
                 }
             })
 
@@ -797,70 +799,13 @@ class CircularEconomyDiagram {
                 let rotateDiagram =
                     Math.PI * 2 -
                     ((d.actorAngle + self.rotationTracker) % (Math.PI * 2))
-                self.rotate(rotateDiagram)
 
-                let actorRects = d3
+                let actorShapes = d3
                     .selectAll('.actor-rotation-groups')
-                    .selectAll('rect')
+                    .selectAll('path')
                     .classed('actor-selected', false)
-                thisActor.selectAll('rect').classed('actor-selected', true)
-
-                d3.selectAll('.actor-rotation-groups')
-                    .selectAll('rect')
-                    .transition()
-                    .attr('x', function (d) {
-                        let selected = d3.select(this).classed('actor-selected')
-                        if (selected) {
-                            return (
-                                geomData.actorArrow.radius -
-                                geomData.actorArrow.growWidth
-                            )
-                        } else {
-                            return geomData.actorArrow.radius
-                        }
-                    })
-                    .attr('y', function (d) {
-                        let selected = d3.select(this).classed('actor-selected')
-                        if (selected) {
-                            return (
-                                (geomData.actorArrow.height / 2 +
-                                    geomData.actorArrow.growHeight) *
-                                -1
-                            )
-                        } else {
-                            return (geomData.actorArrow.height / 2) * -1
-                        }
-                    })
-                    .attr('height', function (d) {
-                        let selected = d3.select(this).classed('actor-selected')
-                        if (selected) {
-                            return (
-                                geomData.actorArrow.height +
-                                geomData.actorArrow.growHeight * 2
-                            )
-                        } else {
-                            return geomData.actorArrow.height
-                        }
-                    })
-                    .attr('width', function (d) {
-                        let selected = d3.select(this).classed('actor-selected')
-                        if (selected) {
-                            return (
-                                geomData.actorArrow.width +
-                                geomData.actorArrow.growWidth * 2
-                            )
-                        } else {
-                            return geomData.actorArrow.width
-                        }
-                    })
-                    .attr('filter', function (d) {
-                        let selected = d3.select(this).classed('actor-selected')
-                        if (selected) {
-                            return 'url(#dropshadow)'
-                        } else {
-                            return 'none'
-                        }
-                    })
+                thisActor.selectAll('path').classed('actor-selected', true)
+                self.rotate(rotateDiagram)
             }
         }
     }
