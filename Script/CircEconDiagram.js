@@ -21,9 +21,10 @@ class CircularEconomyDiagram {
         this.svg.append('g').attr('class', 'stage')
 
         this.svg.append('g').attr('class', 'category-ring')
-
+        this.svg.append('g').attr('class', 'category-text')
         this.svg.append('g').attr('class', 'activities-ring')
         this.svg.append('g').attr('class', 'actors-group')
+
         this.svg.append('defs')
 
         let dropShadowFilter = this.svg
@@ -69,19 +70,11 @@ class CircularEconomyDiagram {
         this.rotationTime = 20
         this.getControllingDim()
         this.svg.style('position', 'absolute')
-        // this.svg.attr('width', this.controllingDim)
-        // this.svg.attr('height', this.controllingDim)
-        // this.svg.style('left', (this.width - this.controllingDim) / 2 + 'px')
-        // this.svg.style('top', (this.height - this.controllingDim) / 2 + 'px')
         this.svg.attr('width', this.width)
         this.svg.attr('height', this.height)
         this.svg.style('left', '0px')
         this.svg.style('top', '0px')
         this.div.style('position', 'absolute')
-        // this.div.style('left', (this.width - this.controllingDim) / 2 + 'px')
-        // this.div.style('top', (this.height - this.controllingDim) / 2 + 'px')
-        // this.div.style('width', this.controllingDim + 'px')
-        // this.div.style('height', this.controllingDim + 'px')
         this.div.style('left', '0px')
         this.div.style('top', '0px')
         this.div.style('width', this.width)
@@ -195,10 +188,17 @@ class CircularEconomyDiagram {
         geo.radiusWidth = (this.controllingDim / 2) * (4 / 20)
         geo.stageRadius = (this.controllingDim / 2) * (1 / 5)
         geo.actorRingRadius = (this.controllingDim / 2) * (9 / 10)
-        geo.actorArrowRadius =
-            geo.radius + geo.radiusWidth - ((this.controllingDim / 2) * 1) / 50
+
         geo.actorRadius = (this.controllingDim / 2) * (1 / 11)
-        geo.actorArrowLengths = this.controllingDim / 2 - geo.actorArrowRadius
+
+        geo.actorArrow = {}
+        geo.actorArrow.radius =
+            geo.radius + geo.radiusWidth - ((this.controllingDim / 2) * 1) / 50
+        geo.actorArrow.width = this.controllingDim / 2 - geo.actorArrow.radius
+        geo.actorArrow.height = 36
+        geo.actorArrow.growWidth = 20
+        geo.actorArrow.growHeight = 18
+
         geo.activitiesWidth =
             geo.radius -
             geo.activitiesPadding -
@@ -225,72 +225,166 @@ class CircularEconomyDiagram {
         let catData = data.categories
         let actorData = data.actors
         let activityData = data.activities
-        // console.log('actor data', actorData)
-        // console.log('category data', catData)
-        // console.log('geometry data', geomData)
-        // console.log('activity data', activityData)
 
-        let categoryText = div
+        let categoryTextPathGenerator = function (catData) {
+            let startAngle = catData.startAngle
+            let endAngle = catData.endAngle
+            let radius = geomData.radius + geomData.radiusWidth / 5
+            let centerX = 0
+            let centerY = 0
+            let startX = Math.cos(startAngle) * radius + centerX
+            let startY = Math.sin(startAngle) * radius + centerY
+            let path = d3.path()
+            path.moveTo(startX, startY)
+            path.arc(centerX, centerY, radius, startAngle, endAngle)
+            let pathData = path.toString()
+            return pathData
+        }
+
+        svg.select('.category-text').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+
+        let categoryTextGroups = svg
+            .select('.category-text')
+            .selectAll('g')
+            .data(catData)
+            .join('g')
+        categoryTextGroups
+            .transition()
+            .duration(self.rotationTime)
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
+            )
+
+        let categoryTextPath = categoryTextGroups
+            .selectAll('.category-text-paths')
+            .data((d) => [d])
+            .join((enter) =>
+                enter
+                    .append('path')
+                    .classed('category-text-paths', true)
+                    .attr('id', (d) => {
+                        let idTag = d.text.split(' ').join('-')
+                        let lowerCaseId = idTag.toLowerCase()
+                        return 'cat-text-path-' + lowerCaseId
+                    })
+                    .style('fill', 'none'),
+            )
+            .attr('d', (d) => categoryTextPathGenerator(d))
+
+        let categoryText = categoryTextGroups
             .selectAll('.category-text')
-            .data(data.categories)
-            // .join('div')
+            .data((d) => [d])
+            .join((enter) =>
+                enter.append('text').classed('category-text', true),
+            )
+            .selectAll('.category-text-to-path')
+            .data((d) => [d])
             .join(
                 (enter) =>
                     enter
-                        .append('div')
-                        .classed('category-text', true)
-                        .classed('category-hover', true)
-                        .classed('circular-economy-square', true)
-                        .classed('no-select', true)
-                        .classed('medium-text', true)
+                        .append('textPath')
+                        .classed('category-text-to-path', true)
                         .classed('pointer', true)
-                        .style('background', 'none')
-                        .text((d) => {
-                            return d.text
+                        .classed('category-hover', true)
+                        .attr('xlink:href', (d) => {
+                            let idTag = d.text.split(' ').join('-')
+                            let lowerCaseId = idTag.toLowerCase()
+                            let id = '#cat-text-path-' + lowerCaseId
+                            return id
                         })
-                        .style('z-index', '2'),
-                (update) => update,
+                        .style('text-anchor', 'middle')
+                        .attr('startOffset', '50%')
+                        .text((d) => d.text.toUpperCase())
+                        .style('font-family', 'Arial, Helvetica, sans-serif')
+                        .style('fill', 'white')
+                        .style('dominant-baseline', 'middle')
+                        .style('font-size', '2vmin'),
+                // (update) => update.style('font-size', '3vmin'),
             )
+        categoryText.on('click', function (e, d) {
+            categoryClick(d, e, this)
+        })
 
-        categoryText
+        let buildCategoryPath = function (catData) {
+            let startAngle = catData.startAngle
+            let endAngle = catData.endAngle
+            let arrowRotation = geomData.arrowRotation
+            let radius = geomData.radius
+            let exteriorRadius = radius + geomData.radiusWidth
+            let centerX = 0
+            let centerY = 0
+            let x1 = Math.cos(startAngle) * radius + centerX
+            let y1 = Math.sin(startAngle) * radius + centerY
+            let x2 =
+                Math.cos(startAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerX
+            let y2 =
+                Math.sin(startAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerY
+            let x3 =
+                Math.cos(endAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerX
+            let y3 =
+                Math.sin(endAngle + arrowRotation) *
+                    (radius + (exteriorRadius - radius) / 2) +
+                centerY
+
+            let path = d3.path()
+            path.moveTo(x1, y1)
+            path.lineTo(x2, y2)
+            path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle)
+            path.lineTo(x3, y3)
+            path.arc(centerX, centerY, radius, endAngle, startAngle, true)
+            let pathData = path.toString()
+
+            return pathData
+        }
+
+        svg.select('.category-ring').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+        let categoryGroups = svg
+            .select('.category-ring')
+            .selectAll('g')
+            .data(catData)
+            .join('g')
+        categoryGroups
             .transition()
             .duration(self.rotationTime)
-            .style('left', (d) => {
-                let relativeX =
-                    Math.cos(d.textAngle + self.rotationTracker) *
-                    (geomData.radius + geomData.radiusWidth / 2)
-                return (
-                    geomData.centerX +
-                    relativeX -
-                    self.padding +
-                    self.categoryOffset -
-                    geomData.radiusWidth / 2 +
-                    'px'
-                )
-            })
-            .style('top', (d) => {
-                let relativeY =
-                    Math.sin(d.textAngle + self.rotationTracker) *
-                    (geomData.radius + geomData.radiusWidth / 2)
-                return (
-                    geomData.centerY +
-                    relativeY -
-                    self.padding +
-                    self.categoryOffset -
-                    geomData.radiusWidth / 2 +
-                    'px'
-                )
-            })
-            .style(
-                'width',
-                geomData.radiusWidth - self.categoryOffset * 2 + 'px',
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
             )
-            .style(
-                'height',
-                geomData.radiusWidth - self.categoryOffset * 2 + 'px',
-            )
+        let categoryShapes = categoryGroups
+            .selectAll('.category-shapes')
+            .data((d) => [d])
+            .join((enter) =>
+                enter
+                    .append('path')
+                    .classed('category-shapes', true)
+                    .classed('category-hover', true)
+                    .classed('pointer', true)
 
-        categoryText.on('click', function (e, d) {
+                    .attr('fill', function (d) {
+                        return d.color
+                    })
+                    .attr('stroke-width', '3')
+                    .attr('stroke', 'white')
+                    .attr('filter', 'none')
+                    .attr('transform', 'translate(0,0)')
+                    .attr('opacity', 1),
+            )
+            .attr('d', (d) => buildCategoryPath(d))
+
+        categoryShapes.on('click', function (e, d) {
             categoryClick(d, e, this)
         })
 
@@ -308,9 +402,7 @@ class CircularEconomyDiagram {
                     .classed('pointer', false)
                     .style('position', 'absolute')
                     .style('background', 'none')
-                    .text((d) => {
-                        return d.text
-                    })
+                    .text((d) => d.text)
                     .style('z-index', '2'),
             )
 
@@ -428,91 +520,6 @@ class CircularEconomyDiagram {
                 return pathData
             })
 
-        let buildCategoryPath = function (catData) {
-            let startAngle = catData.startAngle
-            let endAngle = catData.endAngle
-            let arrowRotation = geomData.arrowRotation
-            let radius = geomData.radius
-            let exteriorRadius = radius + geomData.radiusWidth
-            let centerX = 0
-            let centerY = 0
-            let x1 = Math.cos(startAngle) * radius + centerX
-            let y1 = Math.sin(startAngle) * radius + centerY
-            let x2 =
-                Math.cos(startAngle + arrowRotation) *
-                    (radius + (exteriorRadius - radius) / 2) +
-                centerX
-            let y2 =
-                Math.sin(startAngle + arrowRotation) *
-                    (radius + (exteriorRadius - radius) / 2) +
-                centerY
-            let x3 =
-                Math.cos(endAngle + arrowRotation) *
-                    (radius + (exteriorRadius - radius) / 2) +
-                centerX
-            let y3 =
-                Math.sin(endAngle + arrowRotation) *
-                    (radius + (exteriorRadius - radius) / 2) +
-                centerY
-
-            let path = d3.path()
-            path.moveTo(x1, y1)
-            path.lineTo(x2, y2)
-            path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle)
-            path.lineTo(x3, y3)
-            path.arc(centerX, centerY, radius, endAngle, startAngle, true)
-            let pathData = path.toString()
-
-            return pathData
-        }
-
-        svg.select('.category-ring').attr(
-            'transform',
-            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
-        )
-        let categoryGroups = svg
-            .select('.category-ring')
-            .selectAll('g')
-            .data(catData)
-            .join('g')
-        categoryGroups
-            .transition()
-            .duration(self.rotationTime)
-            .attr(
-                'transform',
-                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
-            )
-        let categoryShapes = categoryGroups
-            .selectAll('.category-shapes')
-            .data(function (d) {
-                return [d]
-            })
-            .join((enter) =>
-                enter
-                    .append('path')
-                    .classed('category-shapes', true)
-                    .classed('category-hover', true)
-                    .classed('pointer', true)
-
-                    .attr('fill', function (d) {
-                        return d.color
-                    })
-                    .attr('stroke-width', '3')
-                    .attr('stroke', 'white')
-                    .attr('filter', 'none')
-                    .attr('transform', 'translate(0,0)')
-                    .attr('opacity', 1),
-            )
-            .attr('d', function (d) {
-                let pathData = buildCategoryPath(d)
-
-                return pathData
-            })
-
-        categoryShapes.on('click', function (e, d) {
-            categoryClick(d, e, this)
-        })
-
         svg.select('.actors-group').attr(
             'transform',
             'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
@@ -533,9 +540,7 @@ class CircularEconomyDiagram {
 
         let actorGroups = actorCenteringGroup
             .selectAll('.actor-rotation-groups')
-            .data(function (d) {
-                return [d]
-            })
+            .data((d) => [d])
             .join((enter) =>
                 enter
                     .append('g')
@@ -554,9 +559,7 @@ class CircularEconomyDiagram {
 
         let actorRectangles = actorGroups
             .selectAll('rect')
-            .data(function (d) {
-                return [d]
-            })
+            .data((d) => [d])
             .join((enter) =>
                 enter
                     .append('rect')
@@ -575,22 +578,72 @@ class CircularEconomyDiagram {
                         return 'gray'
                     }),
             )
+            .attr('x', function (d) {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return (
+                        geomData.actorArrow.radius -
+                        geomData.actorArrow.growWidth
+                    )
+                } else {
+                    return geomData.actorArrow.radius
+                }
+            })
+            .attr('y', function (d) {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return (
+                        (geomData.actorArrow.height / 2 +
+                            geomData.actorArrow.growHeight) *
+                        -1
+                    )
+                } else {
+                    return (geomData.actorArrow.height / 2) * -1
+                }
+            })
+            .attr('height', function (d) {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return (
+                        geomData.actorArrow.height +
+                        geomData.actorArrow.growHeight * 2
+                    )
+                } else {
+                    return geomData.actorArrow.height
+                }
+            })
+            .attr('width', function (d) {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return (
+                        geomData.actorArrow.width +
+                        geomData.actorArrow.growWidth * 2
+                    )
+                } else {
+                    return geomData.actorArrow.width
+                }
+            })
+            .attr('filter', function (d) {
+                let selected = d3.select(this).classed('actor-selected')
+                if (selected) {
+                    return 'url(#dropshadow)'
+                } else {
+                    return 'none'
+                }
+            })
 
         let actorText = actorGroups
             .selectAll('text')
-            .data(function (d) {
-                return [d]
-            })
+            .data((d) => [d])
             .join((enter) =>
                 enter
                     .append('text')
                     .style('font-family', 'Arial, Helvetica, sans-serif')
+                    .style('font-size', '1.6vmin')
                     .style('fill', 'white')
 
                     .attr('y', 0)
-                    .text(function (d) {
-                        return d.short
-                    })
+                    .text((d) => d.short)
 
                     .attr('dominant-baseline', 'middle'),
             )
@@ -601,7 +654,7 @@ class CircularEconomyDiagram {
                 if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
                     return self.controllingDim / 2 - 5
                 } else {
-                    return geomData.actorArrowRadius + 10
+                    return geomData.actorArrow.radius + 10
                 }
             })
             .attr('transform', function (d) {
@@ -636,10 +689,11 @@ class CircularEconomyDiagram {
                 d3.selectAll('.category-hover')
                     .classed('selected-category', false)
                     .classed('receding-category', false)
+                    .attr('opacity', 1)
+                    .filter('.category-shapes')
                     .transition()
                     .attr('filter', 'none')
                     .attr('transform', 'translate(0,0)')
-                    .attr('opacity', 1)
             } else {
                 d3.selectAll('.actor-rotation-groups')
                     .classed('category-selected-actors', (d) => {
@@ -676,6 +730,7 @@ class CircularEconomyDiagram {
                 .selectAll('.category-shapes')
                 .raise()
             d3.selectAll('.selected-category')
+                .filter('.category-shapes')
                 .transition()
                 .attr('filter', 'url(#dropshadow)')
                 .attr('transform', 'translate(1,-4)')
@@ -718,33 +773,46 @@ class CircularEconomyDiagram {
                 .attr('x', function (d) {
                     let selected = d3.select(this).classed('actor-selected')
                     if (selected) {
-                        return geomData.actorArrowRadius - 20
+                        return (
+                            geomData.actorArrow.radius -
+                            geomData.actorArrow.growWidth
+                        )
                     } else {
-                        return geomData.actorArrowRadius
+                        return geomData.actorArrow.radius
                     }
                 })
                 .attr('y', function (d) {
                     let selected = d3.select(this).classed('actor-selected')
                     if (selected) {
-                        return -36
+                        return (
+                            (geomData.actorArrow.height / 2 +
+                                geomData.actorArrow.growHeight) *
+                            -1
+                        )
                     } else {
-                        return -18
+                        return (geomData.actorArrow.height / 2) * -1
                     }
                 })
                 .attr('height', function (d) {
                     let selected = d3.select(this).classed('actor-selected')
                     if (selected) {
-                        return 72
+                        return (
+                            geomData.actorArrow.height +
+                            geomData.actorArrow.growHeight * 2
+                        )
                     } else {
-                        return 36
+                        return geomData.actorArrow.height
                     }
                 })
                 .attr('width', function (d) {
                     let selected = d3.select(this).classed('actor-selected')
                     if (selected) {
-                        return geomData.actorArrowLengths + 40
+                        return (
+                            geomData.actorArrow.width +
+                            geomData.actorArrow.growWidth * 2
+                        )
                     } else {
-                        return geomData.actorArrowLengths
+                        return geomData.actorArrow.width
                     }
                 })
                 .attr('filter', function (d) {

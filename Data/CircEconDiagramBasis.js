@@ -113,7 +113,7 @@ const CeDiagramData = {
             short: 'BACK TO THE GRID',
             details: 'Enables use of surplus green energy generated on site.',
             buttons: [],
-            category: 'Intelligent Built Environment',
+            category: 'Intelligent Buildings',
         },
         {
             actor: 'Internet of Things/BIM for Operations',
@@ -124,7 +124,7 @@ const CeDiagramData = {
                 'Product as service systems',
                 'Tracking material passports',
             ],
-            category: 'Intelligent Built Environment',
+            category: 'Intelligent Buildings',
         },
         {
             actor: 'Utilizing online platforms to facilitate space sharing',
@@ -132,7 +132,7 @@ const CeDiagramData = {
             details:
                 'Web-based platforms can help to match underutilized spaces (e.g. office, homes) with potential users (e.g. Airbnb, WeWork).',
             buttons: [],
-            category: 'Intelligent Built Environment',
+            category: 'Intelligent Buildings',
         },
         {
             actor: 'Upcycling',
@@ -162,7 +162,7 @@ const CeDiagramData = {
             title: 'Tracking material passports',
             sourceActor: 'Tracking material passports',
             destinationActor: 'Internet of Things/BIM for Operations',
-            stage: 'Intelligent Built Environment',
+            stage: 'Intelligent Buildings',
             details:
                 'passports can be folded into BIM during the lifespan of a building.',
         },
@@ -187,7 +187,7 @@ const CeDiagramData = {
     //note the order of the categories matters and is based on the unit circle
     categories: [
         { text: 'Design and Deliver', color: '#358BB0' },
-        { text: 'Intelligent Built Environment', color: '#A6D08F' },
+        { text: 'Intelligent Buildings', color: '#A6D08F' },
         { text: 'End of Design Life', color: '#90B47D' },
         { text: 'Exchange', color: '#61BAE0' },
     ],
