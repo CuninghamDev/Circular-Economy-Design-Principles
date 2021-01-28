@@ -19,10 +19,11 @@ class CircularEconomyDiagram {
         this.previousRotation = this.structuredData.geometry.startRotation
         this.rotationTime = 100
         this.svg.append('g').attr('class', 'stage')
-
+        this.svg.append('g').attr('class', 'activities-ring')
+        this.svg.append('g').attr('class', 'activities-text')
         this.svg.append('g').attr('class', 'category-ring')
         this.svg.append('g').attr('class', 'category-text')
-        this.svg.append('g').attr('class', 'activities-ring')
+
         this.svg.append('g').attr('class', 'actors-group')
 
         this.svg.append('defs')
@@ -388,62 +389,84 @@ class CircularEconomyDiagram {
             categoryClick(d, e, this)
         })
 
-        let activityText = div
-            .selectAll('.activity-text')
-            .data(activityData)
-            .join((enter) =>
-                enter
-                    .append('div')
-                    .classed('activity-text', true)
-                    .classed('activity-hover', true)
-                    .classed('circular-economy-square', true)
-                    .classed('no-select', true)
-                    .classed('medium-text', true)
-                    .classed('pointer', false)
-                    .style('position', 'absolute')
-                    .style('background', 'none')
-                    .text((d) => d.text)
-                    .style('z-index', '2'),
-            )
+        let activityTextPathGenerator = function (actData) {
+            let startAngle = actData.startAngle
+            let endAngle = actData.endAngle
+            let interiorRadius = geomData.stageRadius + geomData.stagePadding
+            let activitiesWidth =
+                geomData.radius - geomData.activitiesPadding - interiorRadius
+            let radius = interiorRadius + activitiesWidth / 3
+            let centerX = 0
+            let centerY = 0
+            let startX = Math.cos(startAngle) * radius + centerX
+            let startY = Math.sin(startAngle) * radius + centerY
+            let path = d3.path()
+            path.moveTo(startX, startY)
+            path.arc(centerX, centerY, radius, startAngle, endAngle)
+            let pathData = path.toString()
+            return pathData
+        }
 
-        activityText
+        svg.select('.activities-text').attr(
+            'transform',
+            'translate(' + geomData.centerX + ',' + geomData.centerY + ')',
+        )
+
+        let activityTextGroups = svg
+            .select('.activities-text')
+            .selectAll('g')
+            .data(activityData)
+            .join('g')
+        activityTextGroups
             .transition()
             .duration(self.rotationTime)
-            .style('left', (d) => {
-                let relativeX =
-                    Math.cos(d.textAngle + self.rotationTracker) *
-                    (geomData.activitiesWidth / 2 +
-                        (geomData.stageRadius + geomData.stagePadding))
-                return (
-                    geomData.centerX +
-                    relativeX -
-                    self.padding +
-                    self.categoryOffset -
-                    geomData.activitiesWidth / 2 +
-                    'px'
-                )
-            })
-            .style('top', (d) => {
-                let relativeY =
-                    Math.sin(d.textAngle + self.rotationTracker) *
-                    (geomData.activitiesWidth / 2 +
-                        (geomData.stageRadius + geomData.stagePadding))
-                return (
-                    geomData.centerY +
-                    relativeY -
-                    self.padding +
-                    self.categoryOffset -
-                    geomData.activitiesWidth / 2 +
-                    'px'
-                )
-            })
-            .style(
-                'width',
-                geomData.activitiesWidth - self.categoryOffset * 2 + 'px',
+            .attr(
+                'transform',
+                'rotate(' + (self.rotationTracker * 180) / Math.PI + ')',
             )
-            .style(
-                'height',
-                geomData.activitiesWidth - self.categoryOffset * 2 + 'px',
+
+        let activitiesTextPaths = activityTextGroups
+            .selectAll('.activity-text-paths')
+            .data((d) => [d])
+            .join((enter) =>
+                enter
+                    .append('path')
+                    .classed('activity-text-paths', true)
+                    .attr('id', (d) => {
+                        let idTag = d.text.split(' ').join('-')
+                        let lowerCaseId = idTag.toLowerCase()
+                        return 'act-text-path-' + lowerCaseId
+                    })
+                    .style('fill', 'none'),
+            )
+            .attr('d', (d) => activityTextPathGenerator(d))
+
+        let activityText = activityTextGroups
+            .selectAll('.activity-text')
+            .data((d) => [d])
+            .join((enter) =>
+                enter.append('text').classed('activity-text', true),
+            )
+            .selectAll('.activity-text-to-path')
+            .data((d) => [d])
+            .join((enter) =>
+                enter
+                    .append('textPath')
+                    .classed('activity-text-to-path', true)
+                    .classed('pointer', true)
+                    .attr('xlink:href', (d) => {
+                        let idTag = d.text.split(' ').join('-')
+                        let lowerCaseId = idTag.toLowerCase()
+                        let id = '#act-text-path-' + lowerCaseId
+                        return id
+                    })
+                    .style('text-anchor', 'middle')
+                    .attr('startOffset', '50%')
+                    .text((d) => d.text.toUpperCase())
+                    .style('font-family', 'Arial, Helvetica, sans-serif')
+                    .style('fill', 'white')
+                    .style('dominant-baseline', 'middle')
+                    .style('font-size', '1.7vmin'),
             )
 
         let buildActivityPath = function (actData) {
