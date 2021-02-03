@@ -1,0 +1,925 @@
+<template>
+  <div id="svg-container">
+    <div id="circular-economy-diagram-div"></div>
+    <svg id="circular-economy-diagram-svg"></svg>
+  </div>
+</template>
+
+<script>
+import { mapState } from "vuex";
+import * as d3 from "d3";
+
+export default {
+  name: "CircularEconomyDiagram",
+  mounted() {
+    let svgId = "circular-economy-diagram-svg";
+    let divId = "circular-economy-diagram-div";
+    let containerId = "svg-container";
+    this.buildDiagram(this.combinedState, svgId, divId, containerId);
+    window.addEventListener("resize", this.resizeDiagram);
+  },
+  watch: {},
+  beforeDestroy() {
+    window.removeEventListener("resize", this.resizeDiagram);
+  },
+  computed: {
+    combinedState() {
+      return {
+        actors: this.actors,
+        buttons: this.buttons,
+        categories: this.categories,
+        activities: this.activities,
+        outterRing: this.outterRing,
+        geometry: this.geometry
+      };
+    },
+    ...mapState([
+      "actors",
+      "buttons",
+      "categories",
+      "activities",
+      "outterRing",
+      "geometry"
+    ])
+  },
+  data() {
+    return {
+      diagram: {}
+    };
+  },
+  methods: {
+    buildDiagram(_data, _svgId, _divId, _containerId) {
+      let diagram = this.diagram;
+
+      console.log("building the circular economy diagram");
+      diagram.data = _data;
+      diagram.svg = d3.select("#" + _svgId);
+      diagram.div = d3.select("#" + _divId);
+      diagram.container = document.getElementById(_containerId);
+      diagram.padding = 10;
+      diagram.categoryOffset = 20;
+
+      diagram.width = d3.select(diagram.container).attr("width");
+      diagram.height = d3.select(diagram.container).attr("height");
+
+      this.structureData();
+      this.resizeDiagram(diagram.width, diagram.height);
+      this.calcGeoms();
+
+      diagram.rotationTracker = diagram.data.geometry.startRotation;
+      diagram.previousRotation = diagram.data.geometry.startRotation;
+      diagram.rotationTime = 100;
+
+      diagram.svg.append("g").attr("class", "stage");
+      diagram.svg.append("g").attr("class", "activities-ring");
+      diagram.svg.append("g").attr("class", "activities-text");
+      diagram.svg.append("g").attr("class", "category-ring");
+      diagram.svg.append("g").attr("class", "category-text");
+      diagram.svg.append("g").attr("class", "actors-group");
+      diagram.svg.append("defs");
+
+      this.createDropShadowFilter();
+      this.generalUpdatePattern();
+    },
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    //////////// BUILDING OUT THE DATA FOR THE DIAGRAM ////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    createDropShadowFilter() {
+      let svg = this.diagram.svg;
+      let dropShadowFilter = svg
+        .select("defs")
+        .append("filter")
+        .attr("id", "dropshadow")
+        .attr("y", "-40%")
+        .attr("height", "180%")
+        .attr("x", "-40%")
+        .attr("width", "180%");
+      dropShadowFilter
+        .append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", 4)
+        .attr("result", "blur");
+      dropShadowFilter
+        .append("feOffset")
+        .attr("in", "blur")
+        .attr("dx", 5)
+        .attr("dy", 8)
+        .attr("result", "offsetBlur");
+      dropShadowFilter
+        .append("feFlood")
+        .attr("in", "offsetBlur")
+        .attr("flood-opacity", "0.5")
+        .attr("result", "offsetColor");
+      dropShadowFilter
+        .append("feComposite")
+        .attr("in", "offsetColor")
+        .attr("in2", "offsetBlur")
+        .attr("operator", "in")
+        .attr("result", "offsetBlur");
+
+      let feMerge = dropShadowFilter.append("feMerge");
+      feMerge.append("feMergeNode").attr("in", "offsetBlur");
+      feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+    },
+
+    structureData() {
+      let diagram = this.diagram;
+      let raw = diagram.data;
+      diagram.structuredData = {};
+      let structData = diagram.structuredData;
+      structData.geometry = {};
+      structData.geometry.startRotation = raw.geometry.startRotation;
+      structData.geometry.arrowRotation = raw.geometry.arrowRotation;
+      structData.geometry.catRotArc = (Math.PI * 2) / raw.categories.length;
+      structData.geometry.halfCatArc = structData.geometry.catRotArc / 2;
+      structData.categories = [];
+      for (let i in raw.categories) {
+        let cat = raw.categories[i];
+        cat.startAngle = structData.geometry.catRotArc * i;
+        cat.endAngle = cat.startAngle + structData.geometry.catRotArc;
+        structData.categories.push(cat);
+      }
+      structData.activities = [];
+      for (let i in raw.activities) {
+        let act = raw.activities[i];
+        act.startAngle = structData.geometry.catRotArc * i;
+        act.endAngle = act.startAngle + structData.geometry.catRotArc;
+        structData.activities.push(act);
+      }
+      let categorizedActorData = [];
+      for (let cat of structData.categories) {
+        let catAct = {};
+        catAct.category = cat.text;
+        catAct.actorCount = 0;
+        catAct.actors = [];
+        catAct.startAngle = cat.startAngle;
+        catAct.endAngle = cat.endAngle;
+        for (let i in raw.actors) {
+          let actorData = raw.actors[i];
+          if (actorData.category == catAct.category) {
+            let actorObj = {
+              actor: actorData.actor,
+              short: actorData.short,
+              "actor data": actorData
+            };
+            catAct.actors.push(actorObj);
+            catAct.actorCount++;
+          }
+        }
+        categorizedActorData.push(catAct);
+      }
+      structData.actors = [];
+      for (let catAct of categorizedActorData) {
+        let radialStep =
+          (catAct.endAngle - catAct.startAngle) / catAct.actorCount;
+        let firstStep = radialStep / 2;
+        for (let i in catAct.actors) {
+          let actor = catAct.actors[i];
+          actor.actorAngle = catAct.startAngle + firstStep + radialStep * i;
+          structData.actors.push(actor);
+        }
+      }
+      console.log("diagram data structured");
+    },
+
+    calcGeoms() {
+      let diagram = this.diagram;
+      let geo = diagram.structuredData.geometry;
+
+      geo.actorSelectRadiusIncrease = 20;
+      geo.stagePadding = 1;
+      geo.activitiesPadding = 5;
+      geo.radius = (diagram.controllingDim / 2) * (6 / 15);
+      geo.radiusWidth = (diagram.controllingDim / 2) * (4 / 20);
+      geo.stageRadius = (diagram.controllingDim / 2) * (1 / 5);
+      geo.actorRingRadius = (diagram.controllingDim / 2) * (9 / 10);
+
+      geo.actorRadius = (diagram.controllingDim / 2) * (1 / 11);
+
+      geo.actorArrow = {};
+      geo.actorArrow.radius =
+        geo.radius + geo.radiusWidth - diagram.controllingDim / 2 / 50;
+      geo.actorArrow.width = diagram.controllingDim / 2 - geo.actorArrow.radius;
+      geo.actorArrow.height = diagram.controllingDim / 25;
+      geo.actorArrow.growWidth = diagram.controllingDim / 75;
+      geo.actorArrow.growHeight = diagram.controllingDim / 75;
+
+      let xShift = geo.actorArrow.growWidth;
+      geo.centerX = diagram.controllingDim / 2 - xShift;
+      geo.centerY = diagram.height / 2;
+
+      geo.activitiesWidth =
+        geo.radius - geo.activitiesPadding - geo.stageRadius - geo.stagePadding;
+      geo.descriptionHeight = geo.activitiesWidth * 0.8;
+      geo.descriptionWidth = geo.activitiesWidth;
+      geo.descriptionYOffset = geo.stageRadius + geo.stagePadding + 10;
+    },
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    //////////// MODIFICATIONS TO THE DIAGRAM ////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    rotate(_rotation) {
+      let diagram = this.diagram;
+      diagram.previousRotation = diagram.rotationTracker;
+      diagram.rotationTracker += _rotation;
+      diagram.rotationTime = 800;
+      this.generalUpdatePattern();
+    },
+
+    resizeDiagram() {
+      console.log("diagram resized");
+      let diagram = this.diagram;
+      let svg = diagram.svg;
+      let div = diagram.div;
+      diagram.containerBounds = diagram.container.getBoundingClientRect();
+      let cb = diagram.containerBounds;
+      diagram.width = cb.right - cb.left;
+      diagram.height = cb.bottom - cb.top;
+      this.getControllingDim();
+      svg.style("position", "absolute");
+      svg.attr("width", diagram.controllingDim);
+      svg.attr("height", diagram.height);
+      svg.style("left", function() {
+        return diagram.width - diagram.controllingDim + "px";
+      });
+      svg.style("top", "0px");
+      div.style("position", "absolute");
+      div.style("left", "0px");
+      div.style("top", "0px");
+      div.style("width", function() {
+        return diagram.width - diagram.controllingDim + "px";
+      });
+      div.style("height", diagram.height);
+      this.calcGeoms();
+      this.generalUpdatePattern();
+    },
+
+    getControllingDim() {
+      let diagram = this.diagram;
+      if (diagram.width < diagram.height) {
+        diagram.controllingDim = diagram.width;
+      } else {
+        diagram.controllingDim = diagram.height;
+      }
+    },
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    //////////// STARTING THE GENERAL UPDATE PATTERN ////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    generalUpdatePattern() {
+      console.log("general update pattern run");
+      let component = this;
+      let self = this.diagram;
+      let svg = self.svg;
+      let div = self.div;
+      let data = self.structuredData;
+      let geomData = data.geometry;
+      let catData = data.categories;
+      let actorData = data.actors;
+      let activityData = data.activities;
+
+      let categoryTextPathGenerator = function(catData) {
+        let startAngle = catData.startAngle;
+        let endAngle = catData.endAngle;
+        let radius = geomData.radius + geomData.radiusWidth / 5;
+        let centerX = 0;
+        let centerY = 0;
+        let startX = Math.cos(startAngle) * radius + centerX;
+        let startY = Math.sin(startAngle) * radius + centerY;
+        let path = d3.path();
+        path.moveTo(startX, startY);
+        path.arc(centerX, centerY, radius, startAngle, endAngle);
+        let pathData = path.toString();
+        return pathData;
+      };
+
+      svg
+        .select(".category-text")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+
+      let categoryTextGroups = svg
+        .select(".category-text")
+        .selectAll("g")
+        .data(catData)
+        .join("g");
+      categoryTextGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+
+      let categoryTextPath = categoryTextGroups
+        .selectAll(".category-text-paths")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("category-text-paths", true)
+            .attr("id", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              return "cat-text-path-" + lowerCaseId;
+            })
+            .style("fill", "none")
+        )
+        .attr("d", d => categoryTextPathGenerator(d));
+
+      let categoryText = categoryTextGroups
+        .selectAll(".category-text")
+        .data(d => [d])
+        .join(enter => enter.append("text").classed("category-text", true))
+        .selectAll(".category-text-to-path")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("textPath")
+            .classed("category-text-to-path", true)
+            .classed("pointer", true)
+            .classed("no-select", true)
+            .classed("category-hover", true)
+            .attr("xlink:href", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              let id = "#cat-text-path-" + lowerCaseId;
+              return id;
+            })
+            .style("text-anchor", "middle")
+            .attr("startOffset", "50%")
+            .text(d => d.text.toUpperCase())
+            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("fill", "white")
+            .style("dominant-baseline", "middle")
+            .style("font-size", "2vmin")
+            .style("opacity", 1)
+        );
+      categoryText.on("click", function(e, d) {
+        categoryClick(d, e, this);
+      });
+
+      let buildCategoryPath = function(catData) {
+        let startAngle = catData.startAngle;
+        let endAngle = catData.endAngle;
+        let arrowRotation = geomData.arrowRotation;
+        let radius = geomData.radius;
+        let exteriorRadius = radius + geomData.radiusWidth;
+        let centerX = 0;
+        let centerY = 0;
+        let x1 = Math.cos(startAngle) * radius + centerX;
+        let y1 = Math.sin(startAngle) * radius + centerY;
+        let x2 =
+          Math.cos(startAngle + arrowRotation) *
+            (radius + (exteriorRadius - radius) / 2) +
+          centerX;
+        let y2 =
+          Math.sin(startAngle + arrowRotation) *
+            (radius + (exteriorRadius - radius) / 2) +
+          centerY;
+        let x3 =
+          Math.cos(endAngle + arrowRotation) *
+            (radius + (exteriorRadius - radius) / 2) +
+          centerX;
+        let y3 =
+          Math.sin(endAngle + arrowRotation) *
+            (radius + (exteriorRadius - radius) / 2) +
+          centerY;
+
+        let path = d3.path();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
+        path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle);
+        path.lineTo(x3, y3);
+        path.arc(centerX, centerY, radius, endAngle, startAngle, true);
+        let pathData = path.toString();
+
+        return pathData;
+      };
+
+      svg
+        .select(".category-ring")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+      let categoryGroups = svg
+        .select(".category-ring")
+        .selectAll("g")
+        .data(catData)
+        .join("g");
+      categoryGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+      let categoryShapes = categoryGroups
+        .selectAll(".category-shapes")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("category-shapes", true)
+            .classed("category-hover", true)
+            .classed("pointer", true)
+
+            .attr("fill", function(d) {
+              return d.color;
+            })
+            .attr("stroke-width", "3")
+            .attr("stroke", "white")
+            .attr("filter", "none")
+            .attr("transform", "translate(0,0)")
+            .attr("opacity", 1)
+        )
+        .attr("d", d => buildCategoryPath(d));
+
+      categoryShapes.on("click", function(e, d) {
+        categoryClick(d, e, this);
+      });
+
+      let activityTextPathGenerator = function(actData) {
+        let startAngle = actData.startAngle;
+        let endAngle = actData.endAngle;
+        let interiorRadius = geomData.stageRadius + geomData.stagePadding;
+        let activitiesWidth =
+          geomData.radius - geomData.activitiesPadding - interiorRadius;
+        let radius = interiorRadius + activitiesWidth / 2;
+        let centerX = 0;
+        let centerY = 0;
+        let startX = Math.cos(startAngle) * radius + centerX;
+        let startY = Math.sin(startAngle) * radius + centerY;
+        let path = d3.path();
+        path.moveTo(startX, startY);
+        path.arc(centerX, centerY, radius, startAngle, endAngle);
+        let pathData = path.toString();
+        return pathData;
+      };
+
+      svg
+        .select(".activities-text")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+
+      let activityTextGroups = svg
+        .select(".activities-text")
+        .selectAll("g")
+        .data(activityData)
+        .join("g");
+      activityTextGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+
+      let activitiesTextPaths = activityTextGroups
+        .selectAll(".activity-text-paths")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("activity-text-paths", true)
+            .attr("id", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              return "act-text-path-" + lowerCaseId;
+            })
+            .style("fill", "none")
+        )
+        .attr("d", d => activityTextPathGenerator(d));
+
+      let activityText = activityTextGroups
+        .selectAll(".activity-text")
+        .data(d => [d])
+        .join(enter => enter.append("text").classed("activity-text", true))
+        .selectAll(".activity-text-to-path")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("textPath")
+            .classed("activity-text-to-path", true)
+            .classed("pointer", true)
+            .classed("no-select", true)
+            .attr("xlink:href", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              let id = "#act-text-path-" + lowerCaseId;
+              return id;
+            })
+            .style("text-anchor", "middle")
+            .attr("startOffset", "50%")
+            .text(d => d.text.toUpperCase())
+            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("fill", "white")
+            .style("dominant-baseline", "middle")
+            .style("font-size", "1.8vmin")
+            .style("opacity", 1)
+        );
+
+      let buildActivityPath = function(actData) {
+        let startAngle = actData.startAngle;
+        let endAngle = actData.endAngle;
+        let interiorRadius = geomData.stageRadius + geomData.stagePadding;
+        let exteriorRadius = geomData.radius - geomData.activitiesPadding;
+        let centerX = 0;
+        let centerY = 0;
+        let x1 = Math.cos(startAngle) * interiorRadius + centerX;
+        let y1 = Math.sin(startAngle) * interiorRadius + centerY;
+        let x2 = Math.cos(startAngle) * exteriorRadius + centerX;
+        let y2 = Math.sin(startAngle) * exteriorRadius + centerY;
+        let x3 = Math.cos(endAngle) * interiorRadius + centerX;
+        let y3 = Math.sin(endAngle) * interiorRadius + centerY;
+
+        let path = d3.path();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
+        path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle);
+        path.lineTo(x3, y3);
+        path.arc(centerX, centerY, interiorRadius, endAngle, startAngle, true);
+        let pathData = path.toString();
+        return pathData;
+      };
+
+      svg
+        .select(".activities-ring")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+
+      let activityGroups = svg
+        .select(".activities-ring")
+        .selectAll("g")
+        .data(activityData)
+        .join("g");
+      activityGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+
+      let activitiesShapes = activityGroups
+        .selectAll(".activity-shapes")
+        .data(function(d) {
+          return [d];
+        })
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("activity-shapes", true)
+            // .classed('pointer', true)
+
+            .attr("fill", function(d) {
+              return d.color;
+            })
+            .attr("stroke-width", "3")
+            .attr("stroke", "white")
+            .attr("filter", "none")
+            .attr("transform", "translate(0,0)")
+            .attr("opacity", 0.7)
+        )
+        .attr("d", function(d) {
+          let pathData = buildActivityPath(d);
+          return pathData;
+        });
+
+      svg
+        .select(".actors-group")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+      let actorCenteringGroup = svg
+        .select(".actors-group")
+        .selectAll(".actor-centering-groups")
+        .data(actorData)
+        .join("g")
+        .classed("actor-centering-groups", true);
+      actorCenteringGroup
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+
+      let actorGroups = actorCenteringGroup
+        .selectAll(".actor-rotation-groups")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("g")
+            .classed("actor-rotation-groups", true)
+            .classed("pointer", false)
+            .attr("transform", function(d) {
+              return "rotate(" + d.actorAngle * (180 / Math.PI) + ")";
+            })
+            .attr("opacity", 0)
+            .classed("actor-selected", false)
+        );
+
+      actorGroups.on("click", function(e, d) {
+        actorClick(d, e, this);
+        console.log("actor clicked");
+      });
+
+      let actorShapeGenerator = function(selected) {
+        let arrowAdjust = 10;
+        if (selected) {
+          arrowAdjust =
+            (geomData.actorArrow.growHeight + geomData.actorArrow.growWidth) /
+              2 +
+            arrowAdjust / 2;
+        }
+        let centerY = 0;
+        let topY = geomData.actorArrow.height / 2;
+        let bottomY = geomData.actorArrow.height / -2;
+
+        let centerX = geomData.actorArrow.radius;
+        let tailX = centerX - arrowAdjust;
+        let pointX = centerX + geomData.actorArrow.width;
+        let edgeX = pointX - arrowAdjust;
+
+        let growY = geomData.actorArrow.growHeight;
+        let growX = geomData.actorArrow.growWidth;
+
+        pointX -= growX;
+        edgeX -= growX;
+
+        if (selected) {
+          topY += growY;
+          bottomY -= growY;
+          centerX -= growX;
+          tailX -= growX;
+          pointX += growX;
+          edgeX += growX;
+        }
+
+        let path = d3.path();
+        path.moveTo(centerX, centerY);
+        path.lineTo(tailX, bottomY);
+        path.lineTo(edgeX, bottomY);
+        path.lineTo(pointX, centerY);
+        path.lineTo(edgeX, topY);
+        path.lineTo(tailX, topY);
+        path.lineTo(centerX, centerY);
+        let pathData = path.toString();
+        return pathData;
+      };
+
+      let actorShapes = actorGroups
+        .selectAll("path")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .style("stroke", "white")
+            .style("stroke-width", "3px")
+            .style("fill", d => {
+              for (let cat of catData) {
+                if (cat.text == d["actor data"].category) {
+                  return cat.color;
+                }
+              }
+              return "gray";
+            })
+        )
+        .attr("filter", function(d) {
+          let selected = d3.select(this).classed("actor-selected");
+          if (selected) {
+            return "url(#dropshadow)";
+          } else {
+            return "none";
+          }
+        })
+        .transition()
+        .attr("d", function() {
+          let selected = d3.select(this).classed("actor-selected");
+          if (selected) {
+            return actorShapeGenerator(true);
+          } else {
+            return actorShapeGenerator(false);
+          }
+        });
+
+      let actorText = actorGroups
+        .selectAll("text")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("text")
+            .classed("no-select", true)
+            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("font-size", "1.4vmin")
+            .style("fill", "white")
+
+            .attr("y", 0)
+            .text(d => d.short)
+
+            .attr("dominant-baseline", "middle")
+        )
+        .attr("x", function(d) {
+          let testAngle =
+            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
+          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+            return self.controllingDim / 2 - 5 + geomData.actorArrow.growWidth;
+          } else {
+            return geomData.actorArrow.radius + 10;
+          }
+        })
+        .attr("transform", function(d) {
+          let testAngle =
+            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
+          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+            return "rotate(180," + (self.controllingDim / 2 - 10) + ",0)";
+          } else {
+            return "rotate(0)";
+          }
+        });
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      let categoryClick = function(d, e, selected) {
+        let thisData = d;
+        let thisEvent = e;
+        let thisCategory = d3.select(selected);
+
+        if (thisCategory.classed("selected-category")) {
+          d3.selectAll(".actor-rotation-groups")
+            .classed("category-selected-actors", false)
+            .classed("temp-category-selected-actors", false)
+            .transition()
+            .style("opacity", "0");
+
+          d3.selectAll(".category-hover")
+            .classed("selected-category", false)
+            .classed("receding-category", false)
+            .attr("opacity", 1)
+            .filter(".category-shapes")
+            .transition()
+            .attr("filter", "none")
+            .attr("transform", "translate(0,0)");
+        } else {
+          d3.selectAll(".actor-rotation-groups")
+            .classed("category-selected-actors", d => {
+              if (d["actor data"].category == thisData.text) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            .classed("pointer", d => {
+              if (d["actor data"].category == thisData.text) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            .classed("temp-category-selected-actors", false);
+
+          d3.selectAll(".category-hover")
+            .classed("selected-category", function(d) {
+              if (thisData.text == d.text) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+            .classed("receding-category", function(d) {
+              if (thisData.text == d.text) {
+                return false;
+              } else {
+                return true;
+              }
+            });
+        }
+        d3.selectAll(".receding-category")
+          .transition()
+          .attr("filter", "none")
+          .attr("transform", "translate(0,0)")
+          .attr("opacity", 0.9);
+
+        d3.selectAll(".selected-category")
+          .filter(".category-shapes")
+          .transition()
+          .attr("filter", "url(#dropshadow)")
+          .attr("transform", "translate(1,-4)")
+          .attr("opacity", 1);
+        let allActors = d3
+          .selectAll(".actor-rotation-groups")
+          .transition()
+          .style("opacity", function(d) {
+            let loopActor = d3.select(this);
+            let isSelected = loopActor.classed("category-selected-actors");
+            if (isSelected) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+      };
+
+      let actorClick = function(d, e, selected) {
+        let thisActor = d3.select(selected);
+        let thisActorActive = thisActor.classed("category-selected-actors");
+        if (thisActorActive) {
+          component.$store.commit("selectActor", d["actor data"]);
+          console.log(d, e, selected);
+          let thisData = d;
+          let thisEvent = e;
+          let rotateDiagram =
+            Math.PI * 2 -
+            ((d.actorAngle + self.rotationTracker) % (Math.PI * 2));
+
+          let actorShapes = d3
+            .selectAll(".actor-rotation-groups")
+            .selectAll("path")
+            .classed("actor-selected", false);
+          thisActor.selectAll("path").classed("actor-selected", true);
+          component.rotate(rotateDiagram);
+        }
+      };
+    }
+  }
+};
+</script>
+
+<style>
+#svg-container {
+  height: 95vmin;
+}
+.body-class {
+  padding: 0;
+  margin: 0;
+}
+.circular-economy-bubble {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  overflow: hidden;
+  padding: 10px;
+}
+.circular-economy-square {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  /* overflow: hidden; */
+  line-height: 95%;
+  padding: 10px;
+}
+.stage-description {
+  border-radius: 8%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: rgb(55, 55, 55);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.small-text {
+  font-size: x-small;
+}
+.medium-text {
+  font-size: large;
+}
+.stroked {
+  border: solid white;
+}
+</style>
