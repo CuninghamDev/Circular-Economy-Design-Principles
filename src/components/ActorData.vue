@@ -9,7 +9,12 @@
         <p class="h4" style="color:Gray">
           <b>{{ selectedActor.actor.toUpperCase() }}</b>
         </p>
-        <button type="button" :style="titleDataObj" class="p-2 btn">
+        <button
+          type="button"
+          :style="titleDataObj"
+          class="p-2 btn"
+          v-if="selectedActor.actor != ''"
+        >
           <b> {{ selectedActor.details }}</b>
         </button>
       </div>
