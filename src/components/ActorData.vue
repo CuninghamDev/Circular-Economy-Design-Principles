@@ -17,6 +17,19 @@
         >
           <b> {{ selectedActor.details }}</b>
         </button>
+        <button
+          v-for="(button, index) in getButtons"
+          :key="index"
+          type="button"
+          :style="{
+            background: button.color,
+            color: 'white',
+            borderRadius: '14px'
+          }"
+          class="row ml-0 mt-2 p-2 btn w-75"
+        >
+          <b> {{ button.details }} </b>
+        </button>
       </div>
     </div>
   </div>
@@ -28,7 +41,7 @@ export default {
   name: "ActorData",
   computed: {
     ...mapState(["selectedActor"]),
-    ...mapGetters(["selectedActorColor"]),
+    ...mapGetters(["selectedActorColor", "getButtons"]),
     titleDataObj() {
       return {
         background: this.selectedActorColor,

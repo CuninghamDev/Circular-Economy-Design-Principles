@@ -122,7 +122,7 @@ export default new Vuex.Store({
         category: "Design and Deliver"
       },
       {
-        actor: "Selling renewable energy back to grid",
+        actor: "Selling renewable energy back to the grid",
         short: "Back to the Grid",
         details: "Enables use of surplus green energy generated on site.",
         buttons: [],
@@ -186,11 +186,75 @@ export default new Vuex.Store({
       },
       {
         title: "Storage and distribution services for salvaged materials",
-        sourceActor: "Tracking material passports",
+        sourceActor: "Storing and Distributing Upcycled Materials",
         destinationActor: undefined,
         stage: "Deconstruct",
         details:
           "During deconstruction these services are relevant as they are used to bring the disassemble pieces back into the exchange realm."
+      },
+      {
+        title:
+          "Connecting salvaged materials supply and demand via online platforms",
+        sourceActor:
+          "Connecting salvage supply and demand via online platforms",
+        destinationActor: undefined,
+        stage: "End of Design Life",
+        details:
+          "the accountability of these connections becomes very relevant at the end of design life."
+      },
+      // {
+      //   title: "Brownfield remediation",
+      //   sourceActor: "Brownfield remediation",
+      //   destinationActor: undefined,
+      //   stage: "Reuse / Use",
+      //   details:
+      //     "Although this becomes predominantly relevant as resourcing something, as it is repurposing a site, brownfields are adding a use to a site otherwise wasted making it relevant in reuse."
+      // },
+      {
+        title: "Demountable design",
+        sourceActor: "Designing for demountability",
+        stage: "Design and Deliver",
+        details:
+          "Makes recovery of reusable materials possible during deconstruction."
+      },
+      {
+        title: "Desinging for future recovery",
+        sourceActor: "Desinging for future recovery",
+        destinationActor: "Upcycling",
+        stage: "End of Design Life",
+        details: "necessary to upcycle"
+      },
+      {
+        title: "Renewable energy",
+        sourceActor: "Selling renewable energy back to the grid",
+        destinationActor: undefined,
+        stage: "Design and Deliver",
+        details:
+          "Makes selling energy back to the grid and involvement in a bigger economic system possible."
+      },
+      {
+        title: "Modeling for future data exchange and use (IoT/BIM)",
+        sourceActor: "Internet of Things/BIM for Operations",
+        destinationActor: undefined,
+        stage: "Design and Deliver",
+        details:
+          "model is created in design and utilized through end of design life."
+      },
+      {
+        title: "Space sharing",
+        sourceActor: "Utilizing online platforms to facilitate space sharing",
+        destinationActor: "Designing for mixed-use",
+        stage: "Design and Deliver",
+        details:
+          "this has to be planned for and considered early on in the design phase of a project to be successful in practice."
+      },
+      {
+        title: "Online platform to facilitate space sharing",
+        sourceActor: "Utilizing online platforms to facilitate space sharing",
+        destinationActor: undefined,
+        stage: "Reuse / Use",
+        details:
+          "These platforms can ensure a building is used and reused to its full capacity during its lifecycle. "
       }
     ],
     categories: [
@@ -228,6 +292,27 @@ export default new Vuex.Store({
         }
       }
       return actorColor;
+    },
+    getButtons: state => {
+      let combinedStages = state.categories.concat(state.activities);
+      let activeButtons = [];
+      for (let button of state.buttons) {
+        if (button.sourceActor == state.selectedActor.actor) {
+          let matched = false;
+          for (let stage of combinedStages) {
+            if (button.stage == stage.text) {
+              button.color = stage.color;
+              matched = true;
+              break;
+            }
+          }
+          if (!matched) {
+            button.color = "gray";
+          }
+          activeButtons.push(button);
+        }
+      }
+      return activeButtons;
     }
   },
   actions: {},

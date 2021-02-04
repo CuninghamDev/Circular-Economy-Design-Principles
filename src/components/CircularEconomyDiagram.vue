@@ -452,7 +452,7 @@ export default {
         let interiorRadius = geomData.stageRadius + geomData.stagePadding;
         let activitiesWidth =
           geomData.radius - geomData.activitiesPadding - interiorRadius;
-        let radius = interiorRadius + activitiesWidth / 2;
+        let radius = interiorRadius + activitiesWidth * (7 / 8);
         let centerX = 0;
         let centerY = 0;
         let startX = Math.cos(startAngle) * radius + centerX;
@@ -483,7 +483,7 @@ export default {
           "transform",
           "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
         );
-
+      console.log("activity data", activityData);
       let activitiesTextPaths = activityTextGroups
         .selectAll(".activity-text-paths")
         .data(d => [d])
@@ -510,7 +510,7 @@ export default {
           enter
             .append("textPath")
             .classed("activity-text-to-path", true)
-            .classed("pointer", true)
+            .classed("pointer", false)
             .classed("no-select", true)
             .attr("xlink:href", d => {
               let idTag = d.text.split(" ").join("-");
@@ -522,80 +522,82 @@ export default {
             .attr("startOffset", "50%")
             .text(d => d.text.toUpperCase())
             .style("font-family", "Arial, Helvetica, sans-serif")
-            .style("fill", "white")
+            .style("fill", d => {
+              return d.color;
+            })
             .style("dominant-baseline", "middle")
             .style("font-size", "1.8vmin")
             .style("opacity", 1)
         );
 
-      let buildActivityPath = function(actData) {
-        let startAngle = actData.startAngle;
-        let endAngle = actData.endAngle;
-        let interiorRadius = geomData.stageRadius + geomData.stagePadding;
-        let exteriorRadius = geomData.radius - geomData.activitiesPadding;
-        let centerX = 0;
-        let centerY = 0;
-        let x1 = Math.cos(startAngle) * interiorRadius + centerX;
-        let y1 = Math.sin(startAngle) * interiorRadius + centerY;
-        let x2 = Math.cos(startAngle) * exteriorRadius + centerX;
-        let y2 = Math.sin(startAngle) * exteriorRadius + centerY;
-        let x3 = Math.cos(endAngle) * interiorRadius + centerX;
-        let y3 = Math.sin(endAngle) * interiorRadius + centerY;
+      // let buildActivityPath = function(actData) {
+      //   let startAngle = actData.startAngle;
+      //   let endAngle = actData.endAngle;
+      //   let interiorRadius = geomData.stageRadius + geomData.stagePadding;
+      //   let exteriorRadius = geomData.radius - geomData.activitiesPadding;
+      //   let centerX = 0;
+      //   let centerY = 0;
+      //   let x1 = Math.cos(startAngle) * interiorRadius + centerX;
+      //   let y1 = Math.sin(startAngle) * interiorRadius + centerY;
+      //   let x2 = Math.cos(startAngle) * exteriorRadius + centerX;
+      //   let y2 = Math.sin(startAngle) * exteriorRadius + centerY;
+      //   let x3 = Math.cos(endAngle) * interiorRadius + centerX;
+      //   let y3 = Math.sin(endAngle) * interiorRadius + centerY;
 
-        let path = d3.path();
-        path.moveTo(x1, y1);
-        path.lineTo(x2, y2);
-        path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle);
-        path.lineTo(x3, y3);
-        path.arc(centerX, centerY, interiorRadius, endAngle, startAngle, true);
-        let pathData = path.toString();
-        return pathData;
-      };
+      //   let path = d3.path();
+      //   path.moveTo(x1, y1);
+      //   path.lineTo(x2, y2);
+      //   path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle);
+      //   path.lineTo(x3, y3);
+      //   path.arc(centerX, centerY, interiorRadius, endAngle, startAngle, true);
+      //   let pathData = path.toString();
+      //   return pathData;
+      // };
 
-      svg
-        .select(".activities-ring")
-        .attr(
-          "transform",
-          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
-        );
+      // svg
+      //   .select(".activities-ring")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+      //   );
 
-      let activityGroups = svg
-        .select(".activities-ring")
-        .selectAll("g")
-        .data(activityData)
-        .join("g");
-      activityGroups
-        .transition()
-        .duration(self.rotationTime)
-        .attr(
-          "transform",
-          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
-        );
+      // let activityGroups = svg
+      //   .select(".activities-ring")
+      //   .selectAll("g")
+      //   .data(activityData)
+      //   .join("g");
+      // activityGroups
+      //   .transition()
+      //   .duration(self.rotationTime)
+      //   .attr(
+      //     "transform",
+      //     "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+      //   );
 
-      let activitiesShapes = activityGroups
-        .selectAll(".activity-shapes")
-        .data(function(d) {
-          return [d];
-        })
-        .join(enter =>
-          enter
-            .append("path")
-            .classed("activity-shapes", true)
-            // .classed('pointer', true)
+      // let activitiesShapes = activityGroups
+      //   .selectAll(".activity-shapes")
+      //   .data(function(d) {
+      //     return [d];
+      //   })
+      //   .join(enter =>
+      //     enter
+      //       .append("path")
+      //       .classed("activity-shapes", true)
+      //       // .classed('pointer', true)
 
-            .attr("fill", function(d) {
-              return d.color;
-            })
-            .attr("stroke-width", "3")
-            .attr("stroke", "white")
-            .attr("filter", "none")
-            .attr("transform", "translate(0,0)")
-            .attr("opacity", 0.7)
-        )
-        .attr("d", function(d) {
-          let pathData = buildActivityPath(d);
-          return pathData;
-        });
+      //       .attr("fill", function(d) {
+      //         return d.color;
+      //       })
+      //       .attr("stroke-width", "3")
+      //       .attr("stroke", "white")
+      //       .attr("filter", "none")
+      //       .attr("transform", "translate(0,0)")
+      //       .attr("opacity", 0.7)
+      //   )
+      //   .attr("d", function(d) {
+      //     let pathData = buildActivityPath(d);
+      //     return pathData;
+      //   });
 
       svg
         .select(".actors-group")
