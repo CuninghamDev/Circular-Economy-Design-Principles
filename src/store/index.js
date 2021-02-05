@@ -275,6 +275,7 @@ export default new Vuex.Store({
     ],
     geometry: {
       startRotation: (-1 * Math.PI) / 4 + 0.01,
+      // startRotation: 0,
       arrowRotation: Math.PI * 0.04
     }
   },

@@ -71,11 +71,13 @@ export default {
       diagram.rotationTime = 100;
 
       diagram.svg.append("g").attr("class", "stage");
+      diagram.svg.append("g").attr("class", "outter-ring");
       diagram.svg.append("g").attr("class", "activities-ring");
       diagram.svg.append("g").attr("class", "activities-text");
       diagram.svg.append("g").attr("class", "category-ring");
       diagram.svg.append("g").attr("class", "category-text");
       diagram.svg.append("g").attr("class", "actors-group");
+
       diagram.svg.append("defs");
 
       this.createDropShadowFilter();
@@ -133,6 +135,7 @@ export default {
       structData.geometry.startRotation = raw.geometry.startRotation;
       structData.geometry.arrowRotation = raw.geometry.arrowRotation;
       structData.geometry.catRotArc = (Math.PI * 2) / raw.categories.length;
+      structData.geometry.outterRingArc = (Math.PI * 2) / raw.outterRing.length;
       structData.geometry.halfCatArc = structData.geometry.catRotArc / 2;
       structData.categories = [];
       for (let i in raw.categories) {
@@ -181,6 +184,17 @@ export default {
           structData.actors.push(actor);
         }
       }
+      structData.outterRing = [];
+      for (let i in raw.outterRing) {
+        let ringData = raw.outterRing[i];
+        ringData.startAngle =
+          structData.geometry.startRotation +
+          structData.geometry.outterRingArc * i -
+          Math.PI / 4;
+        ringData.endAngle =
+          ringData.startAngle + structData.geometry.outterRingArc;
+        structData.outterRing.push(ringData);
+      }
       console.log("diagram data structured");
     },
 
@@ -193,9 +207,9 @@ export default {
       geo.activitiesPadding = 5;
       geo.radius = (diagram.controllingDim / 2) * (6 / 15);
       geo.radiusWidth = (diagram.controllingDim / 2) * (4 / 20);
+      geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
       geo.stageRadius = (diagram.controllingDim / 2) * (1 / 5);
       geo.actorRingRadius = (diagram.controllingDim / 2) * (9 / 10);
-
       geo.actorRadius = (diagram.controllingDim / 2) * (1 / 11);
 
       geo.actorArrow = {};
@@ -272,16 +286,126 @@ export default {
 
     generalUpdatePattern() {
       console.log("general update pattern run");
+
       let component = this;
       let self = this.diagram;
       let svg = self.svg;
       let div = self.div;
       let data = self.structuredData;
+      console.log("structured diagram data", data);
       let geomData = data.geometry;
       let catData = data.categories;
       let actorData = data.actors;
       let activityData = data.activities;
 
+      svg
+        .select(".outter-ring")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+      let outterRingGroups = svg
+        .select(".outter-ring")
+        .selectAll(".outter-ring-rotation-groups")
+        .data(data.outterRing)
+        .join("g")
+        .classed("outter-ring-rotation-groups", true);
+      outterRingGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+      let outterRingShapeGenerator = function(ringData) {
+        let startAngle = ringData.startAngle;
+        let endAngle = ringData.endAngle;
+        let innerRadius = geomData.radius + geomData.radiusWidth;
+        let outterRadius = innerRadius + geomData.outterRingWidth;
+        let centerX = 0;
+        let centerY = 0;
+        let x1 = Math.cos(startAngle) * innerRadius + centerX;
+        let y1 = Math.sin(startAngle) * innerRadius + centerY;
+        // let x2 = Math.cos(startAngle) * outterRadius + centerX
+        // let y2 = Math.sin(startAngle) * outterRadius + centerY
+        let x2 = Math.cos(endAngle) * innerRadius + centerX;
+        let y2 = Math.sin(endAngle) * innerRadius + centerY;
+        let path = d3.path();
+        path.moveTo(x1, y1);
+        // path.lineTo(x2,y2)
+        path.arc(centerX, centerY, outterRadius, startAngle, endAngle);
+        path.lineTo(x2, y2);
+        path.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+        let pathData = path.toString();
+        return pathData;
+      };
+      let outterRingShapes = outterRingGroups
+        .selectAll(".outter-ring-shapes")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .attr("fill", d => d.color)
+            .attr("opacity", 0.55)
+            .classed("outter-ring-shapes", true)
+        )
+        .attr("d", d => outterRingShapeGenerator(d));
+      let outterRingTextPathGenerator = function(ringData) {
+        let startAngle = ringData.startAngle;
+        let endAngle = ringData.endAngle;
+        let radius =
+          geomData.radius + geomData.radiusWidth + geomData.outterRingWidth / 2;
+        let centerX = 0;
+        let centerY = 0;
+        let startX = Math.cos(startAngle) * radius + centerX;
+        let startY = Math.sin(startAngle) * radius + centerY;
+        let path = d3.path();
+        path.moveTo(startX, startY);
+        path.arc(centerX, centerY, radius, startAngle, endAngle);
+        let pathData = path.toString();
+        return pathData;
+      };
+      let outterRingTextGroups = outterRingGroups
+        .selectAll(".outter-ring-text-paths")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("outter-ring-text-paths", true)
+            .attr("fill", "none")
+            .attr("id", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              return "outter-ring-text-path-" + lowerCaseId;
+            })
+        )
+        .attr("d", d => outterRingTextPathGenerator(d));
+
+      let outterRingText = outterRingGroups
+        .selectAll(".outter-ring-text")
+        .data(d => [d])
+        .join(enter => enter.append("text").classed(".outter-ring-text", true))
+        .selectAll(".outter-ring-text-pathed")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("textPath")
+            .classed("outter-ring-text-pathed", true)
+            .classed("no-select", true)
+            .attr("xlink:href", d => {
+              let idTag = d.text.split(" ").join("-");
+              let lowerCaseId = idTag.toLowerCase();
+              return "#outter-ring-text-path-" + lowerCaseId;
+            })
+            .style("text-anchor", "middle")
+            .attr("startOffset", "50%")
+            .text(d => d.text.toUpperCase())
+            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("fill", "white")
+            .style("dominant-baseline", "middle")
+            .style("font-size", "1.7vmin")
+            .style("opacity", 1)
+        );
       let categoryTextPathGenerator = function(catData) {
         let startAngle = catData.startAngle;
         let endAngle = catData.endAngle;
@@ -529,75 +653,6 @@ export default {
             .style("font-size", "1.8vmin")
             .style("opacity", 1)
         );
-
-      // let buildActivityPath = function(actData) {
-      //   let startAngle = actData.startAngle;
-      //   let endAngle = actData.endAngle;
-      //   let interiorRadius = geomData.stageRadius + geomData.stagePadding;
-      //   let exteriorRadius = geomData.radius - geomData.activitiesPadding;
-      //   let centerX = 0;
-      //   let centerY = 0;
-      //   let x1 = Math.cos(startAngle) * interiorRadius + centerX;
-      //   let y1 = Math.sin(startAngle) * interiorRadius + centerY;
-      //   let x2 = Math.cos(startAngle) * exteriorRadius + centerX;
-      //   let y2 = Math.sin(startAngle) * exteriorRadius + centerY;
-      //   let x3 = Math.cos(endAngle) * interiorRadius + centerX;
-      //   let y3 = Math.sin(endAngle) * interiorRadius + centerY;
-
-      //   let path = d3.path();
-      //   path.moveTo(x1, y1);
-      //   path.lineTo(x2, y2);
-      //   path.arc(centerX, centerY, exteriorRadius, startAngle, endAngle);
-      //   path.lineTo(x3, y3);
-      //   path.arc(centerX, centerY, interiorRadius, endAngle, startAngle, true);
-      //   let pathData = path.toString();
-      //   return pathData;
-      // };
-
-      // svg
-      //   .select(".activities-ring")
-      //   .attr(
-      //     "transform",
-      //     "translate(" + geomData.centerX + "," + geomData.centerY + ")"
-      //   );
-
-      // let activityGroups = svg
-      //   .select(".activities-ring")
-      //   .selectAll("g")
-      //   .data(activityData)
-      //   .join("g");
-      // activityGroups
-      //   .transition()
-      //   .duration(self.rotationTime)
-      //   .attr(
-      //     "transform",
-      //     "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
-      //   );
-
-      // let activitiesShapes = activityGroups
-      //   .selectAll(".activity-shapes")
-      //   .data(function(d) {
-      //     return [d];
-      //   })
-      //   .join(enter =>
-      //     enter
-      //       .append("path")
-      //       .classed("activity-shapes", true)
-      //       // .classed('pointer', true)
-
-      //       .attr("fill", function(d) {
-      //         return d.color;
-      //       })
-      //       .attr("stroke-width", "3")
-      //       .attr("stroke", "white")
-      //       .attr("filter", "none")
-      //       .attr("transform", "translate(0,0)")
-      //       .attr("opacity", 0.7)
-      //   )
-      //   .attr("d", function(d) {
-      //     let pathData = buildActivityPath(d);
-      //     return pathData;
-      //   });
 
       svg
         .select(".actors-group")
