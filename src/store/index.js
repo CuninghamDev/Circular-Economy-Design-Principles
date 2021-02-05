@@ -12,6 +12,13 @@ export default new Vuex.Store({
       details: "",
       short: ""
     },
+    blankActor: {
+      actor: "",
+      buttons: "",
+      category: "",
+      details: "",
+      short: ""
+    },
     actors: [
       {
         actor: "Participating in open source design",
@@ -19,15 +26,15 @@ export default new Vuex.Store({
         details:
           "Open source solutions can help propagate circular concepts to a larger audience (e.g. wikihouse/shared solutions)",
         buttons: [],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Tracking material passports",
         short: "Material Passports",
         details:
-          "Material passports are with a material throughout its entire life to ensure its continuous use. During Exchange, the product may be either in a building ready for demo, in a storage facility ready for delivery, or with a manufacturer ready for upcycling. It is the materials passport that allows designers and builders to find these materials to specify for their projects.",
+          "Material passports are with a material throughout its entire life to ensure its continuous use. During Re Use, the product may be either in a building ready for demo, in a storage facility ready for delivery, or with a manufacturer ready for upcycling. It is the materials passport that allows designers and builders to find these materials to specify for their projects.",
         buttons: [],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Storing and distributing upcycled materials",
@@ -35,7 +42,7 @@ export default new Vuex.Store({
         details:
           "Physical marketplace and services to enable harvest and distribution of materials from demolitions and other industries.",
         buttons: ["Upcycling"],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Connecting salvage supply and demand via online platforms",
@@ -43,7 +50,7 @@ export default new Vuex.Store({
         details:
           "By-passing physical warehouse, an online platform can connect supply and demand of salvaged materials directly from site to site.",
         buttons: [],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Remanufacturing salvaged materials into new products",
@@ -51,7 +58,7 @@ export default new Vuex.Store({
         details:
           "When used material is modified into superior product. In this case these materials would otherwise go to a landfill or a recycling facility vs being upcycled. The remanufacturer then has the opportunity to give the new material a passport.",
         buttons: [],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Capturing waste material from other industries",
@@ -59,7 +66,7 @@ export default new Vuex.Store({
         details:
           "Also called “Industrial Symbiosis,” captures waste from unrelated industries (e.g. agriculture) and turns them into useful products (e.g. hempcrete, straw bale)",
         buttons: [],
-        category: "Exchange"
+        category: "Re Use"
       },
       {
         actor: "Designing for demountability",
@@ -126,7 +133,7 @@ export default new Vuex.Store({
         short: "Back to the Grid",
         details: "Enables use of surplus green energy generated on site.",
         buttons: [],
-        category: "Intelligent Buildings"
+        category: "Use"
       },
       {
         actor: "Internet of Things/BIM for Operations",
@@ -134,7 +141,7 @@ export default new Vuex.Store({
         details:
           "Use of sensors, tracking systems and management software can assist with more effective operations and timely maintenance to prolong building’s life.",
         buttons: ["Product as service systems", "Tracking material passports"],
-        category: "Intelligent Buildings"
+        category: "Use"
       },
       {
         actor: "Utilizing online platforms to facilitate space sharing",
@@ -142,7 +149,7 @@ export default new Vuex.Store({
         details:
           "Web-based platforms can help to match underutilized spaces (e.g. office, homes) with potential users (e.g. Airbnb, WeWork).",
         buttons: [],
-        category: "Intelligent Buildings"
+        category: "Use"
       },
       {
         actor: "Upcycling",
@@ -172,7 +179,7 @@ export default new Vuex.Store({
         title: "Tracking material passports",
         sourceActor: "Tracking material passports",
         destinationActor: "Internet of Things/BIM for Operations",
-        stage: "Intelligent Buildings",
+        stage: "Use",
         details:
           "passports can be folded into BIM during the lifespan of a building."
       },
@@ -258,14 +265,34 @@ export default new Vuex.Store({
       }
     ],
     categories: [
-      { text: "Design and Deliver", color: "#358BB0" },
-      { text: "Intelligent Buildings", color: "#A6D08F" },
-      { text: "End of Design Life", color: "#90B47D" },
-      { text: "Exchange", color: "#61BAE0" }
+      {
+        text: "Design and Deliver",
+        color: "#358BB0",
+        iconPath:
+          "http://temp.cuningham.com/circular-economy/assets/DesignAndDeliver.svg"
+      },
+      {
+        text: "Use",
+        color: "#A6D08F",
+        iconPath:
+          "http://temp.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment.svg"
+      },
+      {
+        text: "End of Design Life",
+        color: "#90B47D",
+        iconPath:
+          "http://temp.cuningham.com/circular-economy/assets/EndOfDesignLife.svg"
+      },
+      {
+        text: "Re Use",
+        color: "#61BAE0",
+        iconPath:
+          "http://temp.cuningham.com/circular-economy/assets/BridgingMaterialsAndData.svg"
+      }
     ],
     activities: [
       { text: "Construct", color: "#358BB0" },
-      { text: "Reuse / Use", color: "#A6D08F" },
+      { text: "Built Environment", color: "#A6D08F" },
       { text: "Deconstruct", color: "#90B47D" },
       { text: "Resource / Source", color: "#61BAE0" }
     ],
@@ -303,12 +330,14 @@ export default new Vuex.Store({
           for (let stage of combinedStages) {
             if (button.stage == stage.text) {
               button.color = stage.color;
+              button.iconPath = stage.iconPath;
               matched = true;
               break;
             }
           }
           if (!matched) {
             button.color = "gray";
+            button.iconPath = undefined;
           }
           activeButtons.push(button);
         }

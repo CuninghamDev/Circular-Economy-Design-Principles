@@ -17,19 +17,19 @@
         >
           <b> {{ selectedActor.details }}</b>
         </button>
-        <button
-          v-for="(button, index) in getButtons"
-          :key="index"
-          type="button"
-          :style="{
-            background: button.color,
-            color: 'white',
-            borderRadius: '14px'
-          }"
-          class="row ml-0 mt-2 p-2 btn w-75"
-        >
-          <b> {{ button.details }} </b>
-        </button>
+        <div class="row p-2" v-for="(button, index) in getButtons" :key="index">
+          <div class="col-3 m-0 p-0">
+            <img :src="button.iconPath" class="m-0 p-0" />
+          </div>
+          <div class="col px-1">
+            <div
+              class="rounded-text-box p-2 text-center"
+              :style="{ background: button.color, color: 'white' }"
+            >
+              <b> {{ button.details }} </b>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -53,4 +53,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style>
+.rounded-text-box {
+  border-radius: 14px;
+}
+</style>

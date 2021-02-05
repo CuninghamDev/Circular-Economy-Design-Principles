@@ -39,7 +39,8 @@ export default {
       "categories",
       "activities",
       "outterRing",
-      "geometry"
+      "geometry",
+      "blankActor"
     ])
   },
   data() {
@@ -77,6 +78,7 @@ export default {
       diagram.svg.append("g").attr("class", "category-ring");
       diagram.svg.append("g").attr("class", "category-text");
       diagram.svg.append("g").attr("class", "actors-group");
+      diagram.svg.append("g").attr("class", "category-icons");
 
       diagram.svg.append("defs");
 
@@ -207,10 +209,16 @@ export default {
       geo.activitiesPadding = 5;
       geo.radius = (diagram.controllingDim / 2) * (6 / 15);
       geo.radiusWidth = (diagram.controllingDim / 2) * (4 / 20);
+
       geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
+
       geo.stageRadius = (diagram.controllingDim / 2) * (1 / 5);
+
       geo.actorRingRadius = (diagram.controllingDim / 2) * (9 / 10);
       geo.actorRadius = (diagram.controllingDim / 2) * (1 / 11);
+
+      geo.iconDims = (diagram.controllingDim / 2) * (1 / 5);
+      geo.iconRadius = (diagram.controllingDim / 2) * (1 / 8);
 
       geo.actorArrow = {};
       geo.actorArrow.radius =
@@ -298,6 +306,73 @@ export default {
       let actorData = data.actors;
       let activityData = data.activities;
 
+      console.log("category data to images", catData);
+      svg
+        .select(".category-icons")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+      let iconGroups = svg
+        .select(".category-icons")
+        .selectAll(".icon-groups")
+        .data(catData)
+        .join("g")
+        .classed("icon-groups", true);
+      iconGroups
+        .transition()
+        .duration(self.rotationTime)
+        .attr(
+          "transform",
+          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+        );
+
+      let iconPlacementGroups = iconGroups
+        .selectAll(".icon-rotation-groups")
+        .data(d => [d])
+        .join("g")
+        .classed("icon-rotation-groups", true)
+        .attr("transform", d => {
+          let rotationAngle = d.endAngle - (d.endAngle - d.startAngle) / 2;
+          return (
+            "rotate(" +
+            (rotationAngle * 180) / Math.PI +
+            ") translate(" +
+            geomData.iconRadius +
+            ",0)"
+          );
+        });
+
+      let iconImages = iconPlacementGroups
+        .selectAll(".category-icon-images")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("image")
+            .attr("xlink:href", d => d.iconPath)
+            .classed("category-icon-images", true)
+        )
+        .attr("x", geomData.iconRadius + (geomData.iconDims * -1) / 2)
+        .attr("y", (geomData.iconDims * -1) / 2)
+        .attr("width", geomData.iconDims)
+        .attr("height", geomData.iconDims);
+      iconImages
+        .transition()
+        .duration(self.rotationTime)
+        .attr("transform", d => {
+          let rotationAngle = d.endAngle - (d.endAngle - d.startAngle) / 2;
+          let counterRotation = rotationAngle * -1 - self.rotationTracker;
+          return (
+            "rotate(" +
+            (counterRotation * 180) / Math.PI +
+            "," +
+            geomData.iconRadius +
+            ",0)"
+          );
+        });
+
+      //////////////////
+      // OUTTER RING
       svg
         .select(".outter-ring")
         .attr(
@@ -346,8 +421,10 @@ export default {
           enter
             .append("path")
             .attr("fill", d => d.color)
-            .attr("opacity", 0.55)
+            .attr("opacity", 0.45)
             .classed("outter-ring-shapes", true)
+            .attr("stroke", "white")
+            .attr("stroke-width", "2px")
         )
         .attr("d", d => outterRingShapeGenerator(d));
       let outterRingTextPathGenerator = function(ringData) {
@@ -420,6 +497,9 @@ export default {
         let pathData = path.toString();
         return pathData;
       };
+
+      //////////////////
+      // CATEGORIES AND PRIMARY RING
 
       svg
         .select(".category-text")
@@ -570,6 +650,9 @@ export default {
         categoryClick(d, e, this);
       });
 
+      //////////////////
+      // ACTIVITIES ON INTERIOR OF RING
+
       let activityTextPathGenerator = function(actData) {
         let startAngle = actData.startAngle;
         let endAngle = actData.endAngle;
@@ -607,7 +690,6 @@ export default {
           "transform",
           "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
         );
-      console.log("activity data", activityData);
       let activitiesTextPaths = activityTextGroups
         .selectAll(".activity-text-paths")
         .data(d => [d])
@@ -653,6 +735,9 @@ export default {
             .style("font-size", "1.8vmin")
             .style("opacity", 1)
         );
+
+      //////////////////
+      // ACTOR OBJECTS
 
       svg
         .select(".actors-group")
@@ -895,21 +980,32 @@ export default {
       let actorClick = function(d, e, selected) {
         let thisActor = d3.select(selected);
         let thisActorActive = thisActor.classed("category-selected-actors");
+        let thisActorSelected = thisActor
+          .select("path")
+          .classed("actor-selected");
         if (thisActorActive) {
-          component.$store.commit("selectActor", d["actor data"]);
-          console.log(d, e, selected);
-          let thisData = d;
-          let thisEvent = e;
-          let rotateDiagram =
-            Math.PI * 2 -
-            ((d.actorAngle + self.rotationTracker) % (Math.PI * 2));
+          if (thisActorSelected) {
+            console.log("actor is already selected");
+            component.$store.commit("selectActor", component.blankActor);
+            d3.selectAll(".actor-rotation-groups")
+              .selectAll("path")
+              .classed("actor-selected", false);
+            component.rotate(0);
+          } else {
+            component.$store.commit("selectActor", d["actor data"]);
+            let thisData = d;
+            let thisEvent = e;
+            let rotateDiagram =
+              Math.PI * 2 -
+              ((d.actorAngle + self.rotationTracker) % (Math.PI * 2));
 
-          let actorShapes = d3
-            .selectAll(".actor-rotation-groups")
-            .selectAll("path")
-            .classed("actor-selected", false);
-          thisActor.selectAll("path").classed("actor-selected", true);
-          component.rotate(rotateDiagram);
+            let actorShapes = d3
+              .selectAll(".actor-rotation-groups")
+              .selectAll("path")
+              .classed("actor-selected", false);
+            thisActor.selectAll("path").classed("actor-selected", true);
+            component.rotate(rotateDiagram);
+          }
         }
       };
     }
