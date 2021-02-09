@@ -226,9 +226,9 @@ export default {
       geo.actorArrow.radius =
         geo.radius + geo.radiusWidth - diagram.controllingDim / 2 / 50;
       geo.actorArrow.width = diagram.controllingDim / 2 - geo.actorArrow.radius;
-      geo.actorArrow.height = diagram.controllingDim / 25;
+      geo.actorArrow.height = diagram.controllingDim / 33;
       geo.actorArrow.growWidth = diagram.controllingDim / 75;
-      geo.actorArrow.growHeight = diagram.controllingDim / 75;
+      geo.actorArrow.growHeight = diagram.controllingDim / 100;
 
       let xShift = geo.actorArrow.growWidth;
       geo.centerX = diagram.controllingDim / 2 - xShift;
