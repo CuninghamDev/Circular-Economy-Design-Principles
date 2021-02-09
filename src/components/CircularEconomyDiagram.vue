@@ -815,13 +815,13 @@ export default {
         }
 
         let path = d3.path();
-        path.moveTo(centerX, centerY);
-        path.lineTo(tailX, bottomY);
+        //path.moveTo(centerX, centerY);
+        path.moveTo(tailX, bottomY);
         path.lineTo(edgeX, bottomY);
         path.lineTo(pointX, centerY);
         path.lineTo(edgeX, topY);
         path.lineTo(tailX, topY);
-        path.lineTo(centerX, centerY);
+        path.lineTo(tailX, bottomY);
         let pathData = path.toString();
         return pathData;
       };
