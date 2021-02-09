@@ -204,6 +204,8 @@ export default {
       let diagram = this.diagram;
       let geo = diagram.structuredData.geometry;
 
+      geo.lineWeight = diagram.controllingDim / 500;
+      geo.heavyLineWeight = diagram.controllingDim / 300;
       geo.actorSelectRadiusIncrease = 20;
       geo.stagePadding = 1;
       geo.activitiesPadding = 5;
@@ -424,8 +426,8 @@ export default {
             .attr("opacity", 0.45)
             .classed("outter-ring-shapes", true)
             .attr("stroke", "white")
-            .attr("stroke-width", "2px")
         )
+        .attr("stroke-width", () => geomData.heavyLineWeight)
         .attr("d", d => outterRingShapeGenerator(d));
       let outterRingTextPathGenerator = function(ringData) {
         let startAngle = ringData.startAngle;
@@ -638,12 +640,13 @@ export default {
             .attr("fill", function(d) {
               return d.color;
             })
-            .attr("stroke-width", "3")
+
             .attr("stroke", "white")
             .attr("filter", "none")
             .attr("transform", "translate(0,0)")
             .attr("opacity", 1)
         )
+        .attr("stroke-width", () => geomData.heavyLineWeight)
         .attr("d", d => buildCategoryPath(d));
 
       categoryShapes.on("click", function(e, d) {
@@ -830,7 +833,7 @@ export default {
           enter
             .append("path")
             .style("stroke", "white")
-            .style("stroke-width", "3px")
+
             .style("fill", d => {
               for (let cat of catData) {
                 if (cat.text == d["actor data"].category) {
@@ -840,6 +843,7 @@ export default {
               return "gray";
             })
         )
+        .style("stroke-width", () => geomData.lineWeight)
         .attr("filter", function(d) {
           let selected = d3.select(this).classed("actor-selected");
           if (selected) {
