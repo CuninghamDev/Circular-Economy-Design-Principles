@@ -213,7 +213,7 @@ export default {
       geo.radiusWidth = (diagram.controllingDim / 2) * (4 / 20);
 
       geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
-
+      geo.outterRingOffset = (diagram.controllingDim / 2) * (1 / 75);
       geo.stageRadius = (diagram.controllingDim / 2) * (1 / 5);
 
       geo.actorRingRadius = (diagram.controllingDim / 2) * (9 / 10);
@@ -397,7 +397,8 @@ export default {
       let outterRingShapeGenerator = function(ringData) {
         let startAngle = ringData.startAngle;
         let endAngle = ringData.endAngle;
-        let innerRadius = geomData.radius + geomData.radiusWidth;
+        let innerRadius =
+          geomData.radius + geomData.radiusWidth + geomData.outterRingOffset;
         let outterRadius = innerRadius + geomData.outterRingWidth;
         let centerX = 0;
         let centerY = 0;
@@ -423,17 +424,18 @@ export default {
           enter
             .append("path")
             .attr("fill", d => d.color)
-            .attr("opacity", 0.45)
+            .attr("opacity", 0.3)
             .classed("outter-ring-shapes", true)
-            .attr("stroke", "white")
         )
-        .attr("stroke-width", () => geomData.heavyLineWeight)
         .attr("d", d => outterRingShapeGenerator(d));
       let outterRingTextPathGenerator = function(ringData) {
         let startAngle = ringData.startAngle;
         let endAngle = ringData.endAngle;
         let radius =
-          geomData.radius + geomData.radiusWidth + geomData.outterRingWidth / 2;
+          geomData.radius +
+          geomData.radiusWidth +
+          geomData.outterRingOffset +
+          geomData.outterRingWidth / 2;
         let centerX = 0;
         let centerY = 0;
         let startX = Math.cos(startAngle) * radius + centerX;
@@ -564,7 +566,7 @@ export default {
             .style("font-family", "Arial, Helvetica, sans-serif")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
-            .style("font-size", "2vmin")
+            .style("font-size", "1.6vmin")
             .style("opacity", 1)
         );
       categoryText.on("click", function(e, d) {
@@ -656,88 +658,88 @@ export default {
       //////////////////
       // ACTIVITIES ON INTERIOR OF RING
 
-      let activityTextPathGenerator = function(actData) {
-        let startAngle = actData.startAngle;
-        let endAngle = actData.endAngle;
-        let interiorRadius = geomData.stageRadius + geomData.stagePadding;
-        let activitiesWidth =
-          geomData.radius - geomData.activitiesPadding - interiorRadius;
-        let radius = interiorRadius + activitiesWidth * (7 / 8);
-        let centerX = 0;
-        let centerY = 0;
-        let startX = Math.cos(startAngle) * radius + centerX;
-        let startY = Math.sin(startAngle) * radius + centerY;
-        let path = d3.path();
-        path.moveTo(startX, startY);
-        path.arc(centerX, centerY, radius, startAngle, endAngle);
-        let pathData = path.toString();
-        return pathData;
-      };
+      // let activityTextPathGenerator = function(actData) {
+      //   let startAngle = actData.startAngle;
+      //   let endAngle = actData.endAngle;
+      //   let interiorRadius = geomData.stageRadius + geomData.stagePadding;
+      //   let activitiesWidth =
+      //     geomData.radius - geomData.activitiesPadding - interiorRadius;
+      //   let radius = interiorRadius + activitiesWidth * (7 / 8);
+      //   let centerX = 0;
+      //   let centerY = 0;
+      //   let startX = Math.cos(startAngle) * radius + centerX;
+      //   let startY = Math.sin(startAngle) * radius + centerY;
+      //   let path = d3.path();
+      //   path.moveTo(startX, startY);
+      //   path.arc(centerX, centerY, radius, startAngle, endAngle);
+      //   let pathData = path.toString();
+      //   return pathData;
+      // };
 
-      svg
-        .select(".activities-text")
-        .attr(
-          "transform",
-          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
-        );
+      // svg
+      //   .select(".activities-text")
+      //   .attr(
+      //     "transform",
+      //     "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+      //   );
 
-      let activityTextGroups = svg
-        .select(".activities-text")
-        .selectAll("g")
-        .data(activityData)
-        .join("g");
-      activityTextGroups
-        .transition()
-        .duration(self.rotationTime)
-        .attr(
-          "transform",
-          "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
-        );
-      let activitiesTextPaths = activityTextGroups
-        .selectAll(".activity-text-paths")
-        .data(d => [d])
-        .join(enter =>
-          enter
-            .append("path")
-            .classed("activity-text-paths", true)
-            .attr("id", d => {
-              let idTag = d.text.split(" ").join("-");
-              let lowerCaseId = idTag.toLowerCase();
-              return "act-text-path-" + lowerCaseId;
-            })
-            .style("fill", "none")
-        )
-        .attr("d", d => activityTextPathGenerator(d));
+      // let activityTextGroups = svg
+      //   .select(".activities-text")
+      //   .selectAll("g")
+      //   .data(activityData)
+      //   .join("g");
+      // activityTextGroups
+      //   .transition()
+      //   .duration(self.rotationTime)
+      //   .attr(
+      //     "transform",
+      //     "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
+      //   );
+      // let activitiesTextPaths = activityTextGroups
+      //   .selectAll(".activity-text-paths")
+      //   .data(d => [d])
+      //   .join(enter =>
+      //     enter
+      //       .append("path")
+      //       .classed("activity-text-paths", true)
+      //       .attr("id", d => {
+      //         let idTag = d.text.split(" ").join("-");
+      //         let lowerCaseId = idTag.toLowerCase();
+      //         return "act-text-path-" + lowerCaseId;
+      //       })
+      //       .style("fill", "none")
+      //   )
+      //   .attr("d", d => activityTextPathGenerator(d));
 
-      let activityText = activityTextGroups
-        .selectAll(".activity-text")
-        .data(d => [d])
-        .join(enter => enter.append("text").classed("activity-text", true))
-        .selectAll(".activity-text-to-path")
-        .data(d => [d])
-        .join(enter =>
-          enter
-            .append("textPath")
-            .classed("activity-text-to-path", true)
-            .classed("pointer", false)
-            .classed("no-select", true)
-            .attr("xlink:href", d => {
-              let idTag = d.text.split(" ").join("-");
-              let lowerCaseId = idTag.toLowerCase();
-              let id = "#act-text-path-" + lowerCaseId;
-              return id;
-            })
-            .style("text-anchor", "middle")
-            .attr("startOffset", "50%")
-            .text(d => d.text.toUpperCase())
-            .style("font-family", "Arial, Helvetica, sans-serif")
-            .style("fill", d => {
-              return d.color;
-            })
-            .style("dominant-baseline", "middle")
-            .style("font-size", "1.8vmin")
-            .style("opacity", 1)
-        );
+      // let activityText = activityTextGroups
+      //   .selectAll(".activity-text")
+      //   .data(d => [d])
+      //   .join(enter => enter.append("text").classed("activity-text", true))
+      //   .selectAll(".activity-text-to-path")
+      //   .data(d => [d])
+      //   .join(enter =>
+      //     enter
+      //       .append("textPath")
+      //       .classed("activity-text-to-path", true)
+      //       .classed("pointer", false)
+      //       .classed("no-select", true)
+      //       .attr("xlink:href", d => {
+      //         let idTag = d.text.split(" ").join("-");
+      //         let lowerCaseId = idTag.toLowerCase();
+      //         let id = "#act-text-path-" + lowerCaseId;
+      //         return id;
+      //       })
+      //       .style("text-anchor", "middle")
+      //       .attr("startOffset", "50%")
+      //       .text(d => d.text.toUpperCase())
+      //       .style("font-family", "Arial, Helvetica, sans-serif")
+      //       .style("fill", d => {
+      //         return d.color;
+      //       })
+      //       .style("dominant-baseline", "middle")
+      //       .style("font-size", "1.8vmin")
+      //       .style("opacity", 1)
+      //   );
 
       //////////////////
       // ACTOR OBJECTS

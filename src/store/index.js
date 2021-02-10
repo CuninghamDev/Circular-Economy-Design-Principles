@@ -176,7 +176,7 @@ export default new Vuex.Store({
         short: "Renewable Energy",
         details: "Enables use of surplus green energy generated on site.",
         buttons: ["Selling renewable energy"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Internet of Things/BIM for Operations",
@@ -184,7 +184,7 @@ export default new Vuex.Store({
         details:
           "Use of sensors, tracking systems and management software can assist with more effective operations and timely maintenance to prolong a building’s life.",
         buttons: ["Internet of things/BIM for operations"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Space utilization",
@@ -192,7 +192,7 @@ export default new Vuex.Store({
         details:
           "Web-based platforms can help to match underutilized spaces (e.g. office, homes) with potential users (e.g. Airbnb, WeWork).",
         buttons: ["Space utilization"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Existing structure",
@@ -200,7 +200,7 @@ export default new Vuex.Store({
         details:
           "The structure of a building can be reused for a future project, diverting it all from potential waste.",
         buttons: ["Existing structure"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Adaptive reuse of existing building",
@@ -208,7 +208,7 @@ export default new Vuex.Store({
         details:
           "Prolongs life of the building and diverts existing structure from landfill.",
         buttons: ["Adaptive reuse of existing building"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Harvesting grey water",
@@ -216,7 +216,7 @@ export default new Vuex.Store({
         details:
           "Reusing the buildings water reduces water waste by keeping the water in use for longer.",
         buttons: ["Harvesting grey water"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Harvesting runoff",
@@ -224,7 +224,7 @@ export default new Vuex.Store({
         details:
           "Harvesting runoff reduces water waste and utilizes the natural regenerative nature of the site.",
         buttons: ["Harvesting runoff"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Natural lighting and ventilation",
@@ -232,7 +232,7 @@ export default new Vuex.Store({
         details:
           "Can help minimize operational waste related to lighting and mechanical systems.",
         buttons: ["Natural lighting and ventilation"],
-        category: "Intelligent Buildings"
+        category: "Intelligent Built Environment"
       },
       {
         actor: "Upcycling",
@@ -263,7 +263,7 @@ export default new Vuex.Store({
       {
         title: "Material passports",
         sourceActor: "Material passports",
-        stage: "Intelligent Buildings",
+        stage: "Intelligent Built Environment",
         details:
           "passports can be folded into BIM to track a material’s integrity and lifespan."
       },
@@ -326,7 +326,7 @@ export default new Vuex.Store({
       {
         title: "Product as a service",
         sourceActor: "Product as a service",
-        stage: "Intelligent Buildings",
+        stage: "Intelligent Built Environment",
         details:
           "suppliers can use BIM to track their product performance throughout its lifespan."
       },
@@ -347,14 +347,14 @@ export default new Vuex.Store({
       {
         title: "Designing for mixed-use",
         sourceActor: "Designing for mixed-use",
-        stage: "Intelligent Buildings",
+        stage: "Intelligent Built Environment",
         details:
           "this strategy allows for a building to maximize its occupied hours during its lifespan."
       },
       {
         title: "Modular design",
         sourceActor: "Modular design",
-        stage: "Intelligent Buildings",
+        stage: "Intelligent Built Environment",
         details:
           "modularity allows for a new use of the same building part which extends its lifespan."
       },
@@ -368,7 +368,7 @@ export default new Vuex.Store({
       {
         title: "Designing for adaptive reuse",
         sourceActor: "Designing for adaptive reuse",
-        stage: "Intelligent Buildings",
+        stage: "Intelligent Built Environment",
         details:
           "this design process allows a building to be reused as its needs evolve."
       },
@@ -486,7 +486,7 @@ export default new Vuex.Store({
           "http://temp.cuningham.com/circular-economy/assets/DesignAndDeliver.svg"
       },
       {
-        text: "Intelligent Buildings",
+        text: "Intelligent Built Environment",
         color: "#A6D08F",
         iconPath:
           "http://temp.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment.svg"
