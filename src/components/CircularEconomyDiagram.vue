@@ -209,36 +209,27 @@ export default {
       geo.actorSelectRadiusIncrease = 20;
       geo.stagePadding = 1;
       geo.activitiesPadding = 5;
-      geo.radius = (diagram.controllingDim / 2) * (6 / 15);
-      geo.radiusWidth = (diagram.controllingDim / 2) * (4 / 20);
+      geo.radius = (diagram.controllingDim / 2) * (6 / 16);
+      geo.radiusWidth = (diagram.controllingDim / 2) * (5 / 22);
+      geo.categoryTextInset = geo.radiusWidth / 2;
 
       geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
       geo.outterRingOffset = (diagram.controllingDim / 2) * (1 / 75);
       geo.stageRadius = (diagram.controllingDim / 2) * (1 / 5);
 
-      geo.actorRingRadius = (diagram.controllingDim / 2) * (9 / 10);
-      geo.actorRadius = (diagram.controllingDim / 2) * (1 / 11);
-
       geo.iconDims = (diagram.controllingDim / 2) * (1 / 5);
-      geo.iconRadius = (diagram.controllingDim / 2) * (1 / 8);
-
+      // geo.iconRadius = (diagram.controllingDim / 2) * (1 / 8);
+      geo.iconRadius = geo.radius + geo.radiusWidth / 2;
       geo.actorArrow = {};
-      geo.actorArrow.radius =
-        geo.radius + geo.radiusWidth - diagram.controllingDim / 2 / 50;
+      geo.actorArrow.radius = geo.radius + geo.radiusWidth;
       geo.actorArrow.width = diagram.controllingDim / 2 - geo.actorArrow.radius;
       geo.actorArrow.height = diagram.controllingDim / 33;
       geo.actorArrow.growWidth = diagram.controllingDim / 75;
+      geo.actorArrow.inset = diagram.controllingDim / 85;
       geo.actorArrow.growHeight = diagram.controllingDim / 100;
 
-      let xShift = geo.actorArrow.growWidth;
-      geo.centerX = diagram.controllingDim / 2 - xShift;
+      geo.centerX = diagram.controllingDim / 2;
       geo.centerY = diagram.height / 2;
-
-      geo.activitiesWidth =
-        geo.radius - geo.activitiesPadding - geo.stageRadius - geo.stagePadding;
-      geo.descriptionHeight = geo.activitiesWidth * 0.8;
-      geo.descriptionWidth = geo.activitiesWidth;
-      geo.descriptionYOffset = geo.stageRadius + geo.stagePadding + 10;
     },
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,14 +326,8 @@ export default {
         .join("g")
         .classed("icon-rotation-groups", true)
         .attr("transform", d => {
-          let rotationAngle = d.endAngle - (d.endAngle - d.startAngle) / 2;
-          return (
-            "rotate(" +
-            (rotationAngle * 180) / Math.PI +
-            ") translate(" +
-            geomData.iconRadius +
-            ",0)"
-          );
+          let rotationAngle = d.endAngle - Math.PI * 0.04;
+          return "rotate(" + (rotationAngle * 180) / Math.PI + ")";
         });
 
       let iconImages = iconPlacementGroups
@@ -351,10 +336,11 @@ export default {
         .join(enter =>
           enter
             .append("image")
-            .attr("xlink:href", d => d.iconPath)
+            .attr("xlink:href", d => d.whiteIconPath)
             .classed("category-icon-images", true)
         )
         .attr("x", geomData.iconRadius + (geomData.iconDims * -1) / 2)
+
         .attr("y", (geomData.iconDims * -1) / 2)
         .attr("width", geomData.iconDims)
         .attr("height", geomData.iconDims);
@@ -362,7 +348,7 @@ export default {
         .transition()
         .duration(self.rotationTime)
         .attr("transform", d => {
-          let rotationAngle = d.endAngle - (d.endAngle - d.startAngle) / 2;
+          let rotationAngle = d.endAngle - Math.PI * 0.04;
           let counterRotation = rotationAngle * -1 - self.rotationTracker;
           return (
             "rotate(" +
@@ -449,23 +435,25 @@ export default {
       let outterRingTextGroups = outterRingGroups
         .selectAll(".outter-ring-text-paths")
         .data(d => [d])
-        .join(enter =>
-          enter
-            .append("path")
-            .classed("outter-ring-text-paths", true)
-            .attr("fill", "none")
-            .attr("id", d => {
-              let idTag = d.text.split(" ").join("-");
-              let lowerCaseId = idTag.toLowerCase();
-              return "outter-ring-text-path-" + lowerCaseId;
-            })
-        )
-        .attr("d", d => outterRingTextPathGenerator(d));
+        .join(
+          enter =>
+            enter
+              .append("path")
+              .classed("outter-ring-text-paths", true)
+              .attr("fill", "none")
+              .attr("id", d => {
+                let idTag = d.text.split(" ").join("-");
+                let lowerCaseId = idTag.toLowerCase();
+                return "outter-ring-text-path-" + lowerCaseId;
+              })
+              .attr("d", d => outterRingTextPathGenerator(d)),
+          update => update.attr("d", d => outterRingTextPathGenerator(d))
+        );
 
       let outterRingText = outterRingGroups
         .selectAll(".outter-ring-text")
         .data(d => [d])
-        .join(enter => enter.append("text").classed(".outter-ring-text", true))
+        .join(enter => enter.append("text").classed("outter-ring-text", true))
         .selectAll(".outter-ring-text-pathed")
         .data(d => [d])
         .join(enter =>
@@ -484,13 +472,16 @@ export default {
             .style("font-family", "Arial, Helvetica, sans-serif")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
-            .style("font-size", "1.7vmin")
+
             .style("opacity", 1)
-        );
+        )
+        .style("font-size", function() {
+          return self.controllingDim * 0.02 + "px";
+        });
       let categoryTextPathGenerator = function(catData) {
         let startAngle = catData.startAngle;
         let endAngle = catData.endAngle;
-        let radius = geomData.radius + geomData.radiusWidth / 5;
+        let radius = geomData.radius + geomData.categoryTextInset;
         let centerX = 0;
         let centerY = 0;
         let startX = Math.cos(startAngle) * radius + centerX;
@@ -561,14 +552,17 @@ export default {
               return id;
             })
             .style("text-anchor", "middle")
-            .attr("startOffset", "50%")
+            .attr("startOffset", "45%")
             .text(d => d.text.toUpperCase())
             .style("font-family", "Arial, Helvetica, sans-serif")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
-            .style("font-size", "1.6vmin")
+
             .style("opacity", 1)
-        );
+        )
+        .style("font-size", function() {
+          return self.controllingDim * 0.02 + "px";
+        });
       categoryText.on("click", function(e, d) {
         categoryClick(d, e, this);
       });
@@ -656,92 +650,6 @@ export default {
       });
 
       //////////////////
-      // ACTIVITIES ON INTERIOR OF RING
-
-      // let activityTextPathGenerator = function(actData) {
-      //   let startAngle = actData.startAngle;
-      //   let endAngle = actData.endAngle;
-      //   let interiorRadius = geomData.stageRadius + geomData.stagePadding;
-      //   let activitiesWidth =
-      //     geomData.radius - geomData.activitiesPadding - interiorRadius;
-      //   let radius = interiorRadius + activitiesWidth * (7 / 8);
-      //   let centerX = 0;
-      //   let centerY = 0;
-      //   let startX = Math.cos(startAngle) * radius + centerX;
-      //   let startY = Math.sin(startAngle) * radius + centerY;
-      //   let path = d3.path();
-      //   path.moveTo(startX, startY);
-      //   path.arc(centerX, centerY, radius, startAngle, endAngle);
-      //   let pathData = path.toString();
-      //   return pathData;
-      // };
-
-      // svg
-      //   .select(".activities-text")
-      //   .attr(
-      //     "transform",
-      //     "translate(" + geomData.centerX + "," + geomData.centerY + ")"
-      //   );
-
-      // let activityTextGroups = svg
-      //   .select(".activities-text")
-      //   .selectAll("g")
-      //   .data(activityData)
-      //   .join("g");
-      // activityTextGroups
-      //   .transition()
-      //   .duration(self.rotationTime)
-      //   .attr(
-      //     "transform",
-      //     "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
-      //   );
-      // let activitiesTextPaths = activityTextGroups
-      //   .selectAll(".activity-text-paths")
-      //   .data(d => [d])
-      //   .join(enter =>
-      //     enter
-      //       .append("path")
-      //       .classed("activity-text-paths", true)
-      //       .attr("id", d => {
-      //         let idTag = d.text.split(" ").join("-");
-      //         let lowerCaseId = idTag.toLowerCase();
-      //         return "act-text-path-" + lowerCaseId;
-      //       })
-      //       .style("fill", "none")
-      //   )
-      //   .attr("d", d => activityTextPathGenerator(d));
-
-      // let activityText = activityTextGroups
-      //   .selectAll(".activity-text")
-      //   .data(d => [d])
-      //   .join(enter => enter.append("text").classed("activity-text", true))
-      //   .selectAll(".activity-text-to-path")
-      //   .data(d => [d])
-      //   .join(enter =>
-      //     enter
-      //       .append("textPath")
-      //       .classed("activity-text-to-path", true)
-      //       .classed("pointer", false)
-      //       .classed("no-select", true)
-      //       .attr("xlink:href", d => {
-      //         let idTag = d.text.split(" ").join("-");
-      //         let lowerCaseId = idTag.toLowerCase();
-      //         let id = "#act-text-path-" + lowerCaseId;
-      //         return id;
-      //       })
-      //       .style("text-anchor", "middle")
-      //       .attr("startOffset", "50%")
-      //       .text(d => d.text.toUpperCase())
-      //       .style("font-family", "Arial, Helvetica, sans-serif")
-      //       .style("fill", d => {
-      //         return d.color;
-      //       })
-      //       .style("dominant-baseline", "middle")
-      //       .style("font-size", "1.8vmin")
-      //       .style("opacity", 1)
-      //   );
-
-      //////////////////
       // ACTOR OBJECTS
 
       svg
@@ -796,24 +704,24 @@ export default {
         let topY = geomData.actorArrow.height / 2;
         let bottomY = geomData.actorArrow.height / -2;
 
-        let centerX = geomData.actorArrow.radius;
-        let tailX = centerX - arrowAdjust;
+        let centerX = geomData.actorArrow.radius - geomData.actorArrow.inset;
+        let tailX = centerX;
         let pointX = centerX + geomData.actorArrow.width;
         let edgeX = pointX - arrowAdjust;
 
         let growY = geomData.actorArrow.growHeight;
         let growX = geomData.actorArrow.growWidth;
 
-        pointX -= growX;
-        edgeX -= growX;
+        // pointX -= growX;
+        // edgeX -= growX;
 
         if (selected) {
           topY += growY;
           bottomY -= growY;
           centerX -= growX;
           tailX -= growX;
-          pointX += growX;
-          edgeX += growX;
+          // pointX += growX;
+          // edgeX += growX;
         }
 
         let path = d3.path();
@@ -880,15 +788,6 @@ export default {
 
             .attr("dominant-baseline", "middle")
         )
-        .attr("x", function(d) {
-          let testAngle =
-            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
-          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 - 5 + geomData.actorArrow.growWidth;
-          } else {
-            return geomData.actorArrow.radius + 10;
-          }
-        })
         .attr("transform", function(d) {
           let testAngle =
             (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
@@ -897,8 +796,47 @@ export default {
           } else {
             return "rotate(0)";
           }
+        })
+        .attr("x", function(d) {
+          let testAngle =
+            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
+          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+            return self.controllingDim / 2 + geomData.actorArrow.growWidth;
+          } else {
+            return (
+              geomData.actorArrow.radius + geomData.actorArrow.growWidth / 3
+            );
+          }
+        })
+        .transition()
+        .style("font-size", function(d) {
+          let selected = d3
+            .select(this.parentNode)
+            .select("path")
+            .classed("actor-selected");
+          if (selected) {
+            return self.controllingDim * 0.0172 + "px";
+          } else {
+            return self.controllingDim * 0.015 + "px";
+          }
+        })
+        .attr("x", function(d) {
+          let selected = d3
+            .select(this.parentNode)
+            .select("path")
+            .classed("actor-selected");
+          let testAngle =
+            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
+          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+            return self.controllingDim / 2 + geomData.actorArrow.growWidth;
+          } else if (selected) {
+            return geomData.actorArrow.radius - 10;
+          } else {
+            return (
+              geomData.actorArrow.radius + geomData.actorArrow.growWidth / 3
+            );
+          }
         });
-
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
