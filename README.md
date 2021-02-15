@@ -1,6 +1,6 @@
 ## View In Progress Diagram
 ```
-http://temp.cuningham.com/circular-economy/
+http://research.cuningham.com/circular-economy/
 ```
 
 ## Project setup
