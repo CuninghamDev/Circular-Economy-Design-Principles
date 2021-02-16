@@ -77,8 +77,8 @@ export default {
       diagram.svg.append("g").attr("class", "activities-text");
       diagram.svg.append("g").attr("class", "category-ring");
       diagram.svg.append("g").attr("class", "category-text");
-      diagram.svg.append("g").attr("class", "actors-group");
       diagram.svg.append("g").attr("class", "category-icons");
+      diagram.svg.append("g").attr("class", "actors-group");
 
       diagram.svg.append("defs");
 
@@ -96,10 +96,10 @@ export default {
         .select("defs")
         .append("filter")
         .attr("id", "dropshadow")
-        .attr("y", "-40%")
-        .attr("height", "180%")
-        .attr("x", "-40%")
-        .attr("width", "180%");
+        .attr("y", "-100%")
+        .attr("height", "300%")
+        .attr("x", "-100%")
+        .attr("width", "300%");
       dropShadowFilter
         .append("feGaussianBlur")
         .attr("in", "SourceAlpha")

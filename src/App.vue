@@ -2,10 +2,10 @@
   <div id="app">
     <div class="container-fluid m-0 p-0">
       <div class="row m-0 p-0">
-        <div class="col-lg-8 m-0 p-0">
+        <div class="col-sm-6 col-md-6 col-lg-8 m-0 p-0">
           <circular-economy-diagram></circular-economy-diagram>
         </div>
-        <div class="col" style="">
+        <div class="col m-0 p-0" style="">
           <actor-data></actor-data>
         </div>
       </div>
