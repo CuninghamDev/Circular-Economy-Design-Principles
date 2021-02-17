@@ -420,7 +420,7 @@ export default new Vuex.Store({
         sourceActor: "Existing structure",
         stage: "End of Design Life",
         details:
-          "This is relevant at the end of design life as it will change the way a building is demoed if its bones are to be reused."
+          "This is relevant at the end of design life as it will change the way a building is demolished if its bones are to be reused."
       },
       {
         title: "Adaptive reuse of existing building",

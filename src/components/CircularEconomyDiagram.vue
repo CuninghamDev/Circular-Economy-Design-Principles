@@ -873,13 +873,11 @@ export default {
           let testAngle =
             (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
           if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 + geomData.actorArrow.growWidth;
+            return self.controllingDim / 2 + self.controllingDim * 0.001;
           } else if (selected) {
             return geomData.actorArrow.radius - self.controllingDim * 0.015;
           } else {
-            return (
-              geomData.actorArrow.radius + geomData.actorArrow.growWidth / 3
-            );
+            return geomData.actorArrow.radius + self.controllingDim * 0.003;
           }
         });
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
