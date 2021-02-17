@@ -875,7 +875,7 @@ export default {
           if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
             return self.controllingDim / 2 + geomData.actorArrow.growWidth;
           } else if (selected) {
-            return geomData.actorArrow.radius - 10;
+            return geomData.actorArrow.radius - self.controllingDim * 0.015;
           } else {
             return (
               geomData.actorArrow.radius + geomData.actorArrow.growWidth / 3
