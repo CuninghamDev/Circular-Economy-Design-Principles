@@ -482,6 +482,7 @@ export default new Vuex.Store({
     categories: [
       {
         text: "Design and Deliver",
+        ringText: ["Design and", "Deliver"],
         color: "#358BB0",
         iconPath:
           "http://research.cuningham.com/circular-economy/assets/DesignAndDeliver.svg",
@@ -490,6 +491,7 @@ export default new Vuex.Store({
       },
       {
         text: "Intelligent Built Environment",
+        ringText: ["Intelligent Built", "Environment"],
         color: "#A6D08F",
         iconPath:
           "http://research.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment.svg",
@@ -498,6 +500,7 @@ export default new Vuex.Store({
       },
       {
         text: "End of Design Life",
+        ringText: ["End of", "Design Life"],
         color: "#90B47D",
         iconPath:
           "http://research.cuningham.com/circular-economy/assets/EndOfDesignLife.svg",
@@ -506,6 +509,7 @@ export default new Vuex.Store({
       },
       {
         text: "Resource Exchange",
+        ringText: ["Resource", "Exchange"],
         color: "#61BAE0",
         iconPath:
           "http://research.cuningham.com/circular-economy/assets/BridgingMaterialsAndData.svg",

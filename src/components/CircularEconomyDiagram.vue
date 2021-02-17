@@ -215,7 +215,7 @@ export default {
       geo.activitiesPadding = 5;
       geo.radius = (diagram.controllingDim / 2) * (6 / 16);
       geo.radiusWidth = (diagram.controllingDim / 2) * (5 / 22);
-      geo.categoryTextInset = geo.radiusWidth / 2;
+      geo.categoryTextInset = (geo.radiusWidth * 4) / 7;
 
       geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
       geo.outterRingOffset = (diagram.controllingDim / 2) * (1 / 75);
@@ -297,15 +297,15 @@ export default {
       let svg = self.svg;
       let div = self.div;
       let data = self.structuredData;
-      console.log("structured diagram data", data);
+      // console.log("structured diagram data", data);
       let geomData = data.geometry;
       let catData = data.categories;
       let actorData = data.actors;
       let activityData = data.activities;
       let titleData = [data.title];
-      console.log("title data", self);
+      // console.log("title data", self);
 
-      console.log("category data to images", catData);
+      // console.log("category data to images", catData);
 
       div
         .selectAll(".diagram-title")
@@ -511,7 +511,10 @@ export default {
       let categoryTextPathGenerator = function(catData) {
         let startAngle = catData.startAngle;
         let endAngle = catData.endAngle;
-        let radius = geomData.radius + geomData.categoryTextInset;
+        let radius =
+          geomData.radius +
+          geomData.categoryTextInset -
+          self.controllingDim * 0.028 * catData.index;
         let centerX = 0;
         let centerY = 0;
         let startX = Math.cos(startAngle) * radius + centerX;
@@ -525,7 +528,19 @@ export default {
 
       //////////////////
       // CATEGORIES AND PRIMARY RING
+      console.log("category data", catData);
+      let categoryTextData = [];
+      for (let d of catData) {
+        for (let i in d.ringText) {
+          let t = d.ringText[i];
+          let dataCopy = JSON.parse(JSON.stringify(d));
+          dataCopy.ringLineText = t;
+          dataCopy.index = parseInt(i);
+          categoryTextData.push(dataCopy);
+        }
+      }
 
+      console.log("category text data", categoryTextData);
       svg
         .select(".category-text")
         .attr(
@@ -536,7 +551,7 @@ export default {
       let categoryTextGroups = svg
         .select(".category-text")
         .selectAll("g")
-        .data(catData)
+        .data(categoryTextData)
         .join("g");
       categoryTextGroups
         .transition()
@@ -554,7 +569,7 @@ export default {
             .append("path")
             .classed("category-text-paths", true)
             .attr("id", d => {
-              let idTag = d.text.split(" ").join("-");
+              let idTag = d.ringLineText.split(" ").join("-");
               let lowerCaseId = idTag.toLowerCase();
               return "cat-text-path-" + lowerCaseId;
             })
@@ -576,14 +591,14 @@ export default {
             .classed("no-select", true)
             .classed("category-hover", true)
             .attr("xlink:href", d => {
-              let idTag = d.text.split(" ").join("-");
+              let idTag = d.ringLineText.split(" ").join("-");
               let lowerCaseId = idTag.toLowerCase();
               let id = "#cat-text-path-" + lowerCaseId;
               return id;
             })
             .style("text-anchor", "middle")
             .attr("startOffset", "45%")
-            .text(d => d.text.toUpperCase())
+            .text(d => d.ringLineText.toUpperCase())
             .style("font-family", "Arial, Helvetica, sans-serif")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
@@ -591,7 +606,7 @@ export default {
             .style("opacity", 1)
         )
         .style("font-size", function() {
-          return self.controllingDim * 0.016 + "px";
+          return self.controllingDim * 0.024 + "px";
         });
       categoryText.on("click", function(e, d) {
         categoryClick(d, e, this);
