@@ -1,6 +1,6 @@
 <template>
   <div id="svg-container">
-    <div id="circular-economy-diagram-div"></div>
+    <div id="circular-economy-diagram-div" class="no-select"></div>
     <svg id="circular-economy-diagram-svg"></svg>
   </div>
 </template>
@@ -30,7 +30,8 @@ export default {
         categories: this.categories,
         activities: this.activities,
         outterRing: this.outterRing,
-        geometry: this.geometry
+        geometry: this.geometry,
+        title: this.title
       };
     },
     ...mapState([
@@ -40,7 +41,8 @@ export default {
       "activities",
       "outterRing",
       "geometry",
-      "blankActor"
+      "blankActor",
+      "title"
     ])
   },
   data() {
@@ -71,6 +73,7 @@ export default {
       diagram.previousRotation = diagram.data.geometry.startRotation;
       diagram.rotationTime = 100;
 
+      diagram.svg.append("g").attr("class", "diagram-title");
       diagram.svg.append("g").attr("class", "stage");
       diagram.svg.append("g").attr("class", "outter-ring");
       diagram.svg.append("g").attr("class", "activities-ring");
@@ -133,6 +136,7 @@ export default {
       let raw = diagram.data;
       diagram.structuredData = {};
       let structData = diagram.structuredData;
+      structData.title = raw.title;
       structData.geometry = {};
       structData.geometry.startRotation = raw.geometry.startRotation;
       structData.geometry.arrowRotation = raw.geometry.arrowRotation;
@@ -262,10 +266,10 @@ export default {
       });
       svg.style("top", "0px");
       div.style("position", "absolute");
-      div.style("left", "0px");
+      div.style("right", "0px");
       div.style("top", "0px");
       div.style("width", function() {
-        return diagram.width - diagram.controllingDim + "px";
+        return diagram.controllingDim + "px";
       });
       div.style("height", diagram.height);
       this.calcGeoms();
@@ -298,8 +302,34 @@ export default {
       let catData = data.categories;
       let actorData = data.actors;
       let activityData = data.activities;
+      let titleData = [data.title];
+      console.log("title data", self);
 
       console.log("category data to images", catData);
+
+      div
+        .selectAll(".diagram-title")
+        .data(titleData)
+        .join("div")
+        .classed("diagram-title", true)
+        .text(function(d) {
+          return d.toUpperCase();
+        })
+        .style("height", self.height + "px")
+        .style("display", "flex")
+        .style("justify-content", "center")
+        .style("align-items", "center")
+        .style("margin-left", "37%")
+        .style("margin-right", "37%")
+        .style("text-align", "center")
+        .style("font-family", "Avenir, Helvetica, Arial, sans-serif")
+        .style("font-weight", "bold")
+        .style("font-size", function() {
+          return self.controllingDim * 0.03 + "px";
+        })
+        .style("color", "gray")
+        .classed("h2", true);
+
       svg
         .select(".category-icons")
         .attr(
@@ -561,7 +591,7 @@ export default {
             .style("opacity", 1)
         )
         .style("font-size", function() {
-          return self.controllingDim * 0.02 + "px";
+          return self.controllingDim * 0.016 + "px";
         });
       categoryText.on("click", function(e, d) {
         categoryClick(d, e, this);

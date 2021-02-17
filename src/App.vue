@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <div class="container-fluid m-0 p-0">
+      <!-- <div> </div> -->
       <div class="row m-0 p-0">
         <div class="col-sm-6 col-md-6 col-lg-8 m-0 p-0">
           <circular-economy-diagram></circular-economy-diagram>

@@ -1,11 +1,35 @@
 <template>
   <div
     id="actor-data-container"
-    class="container-fluid h-100 p-0 m-0 no-select"
-    style="vertical-align: 50%"
+    class="container-fluid p-0 m-0 no-select"
+    style="vertical-align: 50%; height: 75%"
   >
-    <div class="row align-items-center h-100 p-0 m-2">
+    <!-- <div class="h2 row mt-5">
+      Circular Economy in the Built Environment (envr.)
+    </div> -->
+    <div
+      v-if="selectedActor.actor == ''"
+      class="ml-3 mr-1 row align-items-center h-100 p-0"
+      style="color: gray; height: 400px"
+    >
       <div class="col m-0 p-0">
+        <p class="h4">
+          <b><em>Where is your project in its life-cycle? </em></b>
+        </p>
+        <p class="h6" style="color:gray">
+          Select a phase in the diagram to explore various strategies your
+          project can use to engage a circular economy.
+        </p>
+      </div>
+    </div>
+    <div
+      v-if="selectedActor.actor != ''"
+      class="row align-items-center h-100 p-0 m-2"
+    >
+      <div class="col m-0 p-0">
+        <p class="h7 my-0" style="color:rgb(200,200,200)">
+          <em>{{ selectedActor.category }}</em>
+        </p>
         <p class="h4" style="color:Gray">
           <b>{{ selectedActor.actor.toUpperCase() }}</b>
         </p>
