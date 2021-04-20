@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    resourcesData: undefined,
     title: "Circular Economy in the Built Environment",
     actorSelected: false,
     categorySelected: false,
@@ -536,6 +537,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setResourcesData(state, resourcesData) {
+      state.resourcesData = resourcesData;
+    },
     selectActor(state, n) {
       if (n == state.blankActor) {
         state.actorSelected = false;

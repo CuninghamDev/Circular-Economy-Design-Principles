@@ -2,16 +2,28 @@
   <v-app>
     <v-navigation-drawer app v-model="drawer" absolute temporary>
       <v-app-bar-nav-icon
-        class="ma-3 pa-4"
+        class="ml-3 mt-3 pa-4"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
       <v-divider></v-divider>
       <v-list nav dense>
         <!-- <v-subheader>Pages</v-subheader> -->
-        <v-list-item class="prevent" active="false"> </v-list-item>
+        <v-list-item-group>
+          <v-list-item
+            v-for="route in routes"
+            :key="route.route"
+            @click="navigateToRoute(route)"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ route.name }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app>
+    <v-app-bar app class="brown lighten-5">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Circular Economy Toolkit</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -32,17 +44,67 @@
 </template>
 
 <script>
+import * as d3 from "d3";
 export default {
   name: "App",
-  mounted: function() {},
+  created: function() {
+    let self = this;
+    d3.csv("/data/20210420_resources.csv").then(function(d) {
+      let dataObj = {};
+      dataObj.columns = d.columns;
+      dataObj.data = [];
+      for (let i in d) {
+        if (i != "columns") {
+          let rowObj = {};
+          for (let k in d[i]) {
+            let trimmedKey = k.trim();
+            if (d[i][k] == "TRUE") {
+              d[i][k] = true;
+            }
+            if (self.isNumeric(d[i][k])) {
+              d[i][k] = Number(d[i][k]);
+            }
+            rowObj[trimmedKey] = d[i][k];
+          }
+          dataObj.data.push(rowObj);
+        }
+      }
+      self.setResourceData(dataObj);
+    });
+  },
   methods: {
     testingMethod: function(testing) {
       console.log("testing", testing);
+    },
+    navigateToRoute: function(routeInfo) {
+      let currentRoute = this.$route.path;
+      if (routeInfo.route != currentRoute) {
+        this.$router.push(routeInfo.route);
+      }
+    },
+    isNumeric: function(str) {
+      if (typeof str != "string") return false; // we only process strings!
+      return (
+        !isNaN(str) && !isNaN(parseFloat(str)) // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+      ); // ...and ensure strings of whitespace fail
+    },
+    setResourceData: function(data) {
+      this.$store.commit("setResourcesData", data);
     }
   },
   data: function() {
     return {
-      drawer: false
+      drawer: false,
+      routes: [
+        {
+          name: "Interactive Diagram",
+          route: "/"
+        },
+        {
+          name: "About",
+          route: "/about"
+        }
+      ]
     };
   }
 };
