@@ -45,9 +45,11 @@
         <p class="h7 my-0" style="color:rgb(200,200,200)">
           <em>{{ selectedActor.category }}</em>
         </p>
+
         <p class="h4" style="color:Gray">
           <b>{{ selectedActor.actor.toUpperCase() }}</b>
         </p>
+
         <div
           :style="{ background: selectedActorColor, color: 'white' }"
           class="rounded-text-box px-3 py-3"
@@ -55,6 +57,7 @@
         >
           <b> {{ selectedActor.details }}</b>
         </div>
+
         <div class="ml-7">
           <div
             class="row p-0 mx-0 my-2 rounded-text-box"
@@ -72,8 +75,23 @@
             </div>
           </div>
         </div>
+        <div class="row align-items-end mt-7">
+          <div class="col"></div>
+          <div class="col">
+            <v-btn
+              large
+              rounded
+              outlined
+              color="teal darken-3"
+              @click="modalToggle = !modalToggle"
+            >
+              Additional Resources
+            </v-btn>
+          </div>
+        </div>
       </div>
     </div>
+    <b-modal v-model="modalToggle"> </b-modal>
   </div>
 </template>
 
@@ -91,6 +109,11 @@ export default {
         borderRadius: "14px"
       };
     }
+  },
+  data: function() {
+    return {
+      modalToggle: false
+    };
   }
 };
 </script>
@@ -101,5 +124,11 @@ export default {
 }
 .ml-7 {
   margin-left: 6rem;
+}
+.modal {
+  padding: 0 !important;
+}
+.modal-open {
+  padding: 0 !important;
 }
 </style>
