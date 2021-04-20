@@ -1,17 +1,44 @@
 <template>
-  <div id="app">
-    <div class="container-fluid m-0 p-0">
-      <!-- <div> </div> -->
-      <div class="row m-0 p-0">
-        <div class="col-sm-6 col-md-6 col-lg-8 m-0 p-0">
-          <circular-economy-diagram></circular-economy-diagram>
+  <v-app>
+    <v-navigation-drawer app v-model="drawer" absolute temporary>
+      <v-app-bar-nav-icon
+        class="ma-3 pa-4"
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
+      <v-divider></v-divider>
+      <v-list nav dense>
+        <v-list-item class="prevent" active="false"> </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    <v-app-bar app>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Circular Economy Toolkit</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-img
+        contain
+        lazy-src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
+        src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
+        class="mt-1"
+        max-height="50"
+        max-width="150"
+      ></v-img>
+    </v-app-bar>
+    <v-main>
+      <v-container fluid>
+        <div class="container-fluid m-0 p-0">
+          <!-- <div> </div> -->
+          <div class="row m-0 p-0">
+            <div class=" col-lg-8 m-0 p-0">
+              <circular-economy-diagram></circular-economy-diagram>
+            </div>
+            <div class="col m-0 p-0" style="">
+              <actor-data></actor-data>
+            </div>
+          </div>
         </div>
-        <div class="col m-0 p-0" style="">
-          <actor-data></actor-data>
-        </div>
-      </div>
-    </div>
-  </div>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -24,12 +51,13 @@ export default {
   mounted: function() {},
   methods: {
     testingMethod: function(testing) {
-      console.log("testing to see if I can get unused variables to be allowed");
-      console.log("another change");
-      console.log("yet another change");
-      console.log("more changes");
-      console.log("some more changes");
+      console.log("testing", testing);
     }
+  },
+  data: function() {
+    return {
+      drawer: false
+    };
   }
 };
 </script>
