@@ -7,6 +7,7 @@
       ></v-app-bar-nav-icon>
       <v-divider></v-divider>
       <v-list nav dense>
+        <!-- <v-subheader>Pages</v-subheader> -->
         <v-list-item class="prevent" active="false"> </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -23,31 +24,16 @@
         max-width="150"
       ></v-img>
     </v-app-bar>
+
     <v-main>
-      <v-container fluid>
-        <div class="container-fluid m-0 p-0">
-          <!-- <div> </div> -->
-          <div class="row m-0 p-0">
-            <div class=" col-lg-8 m-0 p-0">
-              <circular-economy-diagram></circular-economy-diagram>
-            </div>
-            <div class="col m-0 p-0" style="">
-              <actor-data></actor-data>
-            </div>
-          </div>
-        </div>
-      </v-container>
+      <router-view></router-view>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import CircularEconomyDiagram from "./components/CircularEconomyDiagram.vue";
-import ActorData from "./components/ActorData.vue";
-
 export default {
   name: "App",
-  components: { CircularEconomyDiagram, ActorData },
   mounted: function() {},
   methods: {
     testingMethod: function(testing) {
