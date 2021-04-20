@@ -6,6 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     title: "Circular Economy in the Built Environment",
+    actorSelected: false,
+    categorySelected: false,
     selectedActor: {
       actor: "",
       buttons: "",
@@ -535,7 +537,15 @@ export default new Vuex.Store({
   },
   mutations: {
     selectActor(state, n) {
+      if (n == state.blankActor) {
+        state.actorSelected = false;
+      } else {
+        state.actorSelected = true;
+      }
       state.selectedActor = n;
+    },
+    selectCategory(state, n) {
+      state.categorySelected = n;
     }
   },
   getters: {

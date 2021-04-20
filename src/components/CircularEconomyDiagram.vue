@@ -1,5 +1,6 @@
 <template>
   <div id="svg-container">
+    <svg id="circular-economy-background-svg"></svg>
     <div id="circular-economy-diagram-div" class="no-select"></div>
     <svg id="circular-economy-diagram-svg"></svg>
   </div>
@@ -12,10 +13,17 @@ import * as d3 from "d3";
 export default {
   name: "CircularEconomyDiagram",
   mounted() {
+    let backgroundSvgId = "circular-economy-background-svg";
     let svgId = "circular-economy-diagram-svg";
     let divId = "circular-economy-diagram-div";
     let containerId = "svg-container";
-    this.buildDiagram(this.combinedState, svgId, divId, containerId);
+    this.buildDiagram(
+      this.combinedState,
+      backgroundSvgId,
+      svgId,
+      divId,
+      containerId
+    );
     window.addEventListener("resize", this.resizeDiagram);
   },
   watch: {},
@@ -51,11 +59,12 @@ export default {
     };
   },
   methods: {
-    buildDiagram(_data, _svgId, _divId, _containerId) {
+    buildDiagram(_data, _backgroundId, _svgId, _divId, _containerId) {
       let diagram = this.diagram;
 
       console.log("building the circular economy diagram");
       diagram.data = _data;
+      diagram.background = d3.select("#" + _backgroundId);
       diagram.svg = d3.select("#" + _svgId);
       diagram.div = d3.select("#" + _divId);
       diagram.container = document.getElementById(_containerId);
@@ -73,8 +82,9 @@ export default {
       diagram.previousRotation = diagram.data.geometry.startRotation;
       diagram.rotationTime = 100;
 
-      diagram.svg.append("g").attr("class", "diagram-title");
       diagram.svg.append("g").attr("class", "stage");
+      diagram.svg.append("g").attr("class", "diagram-title");
+
       diagram.svg.append("g").attr("class", "outter-ring");
       diagram.svg.append("g").attr("class", "activities-ring");
       diagram.svg.append("g").attr("class", "activities-text");
@@ -251,6 +261,7 @@ export default {
     resizeDiagram() {
       console.log("diagram resized");
       let diagram = this.diagram;
+      let background = diagram.background;
       let svg = diagram.svg;
       let div = diagram.div;
       diagram.containerBounds = diagram.container.getBoundingClientRect();
@@ -258,6 +269,13 @@ export default {
       diagram.width = cb.right - cb.left;
       diagram.height = cb.bottom - cb.top;
       this.getControllingDim();
+      background.style("position", "absolute");
+      background.attr("width", diagram.controllingDim);
+      background.attr("height", diagram.height);
+      background.style("left", function() {
+        return diagram.width - diagram.controllingDim + "px";
+      });
+      background.style("top", "0px");
       svg.style("position", "absolute");
       svg.attr("width", diagram.controllingDim);
       svg.attr("height", diagram.height);
@@ -294,6 +312,7 @@ export default {
 
       let component = this;
       let self = this.diagram;
+      let background = self.background;
       let svg = self.svg;
       let div = self.div;
       let data = self.structuredData;
@@ -325,7 +344,7 @@ export default {
         .style("font-family", "Avenir, Helvetica, Arial, sans-serif")
         .style("font-weight", "bold")
         .style("font-size", function() {
-          return self.controllingDim * 0.03 + "px";
+          return self.controllingDim * 0.022 + "px";
         })
         .style("color", "gray")
         .classed("h2", true);
@@ -878,9 +897,27 @@ export default {
             return geomData.actorArrow.radius + self.controllingDim * 0.003;
           }
         });
+
+      // let rectData = [{ w: self.controllingDim, h: self.height, x: 0, y: 0 }];
+      // svg
+      //   .select(".stage")
+      //   .selectAll("rect")
+      //   .data(rectData)
+      //   .join("rect")
+      //   .attr("width", d => d.w)
+      //   .attr("height", d => d.h)
+      //   .attr("x", d => d.x)
+      //   .attr("y", d => d.y)
+      //   .attr("fill", "none")
+      //   .on("click", function() {
+      //     whiteSpaceClick();
+      //   });
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // let whiteSpaceClick = function() {
+      //   console.log("white space clicked");
+      // };
 
       let categoryClick = function(d, e, selected) {
         let thisData = d;
@@ -888,6 +925,7 @@ export default {
         let thisCategory = d3.select(selected);
 
         if (thisCategory.classed("selected-category")) {
+          component.$store.commit("selectCategory", false);
           d3.selectAll(".actor-rotation-groups")
             .classed("category-selected-actors", false)
             .classed("temp-category-selected-actors", false)
@@ -903,6 +941,7 @@ export default {
             .attr("filter", "none")
             .attr("transform", "translate(0,0)");
         } else {
+          component.$store.commit("selectCategory", true);
           d3.selectAll(".actor-rotation-groups")
             .classed("category-selected-actors", d => {
               if (d["actor data"].category == thisData.text) {

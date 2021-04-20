@@ -8,7 +8,7 @@
       Circular Economy in the Built Environment (envr.)
     </div> -->
     <div
-      v-if="selectedActor.actor == ''"
+      v-if="!actorSelected && !categorySelected"
       class="ml-3 mr-1 row align-items-center h-100 p-0"
       style="color: gray; height: 400px"
     >
@@ -17,8 +17,23 @@
           <b><em>Where is your project in its life-cycle? </em></b>
         </p>
         <p class="h6" style="color:gray">
-          Select a phase in the diagram to explore various strategies your
-          project can use to engage a circular economy.
+          Select a phase in a built asset's lifecycle to explore applicable
+          circular strategies
+        </p>
+      </div>
+    </div>
+    <div
+      v-if="!actorSelected && categorySelected"
+      class="ml-3 mr-1 row align-items-center h-100 p-0"
+      style="color: gray; height: 400px"
+    >
+      <div class="col m-0 p-0">
+        <p class="h4">
+          <b><em>Explore Circular Strategies</em></b>
+        </p>
+        <p class="h6" style="color:gray">
+          Select the arrows representing circular strategies to access
+          additional information
         </p>
       </div>
     </div>
@@ -67,7 +82,7 @@ import { mapState, mapGetters } from "vuex";
 export default {
   name: "ActorData",
   computed: {
-    ...mapState(["selectedActor"]),
+    ...mapState(["selectedActor", "actorSelected", "categorySelected"]),
     ...mapGetters(["selectedActorColor", "getButtons"]),
     titleDataObj() {
       return {
