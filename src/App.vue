@@ -49,7 +49,7 @@ export default {
   name: "App",
   created: function() {
     let self = this;
-    d3.csv("/data/20210420_resources.csv").then(function(d) {
+    d3.csv("/data/20210421_resources.csv").then(function(d) {
       let dataObj = {};
       dataObj.columns = d.columns;
       dataObj.data = [];
@@ -57,7 +57,7 @@ export default {
         if (i != "columns") {
           let rowObj = {};
           for (let k in d[i]) {
-            let trimmedKey = k.trim();
+            let trimmedKey = k.trim().toLowerCase();
             if (d[i][k] == "TRUE") {
               d[i][k] = true;
             }
