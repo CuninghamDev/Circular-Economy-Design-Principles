@@ -77,6 +77,7 @@
         </div>
         <div class="row align-items-end mt-7">
           <div class="col"></div>
+          <div class="col"></div>
           <div class="col">
             <v-dialog v-model="dialog" width="750">
               <template v-slot:activator="{ on, attrs }">
