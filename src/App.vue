@@ -45,11 +45,12 @@
 
 <script>
 import * as d3 from "d3";
+import { mapState } from "vuex";
 export default {
   name: "App",
   created: function() {
     let self = this;
-    d3.csv("/data/20210421_resources.csv").then(function(d) {
+    d3.csv(self.csvPath).then(function(d) {
       let dataObj = {};
       dataObj.columns = d.columns;
       dataObj.data = [];
@@ -106,6 +107,9 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    ...mapState(["csvPath"])
   }
 };
 </script>
