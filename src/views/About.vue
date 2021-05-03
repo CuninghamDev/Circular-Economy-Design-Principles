@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid mt-4">
     <div class="row p-4 pb-0">
-      <div class="col-xl-6 grey grey lighten-4 elevation-2">
+      <div class="col-xl-6 grey grey lighten-4 elevation-2 rounded-lg">
         <h3>About The Circular Economy Toolkit</h3>
         <p>
           This toolkit is one of the products of an ongoing R+D effort by
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="row p-4 pb-0">
-      <div class="col-xl-6 grey grey lighten-4 elevation-2">
+      <div class="col-xl-6 grey grey lighten-4 elevation-2 rounded-lg">
         <h3>Future Development Goals</h3>
         <p>
           This site is under continued development, and the next major
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="row p-4 pb-0">
-      <div class="col-xl-6 grey grey lighten-4 elevation-2">
+      <div class="col-xl-6 grey grey lighten-4 elevation-2 rounded-lg">
         <h3>Contribute Ideas</h3>
         <p>
           We are building a form that will allow you to contribute your insights
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="row p-4 pb-0">
-      <div class="col-xl-6 grey grey lighten-4 elevation-2">
+      <div class="col-xl-6 grey grey lighten-4 elevation-2 rounded-lg">
         <h3>Get in Touch</h3>
         <p>
           We are always looking for new partners and collaborators in our work
@@ -58,7 +58,7 @@
       </div>
     </div>
     <div class="row p-4 pb-0">
-      <div class="col-xl-6 grey grey lighten-4 elevation-2">
+      <div class="col-xl-6 grey grey lighten-4 elevation-2 rounded-lg">
         <div class="container m-0 p-0">
           <div class="row m-0 p-0">
             <div class="col-8 m-0 p-0">

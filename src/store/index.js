@@ -587,6 +587,15 @@ export default new Vuex.Store({
         }
       }
       return activeButtons;
+    },
+    getLifeCycles: state => {
+      let lifeCycles = [];
+      for (let actor of state.actors) {
+        if (!lifeCycles.includes(actor.category)) {
+          lifeCycles.push(actor.category);
+        }
+      }
+      return lifeCycles;
     }
   },
   actions: {},

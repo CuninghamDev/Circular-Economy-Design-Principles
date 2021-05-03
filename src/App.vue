@@ -25,15 +25,17 @@
     </v-navigation-drawer>
     <v-app-bar app class="brown lighten-5">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Circular Economy Toolkit</v-toolbar-title>
+      <v-toolbar-title>Circular Economy</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-img
         contain
         lazy-src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
         src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
+        @click="openCgaWebsite()"
         class="mt-1"
         max-height="50"
-        max-width="150"
+        max-width="120"
+        style="cursor:pointer"
       ></v-img>
     </v-app-bar>
 
@@ -91,6 +93,9 @@ export default {
     },
     setResourceData: function(data) {
       this.$store.commit("setResourcesData", data);
+    },
+    openCgaWebsite: function() {
+      window.open("https://cuningham.com/", "_blank");
     }
   },
   data: function() {
@@ -100,6 +105,10 @@ export default {
         {
           name: "Interactive Diagram",
           route: "/"
+        },
+        {
+          name: "List of Resources",
+          route: "/resources"
         },
         {
           name: "About",

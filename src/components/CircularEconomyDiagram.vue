@@ -394,8 +394,9 @@ export default {
         .attr("width", geomData.iconDims)
         .attr("height", geomData.iconDims);
       iconImages
-        .transition()
-        .duration(self.rotationTime)
+        // .transition()
+        // .delay(self.rotationTime)
+        // .duration(1)
         .attr("transform", d => {
           let rotationAngle = d.endAngle - Math.PI * 0.04;
           let counterRotation = rotationAngle * -1 - self.rotationTracker;

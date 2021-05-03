@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Diagram from "../views/Diagram.vue";
 import About from "../views/About.vue";
+import Resources from "../views/Resources.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
+  },
+  {
+    path: "/resources",
+    name: "Resources",
+    component: () => import("../views/Resources.vue")
   }
 ];
 
