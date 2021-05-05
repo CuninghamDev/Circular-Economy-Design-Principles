@@ -12,6 +12,14 @@ Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
 
+// Registering a custom global directive called `v-blur` that prevents focus
+// Useful for removing focus from vuetify components after they are clicked
+Vue.directive("blur", {
+  inserted: function(el) {
+    el.onfocus = ev => ev.target.blur();
+  }
+});
+
 new Vue({
   store,
   vuetify,

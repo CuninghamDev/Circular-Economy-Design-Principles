@@ -119,9 +119,6 @@
                     :title="d['read time']"
                     >mdi-circle-slice-3</v-icon
                   >
-                  <v-icon v-else large title="no listed read time" color="grey"
-                    >mdi-circle-slice-5</v-icon
-                  >
                 </td>
                 <td class="align-middle">
                   <div class="container m-0 p-0">

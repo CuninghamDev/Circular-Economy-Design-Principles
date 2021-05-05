@@ -79,7 +79,7 @@
           <div class="col"></div>
           <div class="col"></div>
           <div class="col">
-            <v-dialog v-model="dialog" width="750">
+            <v-dialog v-model="dialog" width="950">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   color="teal darken-3"
@@ -99,7 +99,7 @@
                 >
                   <table class="table table-borderless ma-0 pa-0">
                     <tbody class="ma-0 pa-0">
-                      <tr>
+                      <tr class="ma-0 pa-0">
                         <td
                           class="align-middle ma-0 pa-0"
                           style="width:120px"
@@ -111,7 +111,7 @@
                             style="height:100px; width:100px"
                           />
                         </td>
-                        <td class="align-middle text-left ma-0 pa-0">
+                        <td class="align-bottom text-left ma-0 pa-0">
                           <p
                             class="h5 ma-0 pa-0 text-white"
                             style="overflow-wrap:break-word; hyphens: auto"
@@ -120,59 +120,137 @@
                           </p>
                         </td>
                       </tr>
-                      <tr class="ma-0 pa-0 align-middle">
-                        <p class="ma-0 pa-0 text-white">Additional Resources</p>
+                      <tr class="ma-0 pa-0">
+                        <td class="ma-0 pa-0 align-top">
+                          <p class="ma-0 pa-0 text-white">
+                            Additional Resources
+                          </p>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </v-card-title>
 
-                <v-list class="transparent">
-                  <v-list-item
-                    v-for="resource in relevantResources"
-                    :key="resource.id"
-                  >
-                    <v-list-item-content>
-                      <v-list-item-title class="h5 font-italic">
-                        <!-- {{
-                          resource["long name"] != ""
-                            ? resource["long name"]
-                            : resource["short name"]
-                        }} -->
-                        {{ resource["short name"] }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle v-if="resource['long name'] != ''">
-                        {{ resource["long name"] }}
-                      </v-list-item-subtitle>
-                      <v-list-item-subtitle v-if="resource['type'] != ''">
-                        Resource Type: {{ resource["type"].toUpperCase() }}
-                      </v-list-item-subtitle>
-                      <v-list-item-subtitle v-if="resource['read time'] != ''">
-                        Expected Read Time: {{ resource["read time"] }}
-                      </v-list-item-subtitle>
-                      <v-card-text v-if="'summary' in resource">
-                        {{ resource["summary"] }}
-                      </v-card-text>
-                      <a
-                        class="ml-4"
-                        v-if="resource['external link'] != ''"
-                        :href="resource['external link']"
-                        target="_blank"
+                <v-container class="my-0 pb-0 pt-4">
+                  <v-row class="py-1">
+                    <v-col v-if="relevantResources.length == 0">
+                      <p class="red--text text--darken-4">
+                        No resources are listed for this circular strategy
+                      </p>
+                      <p class="red--text text--darken-4">
+                        (Coming Soon!) Use the dialogue below to suggest missing
+                        resources
+                      </p>
+                    </v-col>
+                    <v-col
+                      v-for="resource in relevantResources"
+                      :key="resource.id"
+                      cols="12"
+                      class="py-2"
+                    >
+                      <v-card
+                        v-blur
+                        @click="openLink(resource['external link'])"
+                        hover
+                        shaped
+                        class="grey lighten-5"
                       >
-                        Link
-                      </a>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item v-if="relevantResources.length == 0">
-                    <v-list-item-content>
-                      <v-list-item-title class="h6 red--text">
-                        There are currently no listed resources for this topic
-                      </v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
+                        <v-card-title class="text-h5">
+                          {{ resource["short name"] }}
+                        </v-card-title>
+                        <v-card-subtitle v-if="resource['long name'] != ''">
+                          <b>{{ resource["long name"] }}</b>
+                        </v-card-subtitle>
+                        <v-card-text>
+                          <table class="table table-borderless ma-0 pa-0">
+                            <tbody class="ma-0 pa-0">
+                              <tr class="ma-0 pa-0">
+                                <td
+                                  class="ma-0 pt-0 pb-2 pl-0 pr-4 border-bottom align-middle"
+                                  style="width:50px"
+                                >
+                                  <v-icon
+                                    color="grey"
+                                    v-if="resource['type'] == 'Resource'"
+                                    large
+                                    :title="resource['type']"
+                                    >mdi-file-table-box-multiple-outline</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['type'] == 'Learn'"
+                                    large
+                                    :title="resource['type']"
+                                  >
+                                    mdi-book-open-page-variant-outline</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['type'] == 'Example'"
+                                    large
+                                    :title="resource['type']"
+                                  >
+                                    mdi-city-variant-outline</v-icon
+                                  >
+                                </td>
+                                <td
+                                  class="ma-0 pt-0 pb-2 pl-0 pr-3 border-bottom align-middle"
+                                  style="width:75px"
+                                >
+                                  {{ resource["type"] }}
+                                </td>
+                                <td
+                                  class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
+                                  rowspan="2"
+                                >
+                                  <p class="h6">{{ resource["summary"] }}</p>
+                                </td>
+                              </tr>
+                              <tr class="ma-0 pa-0">
+                                <td
+                                  class="ma-0 pt-2 pb-0 pl-0 pr-4 align-middle"
+                                  style="width:50px"
+                                >
+                                  <v-icon
+                                    color="grey"
+                                    v-if="resource['read time'] == '2 min'"
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-1</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['read time'] == '5 min'"
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-2</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="
+                                      resource['read time'] == '10 min'
+                                    "
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-3</v-icon
+                                  >
+                                </td>
+                                <td
+                                  class="ma-0 pt-2 pb-0 pl-0 pr-3 align-middle"
+                                  style="width:75px"
+                                >
+                                  {{ resource["read time"] }}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </v-container>
 
-                <div class="elevation-5">
+                <div class="elevation-5 my-0 py-0">
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-spacer></v-spacer>
@@ -242,6 +320,11 @@ export default {
     return {
       dialog: false
     };
+  },
+  methods: {
+    openLink(link) {
+      window.open(link, "_blank");
+    }
   }
 };
 </script>
