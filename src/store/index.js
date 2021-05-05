@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     // csvPath: "/circular-economy/data/20210421_resources.csv",
-    csvPath: "data/20210421_resources.csv",
+    csvPath: "data/20210504_resources.csv",
     resourcesData: undefined,
     title: "Circular Economy in the Built Environment",
     actorSelected: false,

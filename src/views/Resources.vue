@@ -60,14 +60,33 @@
             <tbody style="cursor:pointer">
               <tr
                 class="border-bottom"
-                v-for="(d, i) in resourcesData.data"
+                v-for="(d, i) in resourcesWithLifeCycles"
                 :key="i"
                 @click="openLinkPage(d['external link'])"
               >
-                <td>{{ d["short name"] }}</td>
+                <td>
+                  <b>{{ d["short name"] }}</b>
+                </td>
                 <td>{{ d["type"] }}</td>
                 <td>{{ d["read time"] }}</td>
-                <td>Set of Icons</td>
+                <td>
+                  <div class="container m-0 p-0">
+                    <div class="row m-0 p-0">
+                      <div
+                        class="col m-0 p-0"
+                        v-for="(lc, k) in d.lifeCycles"
+                        :key="k"
+                      >
+                        <img
+                          v-if="lc.flag"
+                          :src="lc.link"
+                          class="my-0 mx-1 p-0 rounded-circle bordered"
+                          :style="'backgroundColor:' + lc.color"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -82,8 +101,64 @@ import { mapState, mapGetters } from "vuex";
 export default {
   name: "Resources",
   computed: {
-    ...mapState(["resourcesData"]),
+    ...mapState(["resourcesData", "actors", "categories"]),
     ...mapGetters(["getLifeCycles"]),
+    resourcesWithLifeCycles: function() {
+      let resourcesOut = [];
+      //this if clause is necessary because the app asynchronously loads the data, and it may not be present on first load
+      if (this.resourcesData) {
+        let resourcesCopy = JSON.parse(JSON.stringify(this.resourcesData.data));
+        for (let resource of resourcesCopy) {
+          resource.lifeCycles = {
+            "resource exchange": {
+              flag: false,
+              link: undefined,
+              color: undefined
+            },
+            "design and deliver": {
+              flag: false,
+              link: undefined,
+              color: undefined
+            },
+            "intelligent built environment": {
+              flag: false,
+              link: undefined,
+              color: undefined
+            },
+            "end of design life": {
+              flag: false,
+              link: undefined,
+              color: undefined
+            }
+          };
+          for (let key in resource) {
+            if (resource[key] == true) {
+              for (let actor of this.actors) {
+                if (
+                  key == actor.actor.toLowerCase() &&
+                  !resource.lifeCycles[actor.category.toLowerCase()].flag
+                ) {
+                  resource.lifeCycles[actor.category.toLowerCase()].flag = true;
+                  for (let cat of this.categories) {
+                    if (
+                      cat.text.toLowerCase() == actor.category.toLowerCase()
+                    ) {
+                      resource.lifeCycles[actor.category.toLowerCase()].link =
+                        cat.whiteIconPath;
+                      resource.lifeCycles[actor.category.toLowerCase()].color =
+                        cat.color;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          resourcesOut.push(resource);
+        }
+      }
+
+      return resourcesOut;
+    },
     filteredResources: function() {
       return "something";
     }
