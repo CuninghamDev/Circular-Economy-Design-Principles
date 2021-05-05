@@ -5,11 +5,11 @@
         <h3>About The Circular Economy Toolkit</h3>
         <p>
           This toolkit is one of the products of an ongoing R+D effort by
-          Cuningham Group. This work reflects a broader push across our studios
-          and design practices to embody the principles of regenerative design.
+          Cuningham. This work reflects a broader push across our studios and
+          design practices to embody the principles of regenerative design.
         </p>
         <p>
-          This toolkit grew out of previous research efforts including an
+          This toolkit grew out of internal research efforts that included an
           extensive literature review, a self assessment of several of our past
           designs, and internal deliberations regarding how circularity can
           begin to be implemented in conventional design projects. Currently
@@ -28,10 +28,9 @@
           development push is planning to include the following features...
         </p>
         <ul>
-          <li>A searchable list of resources</li>
           <li>A set of pages for selecting circular design goals</li>
           <li>
-            A set of pages for tracking a project's delivery on it's circular
+            A set of pages for tracking a project's delivery on its circular
             design goals
           </li>
         </ul>
@@ -52,8 +51,8 @@
         <p>
           We are always looking for new partners and collaborators in our work
           to improve the built environment. We are planning to build a contact
-          form, but for the meantime reach out to Cuningham Group and we will
-          make sure you get in touch with the right people!
+          form, but for the meantime reach out to Cuningham and we will make
+          sure you get in touch with the right people!
         </p>
       </div>
     </div>
@@ -69,14 +68,17 @@
         </div>
         <p>
           This toolkit is being developed as open source software, and is
-          licensed with an MIT License. If you would like to contribute to the
-          development of this platform, or browse the source code for yourself,
-          you can access it
-          <a
-            href="https://github.com/dschipperCuningham/Circular-Economy-Design-Principles"
-            target="_blank"
-            >here</a
-          >.
+          licensed with an MIT License.
+          <v-btn
+            class="mt-2"
+            color="grey darken-3"
+            dark
+            rounded="xl"
+            @click="openGithubLink()"
+          >
+            <v-icon class="pr-2">mdi-github</v-icon>
+            Source Code
+          </v-btn>
         </p>
       </div>
     </div>
@@ -85,6 +87,14 @@
 
 <script>
 export default {
-  name: "About"
+  name: "About",
+  methods: {
+    openGithubLink() {
+      window.open(
+        "https://github.com/dschipperCuningham/Circular-Economy-Design-Principles",
+        "_blank"
+      );
+    }
+  }
 };
 </script>
