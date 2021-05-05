@@ -552,6 +552,17 @@ export default new Vuex.Store({
     },
     selectCategory(state, n) {
       state.categorySelected = n;
+    },
+    resetDiagram(state) {
+      state.categorySelected = false;
+      state.actorSelected = false;
+      state.selectedActor = {
+        actor: "",
+        buttons: "",
+        category: "",
+        details: "",
+        short: ""
+      };
     }
   },
   getters: {

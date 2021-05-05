@@ -93,16 +93,39 @@
               </template>
 
               <v-card>
-                <v-card-title class="pb-5 brown lighten-5">
-                  Additional Resources
+                <v-card-title
+                  class=" text-white pa-2 ma-0 elevation-4"
+                  :style="'backgroundColor:' + selectedActorColor"
+                >
+                  <table class="table table-borderless ma-0 pa-0">
+                    <tbody class="ma-0 pa-0">
+                      <tr>
+                        <td
+                          class="align-middle ma-0 pa-0"
+                          style="width:120px"
+                          rowspan="2"
+                        >
+                          <img
+                            class="ma-0 pa-0"
+                            :src="activeCategory.whiteIconPath"
+                            style="height:100px; width:100px"
+                          />
+                        </td>
+                        <td class="align-middle text-left ma-0 pa-0">
+                          <p
+                            class="h5 ma-0 pa-0 text-white"
+                            style="overflow-wrap:break-word; hyphens: auto"
+                          >
+                            {{ selectedActor.actor.toUpperCase() }}
+                          </p>
+                        </td>
+                      </tr>
+                      <tr class="ma-0 pa-0 align-middle">
+                        <p class="ma-0 pa-0 text-white">Additional Resources</p>
+                      </tr>
+                    </tbody>
+                  </table>
                 </v-card-title>
-                <v-card-subtitle class="brown lighten-5 pb-1">
-                  {{
-                    selectedActor.actor.toUpperCase() +
-                      " | " +
-                      selectedActor.category
-                  }}
-                </v-card-subtitle>
 
                 <v-list class="transparent">
                   <v-list-item
@@ -111,12 +134,16 @@
                   >
                     <v-list-item-content>
                       <v-list-item-title class="h5 font-italic">
-                        {{
+                        <!-- {{
                           resource["long name"] != ""
                             ? resource["long name"]
                             : resource["short name"]
-                        }}
+                        }} -->
+                        {{ resource["short name"] }}
                       </v-list-item-title>
+                      <v-list-item-subtitle v-if="resource['long name'] != ''">
+                        {{ resource["long name"] }}
+                      </v-list-item-subtitle>
                       <v-list-item-subtitle v-if="resource['type'] != ''">
                         Resource Type: {{ resource["type"].toUpperCase() }}
                       </v-list-item-subtitle>
@@ -145,14 +172,15 @@
                   </v-list-item>
                 </v-list>
 
-                <v-divider></v-divider>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="teal darken-3" text @click="dialog = false">
-                    Close
-                  </v-btn>
-                </v-card-actions>
+                <div class="elevation-5">
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="teal darken-3" text @click="dialog = false">
+                      Close
+                    </v-btn>
+                  </v-card-actions>
+                </div>
               </v-card>
             </v-dialog>
           </div>
@@ -171,9 +199,21 @@ export default {
       "selectedActor",
       "actorSelected",
       "categorySelected",
-      "resourcesData"
+      "resourcesData",
+      "categories"
     ]),
     ...mapGetters(["selectedActorColor", "getButtons"]),
+    activeCategory() {
+      let activeCategory = {};
+      for (let cat of this.categories) {
+        if (
+          cat.text.toLowerCase() == this.selectedActor.category.toLowerCase()
+        ) {
+          activeCategory = cat;
+        }
+      }
+      return activeCategory;
+    },
     titleDataObj() {
       return {
         background: this.selectedActorColor,

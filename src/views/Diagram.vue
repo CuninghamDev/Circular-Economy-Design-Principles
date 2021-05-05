@@ -16,6 +16,9 @@ import CircularEconomyDiagram from "../components/CircularEconomyDiagram.vue";
 import ActorData from "../components/ActorData.vue";
 export default {
   name: "Diagram",
-  components: { ActorData, CircularEconomyDiagram }
+  components: { ActorData, CircularEconomyDiagram },
+  beforeDestroy() {
+    this.$store.commit("resetDiagram");
+  }
 };
 </script>
