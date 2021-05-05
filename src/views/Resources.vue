@@ -1,7 +1,9 @@
 <template>
-  <div class="container-fluid mt-4">
-    <div class="row p-4 pb-5">
-      <div class="col-lg-7 grey grey lighten-4 elevation-2 rounded-lg">
+  <div class="container-fluid">
+    <div class="row mt-5 mx-2">
+      <div
+        class="col-lg-8 col-xl-6 col-md-12 grey grey lighten-4 elevation-2 rounded-lg"
+      >
         <h4>Resources to Learn More About the Circular Economy</h4>
         <p>
           Use the filters below browse through the full list of identified
@@ -9,29 +11,8 @@
         </p>
       </div>
     </div>
-    <div class="row pt-0 mt-0 mb-0 px-2 pb-0">
-      <div class="col-md-3 pb-0 mb-0">
-        <v-select
-          :items="readTimeFilters"
-          label="Quick Reads"
-          dense
-          outlined
-          @input="setReadTimeFilter($event)"
-        >
-        </v-select>
-      </div>
-      <div class="col-md-3 pb-0 mb-0">
-        <v-select
-          class="my-0 py-0"
-          :items="typeFilters"
-          label="Type of Resource"
-          dense
-          outlined
-          @input="setTypeFilter($event)"
-        >
-        </v-select>
-      </div>
-      <div class="col-md-3 pb-0 mb-0">
+    <div class="row ml-0 mt-6">
+      <div class="col-md-3 mb-0 pb-0 ml-0">
         <v-select
           class="my-0 py-0"
           :items="lifeCycleFilters"
@@ -42,11 +23,33 @@
         >
         </v-select>
       </div>
+
+      <div class="col-md-3 mb-0 pb-0">
+        <v-select
+          class="my-0 py-0"
+          :items="typeFilters"
+          label="Type of Resource"
+          dense
+          outlined
+          @input="setTypeFilter($event)"
+        >
+        </v-select>
+      </div>
+      <div class="col-md-3 mb-0 pb-0">
+        <v-select
+          :items="readTimeFilters"
+          label="Quick Reads"
+          dense
+          outlined
+          @input="setReadTimeFilter($event)"
+        >
+        </v-select>
+      </div>
     </div>
-    <div class="row pt-0 mt-0 pb-1 px-2 my-0">
-      <div class="col-lg-12 py-0 my-0">
-        <div class="table-responsive rounded-lg elevation-2">
-          <table class="table table-borderless table-hover">
+    <div class="row mx-2">
+      <div class="col-lg-8 col-xl-6 col-md-12 ma-0 pa-0">
+        <div class="table-responsive rounded-lg elevation-2 ma-0 pa-0">
+          <table class="table table-borderless table-hover ma-0 pa-0">
             <thead class="grey darken-1 text-white elevation-2">
               <th class="border-right header-right-border" scope="col">
                 Resource
@@ -60,7 +63,7 @@
             <tbody style="cursor:pointer">
               <tr
                 class="border-bottom"
-                v-for="(d, i) in resourcesWithLifeCycles"
+                v-for="(d, i) in filteredResources"
                 :key="i"
                 @click="openLinkPage(d['external link'])"
               >
@@ -160,7 +163,37 @@ export default {
       return resourcesOut;
     },
     filteredResources: function() {
-      return "something";
+      let filteredResources = [];
+
+      for (let resource of this.resourcesWithLifeCycles) {
+        let typeFilter = true;
+        let timeFilter = true;
+        let lifeCycleFilter = true;
+        if (
+          this.activeReadTimeFilter != "" &&
+          resource["read time"] != this.activeReadTimeFilter
+        ) {
+          timeFilter = false;
+        }
+        if (
+          this.activeTypeFilter != "" &&
+          resource["type"].toLowerCase() != this.activeTypeFilter.toLowerCase()
+        ) {
+          typeFilter = false;
+        }
+        if (this.activeLifeCycleFilter != "") {
+          let lifeCycleData =
+            resource.lifeCycles[this.activeLifeCycleFilter.toLowerCase()];
+          if (lifeCycleData.flag == false) {
+            lifeCycleFilter = false;
+          }
+        }
+
+        if (typeFilter && timeFilter && lifeCycleFilter) {
+          filteredResources.push(resource);
+        }
+      }
+      return filteredResources;
     }
   },
   methods: {
