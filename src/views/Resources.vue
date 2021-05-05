@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="row ml-0 mt-6">
-      <div class="col-md-3 mb-0 pb-0 ml-0">
+      <div class="col-md-4 col-xl-3 mb-0 pb-0 ml-0">
         <v-select
           class="my-0 py-0"
           :items="lifeCycleFilters"
@@ -24,7 +24,7 @@
         </v-select>
       </div>
 
-      <div class="col-md-3 mb-0 pb-0">
+      <div class="col-md-4 col-xl-3  mb-0 pb-0">
         <v-select
           class="my-0 py-0"
           :items="typeFilters"
@@ -35,7 +35,7 @@
         >
         </v-select>
       </div>
-      <div class="col-md-3 mb-0 pb-0">
+      <div class="col-md-4 col-xl-3 mb-0 pb-0">
         <v-select
           :items="readTimeFilters"
           label="Quick Reads"
@@ -67,24 +67,76 @@
                 :key="i"
                 @click="openLinkPage(d['external link'])"
               >
-                <td>
+                <td class="align-middle">
                   <b>{{ d["short name"] }}</b>
                 </td>
-                <td>{{ d["type"] }}</td>
-                <td>{{ d["read time"] }}</td>
-                <td>
+                <td class="text-center align-middle">
+                  <!-- {{ d["type"] }} -->
+                  <v-icon
+                    color="grey"
+                    v-if="d['type'] == 'Resource'"
+                    large
+                    :title="d['type']"
+                    >mdi-file-table-box-multiple-outline</v-icon
+                  >
+                  <v-icon
+                    color="grey"
+                    v-else-if="d['type'] == 'Learn'"
+                    large
+                    :title="d['type']"
+                  >
+                    mdi-book-open-page-variant-outline</v-icon
+                  >
+                  <v-icon
+                    color="grey"
+                    v-else-if="d['type'] == 'Example'"
+                    large
+                    :title="d['type']"
+                  >
+                    mdi-city-variant-outline</v-icon
+                  >
+                </td>
+                <td class="text-center align-middle">
+                  <!-- {{ d["read time"] }} -->
+                  <v-icon
+                    color="grey"
+                    v-if="d['read time'] == '2 min'"
+                    large
+                    :title="d['read time']"
+                    >mdi-circle-slice-1</v-icon
+                  >
+                  <v-icon
+                    color="grey"
+                    v-else-if="d['read time'] == '5 min'"
+                    large
+                    :title="d['read time']"
+                    >mdi-circle-slice-2</v-icon
+                  >
+                  <v-icon
+                    color="grey"
+                    v-else-if="d['read time'] == '10 min'"
+                    large
+                    :title="d['read time']"
+                    >mdi-circle-slice-3</v-icon
+                  >
+                  <v-icon v-else large title="no listed read time" color="grey"
+                    >mdi-circle-slice-5</v-icon
+                  >
+                </td>
+                <td class="align-middle">
                   <div class="container m-0 p-0">
                     <div class="row m-0 p-0">
                       <div
-                        class="col m-0 p-0"
+                        class="m-0 p-0"
                         v-for="(lc, k) in d.lifeCycles"
                         :key="k"
                       >
                         <img
                           v-if="lc.flag"
                           :src="lc.link"
-                          class="my-0 mx-1 p-0 rounded-circle bordered"
+                          class="col mx-1 my-1 p-0 rounded-circle bordered"
                           :style="'backgroundColor:' + lc.color"
+                          style="width: 40px; min-height: 40px"
                         />
                       </div>
                     </div>
