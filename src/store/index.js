@@ -5,9 +5,12 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    // csvPath: "/circular-economy/data/20210504_resources.csv",
-    csvPath: "data/resources.csv",
+    // resourcesCsvPath: "/circular-economy/data/resources.csv",
+    resourcesCsvPath: "data/resources.csv",
     resourcesData: undefined,
+    // generalResourcesCsvPath: "/circular-economy/data/general_resources.csv",
+    generalResourcesCsvPath: "data/general_resources.csv",
+    generalResourceData: undefined,
     title: "Circular Economy in the Built Environment",
     actorSelected: false,
     categorySelected: false,
@@ -541,6 +544,9 @@ export default new Vuex.Store({
   mutations: {
     setResourcesData(state, resourcesData) {
       state.resourcesData = resourcesData;
+    },
+    setGeneralResourceData(state, resourceData) {
+      state.generalResourceData = resourceData;
     },
     selectActor(state, n) {
       if (n == state.blankActor) {

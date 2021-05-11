@@ -67,10 +67,10 @@
                 licensed with an MIT License.
               </p>
               <v-btn
-                class="mt-0 pt-0 elevation-2"
+                class="mt-0 pt-0 elevation-4"
                 color="grey darken-3"
                 dark
-                rounded
+                outlined
                 @click="openGithubLink()"
               >
                 <v-icon class="pr-2">mdi-github</v-icon>

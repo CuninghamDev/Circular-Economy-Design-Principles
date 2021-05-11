@@ -52,7 +52,8 @@ export default {
   name: "App",
   created: function() {
     let self = this;
-    d3.csv(self.csvPath).then(function(d) {
+
+    d3.csv(self.resourcesCsvPath).then(function(d) {
       let dataObj = {};
       dataObj.columns = d.columns;
       dataObj.data = [];
@@ -74,11 +75,38 @@ export default {
       }
       self.setResourceData(dataObj);
     });
+
+    d3.csv(self.generalResourcesCsvPath).then(function(d) {
+      let dataObj = {};
+      dataObj.columns = d.columns;
+      dataObj.data = [];
+      for (let i in d) {
+        if (i != "columns" && i != 0) {
+          let rowObj = {};
+          for (let k of d.columns) {
+            let val = d[i][k];
+            if (val.includes("resource")) {
+              val = "Resource";
+            } else if (val.includes("learn")) {
+              val = "Learn";
+            } else if (val.includes("example")) {
+              val = "Example";
+            } else if (val.toLowerCase() == "no") {
+              val = false;
+            } else if (val.toLowerCase() == "yes") {
+              val = true;
+            } else if (!isNaN(val) && val != "") {
+              val = Number(val);
+            }
+            rowObj[k] = val;
+          }
+          dataObj.data.push(rowObj);
+        }
+      }
+      self.setGeneralResourceData(dataObj);
+    });
   },
   methods: {
-    testingMethod: function(testing) {
-      console.log("testing", testing);
-    },
     isNumeric: function(str) {
       if (typeof str != "string") return false; // we only process strings!
       return (
@@ -87,6 +115,9 @@ export default {
     },
     setResourceData: function(data) {
       this.$store.commit("setResourcesData", data);
+    },
+    setGeneralResourceData: function(data) {
+      this.$store.commit("setGeneralResourceData", data);
     },
     openCgaWebsite: function() {
       window.open("https://cuningham.com/", "_blank");
@@ -115,7 +146,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["csvPath"])
+    ...mapState(["resourcesCsvPath", "generalResourcesCsvPath"])
   }
 };
 </script>
