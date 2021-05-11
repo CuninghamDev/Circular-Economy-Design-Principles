@@ -65,25 +65,21 @@
               <p>
                 This toolkit is being developed as open source software, and is
                 licensed with an MIT License.
-                
               </p>
               <v-btn
-                  class="mt-0 pt-0 elevation-2"
-                  color="grey darken-3"
-                  dark
-                  rounded
-                  @click="openGithubLink()"
-                >
-                  <v-icon class="pr-2">mdi-github</v-icon>
-                  Source Code
-                </v-btn>
+                class="mt-0 pt-0 elevation-2"
+                color="grey darken-3"
+                dark
+                rounded
+                @click="openGithubLink()"
+              >
+                <v-icon class="pr-2">mdi-github</v-icon>
+                Source Code
+              </v-btn>
             </div>
-            <div class="col-4">
-              
-            </div>
+            <div class="col-4"></div>
           </div>
         </div>
-        
       </div>
     </div>
   </div>
