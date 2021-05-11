@@ -6,9 +6,24 @@
       >
         <h4>Resources to Learn More About the Circular Economy</h4>
         <p>
-          Use the filters below browse through the full list of identified
-          resources to find the information most relevant to you
+          The filters below allow you to sort the resources by the Project Life
+          Cycle they apply to, the Type of resource they link to, and by the
+          length of time they take to read. This list or resources is growing
+          and evolving.
         </p>
+        <h5>Do You Know a Resource Missing from this Page?</h5>
+        <p>
+          If you know of a resource that is missing from this page, we'd love to
+          hear from you! Please fill out the form at the link below to propose
+          an additional resource be added to this database.
+        </p>
+        <v-btn
+          color="blue accent-4"
+          class=" elevation-2 mb-2"
+          outlined
+          @click="navigateToRoute('/suggest-resource')"
+          >Suggest Resource</v-btn
+        >
       </div>
     </div>
     <div class="row ml-0 mt-6">
@@ -257,6 +272,12 @@ export default {
     },
     openLinkPage(link) {
       window.open(link, "_blank");
+    },
+    navigateToRoute: function(path) {
+      let currentRoute = this.$route.path;
+      if (path != currentRoute) {
+        this.$router.push(path);
+      }
     }
   },
   data: () => ({

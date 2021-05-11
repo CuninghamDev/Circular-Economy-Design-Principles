@@ -62,24 +62,28 @@
           <div class="row m-0 p-0">
             <div class="col-8 m-0 p-0">
               <h3>Open Source</h3>
+              <p>
+                This toolkit is being developed as open source software, and is
+                licensed with an MIT License.
+                
+              </p>
+              <v-btn
+                  class="mt-0 pt-0 elevation-2"
+                  color="grey darken-3"
+                  dark
+                  rounded
+                  @click="openGithubLink()"
+                >
+                  <v-icon class="pr-2">mdi-github</v-icon>
+                  Source Code
+                </v-btn>
             </div>
-            <div class="col-4"></div>
+            <div class="col-4">
+              
+            </div>
           </div>
         </div>
-        <p>
-          This toolkit is being developed as open source software, and is
-          licensed with an MIT License.
-          <v-btn
-            class="mt-2"
-            color="grey darken-3"
-            dark
-            rounded
-            @click="openGithubLink()"
-          >
-            <v-icon class="pr-2">mdi-github</v-icon>
-            Source Code
-          </v-btn>
-        </p>
+        
       </div>
     </div>
   </div>

@@ -96,6 +96,7 @@
                 <v-card-title
                   class=" text-white pa-2 ma-0 elevation-3"
                   :style="'backgroundColor:' + selectedActorColor"
+                  style="z-index:1000"
                 >
                   <table class="table table-borderless ma-0 pa-0">
                     <tbody class="ma-0 pa-0">
@@ -131,15 +132,23 @@
                   </table>
                 </v-card-title>
 
-                <v-container class="my-0 pb-0 pt-4">
+                <v-container
+                  style="z-index:0"
+                  class="my-0 pb-4 pt-4 hide-scrollbar"
+                  :style="
+                    'max-height:' +
+                      this.windowHeight * 0.5 +
+                      'px; overflow-y: auto'
+                  "
+                >
                   <v-row class="py-1">
                     <v-col v-if="relevantResources.length == 0">
                       <p class="red--text text--darken-4">
                         No resources are listed for this circular strategy
                       </p>
                       <p class="red--text text--darken-4">
-                        (Coming Soon!) Use the dialogue below to suggest missing
-                        resources
+                        Use the "Suggest Resource" button below to suggest
+                        missing resources that should be added to this database
                       </p>
                     </v-col>
                     <v-col
@@ -251,8 +260,15 @@
                 </v-container>
 
                 <div class="elevation-3 my-0 py-0">
-                  <v-divider></v-divider>
-                  <v-card-actions>
+                  <v-divider class="my-0"></v-divider>
+                  <v-card-actions class="py-4">
+                    <v-btn
+                      color="blue accent-4"
+                      class="elevation-2"
+                      @click="navigateToRoute('/suggest-resource')"
+                      outlined
+                      >Suggest Resource</v-btn
+                    >
                     <v-spacer></v-spacer>
                     <v-btn color="teal darken-3" text @click="dialog = false">
                       Close
@@ -272,6 +288,13 @@
 import { mapState, mapGetters } from "vuex";
 export default {
   name: "ActorData",
+  created() {
+    this.recordWindowHeight();
+    window.addEventListener("resize", this.recordWindowHeight);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.recordWindowHeight);
+  },
   computed: {
     ...mapState([
       "selectedActor",
@@ -318,12 +341,23 @@ export default {
   },
   data: function() {
     return {
-      dialog: false
+      dialog: false,
+      windowHeight: undefined
     };
   },
   methods: {
     openLink(link) {
       window.open(link, "_blank");
+    },
+    navigateToRoute(path) {
+      let currentRoute = this.$route.path;
+      if (path != currentRoute) {
+        this.$router.push(path);
+      }
+    },
+    recordWindowHeight() {
+      let windowHeight = window.innerHeight;
+      this.windowHeight = windowHeight;
     }
   }
 };
@@ -341,5 +375,12 @@ export default {
 }
 .modal-open {
   padding: 0 !important;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

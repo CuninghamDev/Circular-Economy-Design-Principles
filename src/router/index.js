@@ -29,6 +29,11 @@ const routes = [
     path: "/resources",
     name: "Resources",
     component: () => import("../views/Resources.vue")
+  },
+  {
+    path: "/suggest-resource",
+    name: "Suggest Resource",
+    component: () => import("../views/SuggestResource.vue")
   }
 ];
 
