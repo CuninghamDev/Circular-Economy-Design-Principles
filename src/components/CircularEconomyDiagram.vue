@@ -1,5 +1,5 @@
 <template>
-  <div id="svg-container">
+  <div id="svg-container" class="hide-scrollbar">
     <svg id="circular-economy-background-svg"></svg>
     <div id="circular-economy-diagram-div" class="no-select"></div>
     <svg id="circular-economy-diagram-svg"></svg>
@@ -1040,7 +1040,7 @@ export default {
 
 <style>
 #svg-container {
-  height: 95vmin;
+  height: 92vmin;
 }
 .body-class {
   padding: 0;
@@ -1099,5 +1099,12 @@ export default {
 }
 .stroked {
   border: solid white;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

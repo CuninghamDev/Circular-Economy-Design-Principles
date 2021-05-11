@@ -4,9 +4,6 @@
     class="container-fluid p-0 m-0 no-select"
     style="vertical-align: 50%; height: 75%"
   >
-    <!-- <div class="h2 row mt-5">
-      Circular Economy in the Built Environment (envr.)
-    </div> -->
     <div
       v-if="!actorSelected && !categorySelected"
       class="ml-3 mr-1 row align-items-center h-100 p-0"

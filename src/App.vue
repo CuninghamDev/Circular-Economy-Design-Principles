@@ -12,9 +12,9 @@
           <v-list-item
             v-for="route in routes"
             :key="route.route"
-            @click="navigateToRoute(route)"
+            :to="route.route"
           >
-            <v-list-item-content>
+            <v-list-item-content :ref="route.ref">
               <v-list-item-title>
                 {{ route.name }}
               </v-list-item-title>
@@ -79,12 +79,6 @@ export default {
     testingMethod: function(testing) {
       console.log("testing", testing);
     },
-    navigateToRoute: function(routeInfo) {
-      let currentRoute = this.$route.path;
-      if (routeInfo.route != currentRoute) {
-        this.$router.push(routeInfo.route);
-      }
-    },
     isNumeric: function(str) {
       if (typeof str != "string") return false; // we only process strings!
       return (
@@ -104,14 +98,17 @@ export default {
       routes: [
         {
           name: "Interactive Diagram",
+          ref: "diagram",
           route: "/"
         },
         {
           name: "List of Resources",
+          ref: "resources",
           route: "/resources"
         },
         {
           name: "About",
+          ref: "about",
           route: "/about"
         }
       ]

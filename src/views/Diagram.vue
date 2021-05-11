@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid m-0 p-0">
+  <div class="container-fluid m-0 p-0 hide-scrollbar">
     <div class="row m-0 p-0">
       <div class=" col-lg-8 m-0 p-0">
         <circular-economy-diagram></circular-economy-diagram>
@@ -22,3 +22,13 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
