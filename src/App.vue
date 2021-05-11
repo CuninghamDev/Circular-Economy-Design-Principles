@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app v-model="drawer" absolute temporary>
+    <v-navigation-drawer app v-model="drawer" temporary>
       <v-app-bar-nav-icon
         class="ml-3 mt-3 pa-4"
         @click.stop="drawer = !drawer"

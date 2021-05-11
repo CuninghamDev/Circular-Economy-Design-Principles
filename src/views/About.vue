@@ -73,7 +73,7 @@
             class="mt-2"
             color="grey darken-3"
             dark
-            rounded="xl"
+            rounded
             @click="openGithubLink()"
           >
             <v-icon class="pr-2">mdi-github</v-icon>

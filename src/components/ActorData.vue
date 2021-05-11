@@ -94,7 +94,7 @@
 
               <v-card>
                 <v-card-title
-                  class=" text-white pa-2 ma-0 elevation-4"
+                  class=" text-white pa-2 ma-0 elevation-3"
                   :style="'backgroundColor:' + selectedActorColor"
                 >
                   <table class="table table-borderless ma-0 pa-0">
@@ -250,7 +250,7 @@
                   </v-row>
                 </v-container>
 
-                <div class="elevation-5 my-0 py-0">
+                <div class="elevation-3 my-0 py-0">
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-spacer></v-spacer>
