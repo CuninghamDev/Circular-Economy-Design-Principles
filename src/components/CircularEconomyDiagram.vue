@@ -3,6 +3,163 @@
     <svg id="circular-economy-background-svg"></svg>
     <div id="circular-economy-diagram-div" class="no-select"></div>
     <svg id="circular-economy-diagram-svg"></svg>
+
+    <v-dialog v-model="dialog" width="950">
+      <v-card>
+        <v-card-title
+          class=" text-white pa-2 ma-0 elevation-3"
+          style="z-index:1000"
+        >
+          <table class="table table-borderless ma-4">
+            <tbody class="ma-0 pa-0">
+              <tr class="ma-0 pa-0">
+                <td class="align-bottom text-left ma-0 pa-0">
+                  <p
+                    class="h5 ma-0 pa-0 text-gray"
+                    style="overflow-wrap:break-word; hyphens: auto"
+                  >
+                    CIRCULAR ECONOMY IN THE BUILT ENVIRONMENT
+                  </p>
+                </td>
+              </tr>
+              <tr class="ma-0 pa-0">
+                <td class="ma-0 pa-0 align-top">
+                  <p class="ma-0 pa-0 text-gray">
+                    General Resources to Learn More About the Circular Economy
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </v-card-title>
+
+        <v-container
+          style="z-index:0"
+          class="my-0 pb-4 pt-4 hide-scrollbar"
+          :style="
+            'max-height:' + this.windowHeight * 0.5 + 'px; overflow-y: auto'
+          "
+        >
+          <!-- <v-row class="py-1">
+                    <v-col
+                      v-for="resource in relevantResources"
+                      :key="resource.id"
+                      cols="12"
+                      class="py-2"
+                    >
+                      <v-card
+                        v-blur
+                        @click="openLink(resource['external link'])"
+                        hover
+                        shaped
+                        class="grey lighten-5"
+                      >
+                        <v-card-title class="text-h5">
+                          {{ resource["short name"] }}
+                        </v-card-title>
+                        <v-card-subtitle v-if="resource['long name'] != ''">
+                          <b>{{ resource["long name"] }}</b>
+                        </v-card-subtitle>
+                        <v-card-text>
+                          <table class="table table-borderless ma-0 pa-0">
+                            <tbody class="ma-0 pa-0">
+                              <tr class="ma-0 pa-0">
+                                <td
+                                  class="ma-0 pt-0 pb-2 pl-0 pr-4 border-bottom align-middle"
+                                  style="width:50px"
+                                >
+                                  <v-icon
+                                    color="grey"
+                                    v-if="resource['type'] == 'Resource'"
+                                    large
+                                    :title="resource['type']"
+                                    >mdi-file-table-box-multiple-outline</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['type'] == 'Learn'"
+                                    large
+                                    :title="resource['type']"
+                                  >
+                                    mdi-book-open-page-variant-outline</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['type'] == 'Example'"
+                                    large
+                                    :title="resource['type']"
+                                  >
+                                    mdi-city-variant-outline</v-icon
+                                  >
+                                </td>
+                                <td
+                                  class="ma-0 pt-0 pb-2 pl-0 pr-3 border-bottom align-middle"
+                                  style="width:75px"
+                                >
+                                  {{ resource["type"] }}
+                                </td>
+                                <td
+                                  class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
+                                  rowspan="2"
+                                >
+                                  <p class="h6">{{ resource["summary"] }}</p>
+                                </td>
+                              </tr>
+                              <tr class="ma-0 pa-0">
+                                <td
+                                  class="ma-0 pt-2 pb-0 pl-0 pr-4 align-middle"
+                                  style="width:50px"
+                                >
+                                  <v-icon
+                                    color="grey"
+                                    v-if="resource['read time'] == '2 min'"
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-1</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="resource['read time'] == '5 min'"
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-2</v-icon
+                                  >
+                                  <v-icon
+                                    color="grey"
+                                    v-else-if="
+                                      resource['read time'] == '10 min'
+                                    "
+                                    large
+                                    :title="resource['read time']"
+                                    >mdi-circle-slice-3</v-icon
+                                  >
+                                </td>
+                                <td
+                                  class="ma-0 pt-2 pb-0 pl-0 pr-3 align-middle"
+                                  style="width:75px"
+                                >
+                                  {{ resource["read time"] }}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row> -->
+        </v-container>
+
+        <div class="elevation-3 my-0 py-0">
+          <v-divider class="my-0"></v-divider>
+          <v-card-actions class="py-4">
+            <v-spacer></v-spacer>
+            <v-btn color="teal darken-3" text @click="dialog = false">
+              Close
+            </v-btn>
+          </v-card-actions>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -12,6 +169,10 @@ import * as d3 from "d3";
 
 export default {
   name: "CircularEconomyDiagram",
+  created() {
+    this.recordWindowHeight();
+    window.addEventListener("resize", this.recordWindowHeight);
+  },
   mounted() {
     let backgroundSvgId = "circular-economy-background-svg";
     let svgId = "circular-economy-diagram-svg";
@@ -29,6 +190,9 @@ export default {
   watch: {},
   beforeDestroy() {
     window.removeEventListener("resize", this.resizeDiagram);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.recordWindowHeight);
   },
   computed: {
     combinedState() {
@@ -55,10 +219,21 @@ export default {
   },
   data() {
     return {
-      diagram: {}
+      diagram: {},
+      dialog: false,
+      windowHeight: undefined
     };
   },
   methods: {
+    recordWindowHeight() {
+      let windowHeight = window.innerHeight;
+      this.windowHeight = windowHeight;
+    },
+
+    toggleDialog() {
+      this.dialog ? (this.dialog = false) : (this.dialog = true);
+    },
+
     buildDiagram(_data, _backgroundId, _svgId, _divId, _containerId) {
       let diagram = this.diagram;
 
@@ -326,29 +501,6 @@ export default {
 
       // console.log("category data to images", catData);
 
-      div
-        .selectAll(".diagram-title")
-        .data(titleData)
-        .join("div")
-        .classed("diagram-title", true)
-        .text(function(d) {
-          return d.toUpperCase();
-        })
-        .style("height", self.height + "px")
-        .style("display", "flex")
-        .style("justify-content", "center")
-        .style("align-items", "center")
-        .style("margin-left", "37%")
-        .style("margin-right", "37%")
-        .style("text-align", "center")
-        .style("font-family", "Avenir, Helvetica, Arial, sans-serif")
-        .style("font-weight", "bold")
-        .style("font-size", function() {
-          return self.controllingDim * 0.022 + "px";
-        })
-        .style("color", "gray")
-        .classed("h2", true);
-
       svg
         .select(".category-icons")
         .attr(
@@ -408,6 +560,59 @@ export default {
             ",0)"
           );
         });
+
+      svg
+        .select(".diagram-title")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+      let diagramData = ["CIRCULAR ECONOMY", "IN THE BUILT", "ENVIRONMENT"];
+      let diagramTitle = svg
+        .select(".diagram-title")
+        .selectAll(".diagram-title-text")
+        .data(diagramData)
+        .join("text")
+        .classed("diagram-title-text", true)
+        .text(d => d)
+        .style("text-anchor", "middle")
+        .attr("startOffset", "50%")
+        .style("font-family", "Arial, Helvetica, sans-serif")
+        .style("dominant-baseline", "middle")
+        .style("fill", "gray")
+        .style("font-size", function() {
+          return self.controllingDim * 0.026 + "px";
+        })
+        .style("font-weight", "bold")
+        .style("cursor", "pointer")
+        .attr("filter", "none")
+        .attr("transform", (d, i) => {
+          let stepSize = self.controllingDim * 0.026;
+          let startStep = stepSize * -1;
+          let yTransform = startStep + stepSize * i;
+          return "translate(0," + yTransform + ")";
+        });
+      diagramTitle.on("mouseover", function() {
+        d3.select(this.parentNode)
+          .selectAll(".diagram-title-text")
+          .transition()
+          .duration(150)
+          .style("fill", "#303030")
+          .style("font-weight", "bolder");
+      });
+      diagramTitle.on("mouseout", function() {
+        d3.select(this.parentNode)
+          .selectAll(".diagram-title-text")
+          .transition()
+          .duration(150)
+          .style("fill", "gray")
+          .style("font-weight", "bold");
+      });
+
+      diagramTitle.on("click", function() {
+        component.toggleDialog();
+        console.log("diagram title clicked");
+      });
 
       //////////////////
       // OUTTER RING
