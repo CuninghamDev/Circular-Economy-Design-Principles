@@ -3,6 +3,6 @@ module.exports = {
   publicPath: "",
   productionSourceMap: false,
   devServer: {
-    proxy: "http://research.cuningham.com/circular-economy/"
+    proxy: "http://research.cuningham.com/"
   }
 };
