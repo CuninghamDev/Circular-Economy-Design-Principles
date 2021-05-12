@@ -7,7 +7,7 @@
     <v-dialog v-model="dialog" width="950">
       <v-card>
         <v-card-title
-          class=" text-white pa-2 ma-0 elevation-3"
+          class=" text-white pa-2 ma-0 elevation-3 brown lighten-5 bordered-bottom"
           style="z-index:1000"
         >
           <table class="table table-borderless ma-4">
@@ -40,113 +40,111 @@
             'max-height:' + this.windowHeight * 0.5 + 'px; overflow-y: auto'
           "
         >
-          <!-- <v-row class="py-1">
-                    <v-col
-                      v-for="resource in relevantResources"
-                      :key="resource.id"
-                      cols="12"
-                      class="py-2"
-                    >
-                      <v-card
-                        v-blur
-                        @click="openLink(resource['external link'])"
-                        hover
-                        shaped
-                        class="grey lighten-5"
-                      >
-                        <v-card-title class="text-h5">
-                          {{ resource["short name"] }}
-                        </v-card-title>
-                        <v-card-subtitle v-if="resource['long name'] != ''">
-                          <b>{{ resource["long name"] }}</b>
-                        </v-card-subtitle>
-                        <v-card-text>
-                          <table class="table table-borderless ma-0 pa-0">
-                            <tbody class="ma-0 pa-0">
-                              <tr class="ma-0 pa-0">
-                                <td
-                                  class="ma-0 pt-0 pb-2 pl-0 pr-4 border-bottom align-middle"
-                                  style="width:50px"
-                                >
-                                  <v-icon
-                                    color="grey"
-                                    v-if="resource['type'] == 'Resource'"
-                                    large
-                                    :title="resource['type']"
-                                    >mdi-file-table-box-multiple-outline</v-icon
-                                  >
-                                  <v-icon
-                                    color="grey"
-                                    v-else-if="resource['type'] == 'Learn'"
-                                    large
-                                    :title="resource['type']"
-                                  >
-                                    mdi-book-open-page-variant-outline</v-icon
-                                  >
-                                  <v-icon
-                                    color="grey"
-                                    v-else-if="resource['type'] == 'Example'"
-                                    large
-                                    :title="resource['type']"
-                                  >
-                                    mdi-city-variant-outline</v-icon
-                                  >
-                                </td>
-                                <td
-                                  class="ma-0 pt-0 pb-2 pl-0 pr-3 border-bottom align-middle"
-                                  style="width:75px"
-                                >
-                                  {{ resource["type"] }}
-                                </td>
-                                <td
-                                  class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
-                                  rowspan="2"
-                                >
-                                  <p class="h6">{{ resource["summary"] }}</p>
-                                </td>
-                              </tr>
-                              <tr class="ma-0 pa-0">
-                                <td
-                                  class="ma-0 pt-2 pb-0 pl-0 pr-4 align-middle"
-                                  style="width:50px"
-                                >
-                                  <v-icon
-                                    color="grey"
-                                    v-if="resource['read time'] == '2 min'"
-                                    large
-                                    :title="resource['read time']"
-                                    >mdi-circle-slice-1</v-icon
-                                  >
-                                  <v-icon
-                                    color="grey"
-                                    v-else-if="resource['read time'] == '5 min'"
-                                    large
-                                    :title="resource['read time']"
-                                    >mdi-circle-slice-2</v-icon
-                                  >
-                                  <v-icon
-                                    color="grey"
-                                    v-else-if="
-                                      resource['read time'] == '10 min'
-                                    "
-                                    large
-                                    :title="resource['read time']"
-                                    >mdi-circle-slice-3</v-icon
-                                  >
-                                </td>
-                                <td
-                                  class="ma-0 pt-2 pb-0 pl-0 pr-3 align-middle"
-                                  style="width:75px"
-                                >
-                                  {{ resource["read time"] }}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </v-card-text>
-                      </v-card>
-                    </v-col>
-                  </v-row> -->
+          <v-row class="py-1">
+            <v-col
+              v-for="resource in generalResources"
+              :key="resource.id"
+              cols="12"
+              class="py-2"
+            >
+              <v-card
+                v-blur
+                @click="openLink(resource['external link'])"
+                hover
+                shaped
+                class="grey lighten-5"
+              >
+                <v-card-title class="text-h5">
+                  {{ resource["short name"] }}
+                </v-card-title>
+                <v-card-subtitle v-if="resource['long name'] != ''">
+                  <b>{{ resource["long name"] }}</b>
+                </v-card-subtitle>
+                <v-card-text>
+                  <table class="table table-borderless ma-0 pa-0">
+                    <tbody class="ma-0 pa-0">
+                      <tr class="ma-0 pa-0">
+                        <td
+                          class="ma-0 pt-0 pb-2 pl-0 pr-4 border-bottom align-middle"
+                          style="width:50px"
+                        >
+                          <v-icon
+                            color="grey"
+                            v-if="resource['type'] == 'Resource'"
+                            large
+                            :title="resource['type']"
+                            >mdi-file-table-box-multiple-outline</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['type'] == 'Learn'"
+                            large
+                            :title="resource['type']"
+                          >
+                            mdi-book-open-page-variant-outline</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['type'] == 'Example'"
+                            large
+                            :title="resource['type']"
+                          >
+                            mdi-city-variant-outline</v-icon
+                          >
+                        </td>
+                        <td
+                          class="ma-0 pt-0 pb-2 pl-0 pr-3 border-bottom align-middle"
+                          style="width:75px"
+                        >
+                          {{ resource["type"] }}
+                        </td>
+                        <td
+                          class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
+                          rowspan="2"
+                        >
+                          <p class="h6">{{ resource["summary"] }}</p>
+                        </td>
+                      </tr>
+                      <tr class="ma-0 pa-0">
+                        <td
+                          class="ma-0 pt-2 pb-0 pl-0 pr-4 align-middle"
+                          style="width:50px"
+                        >
+                          <v-icon
+                            color="grey"
+                            v-if="resource['read time'] == '2 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-1</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['read time'] == '5 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-2</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['read time'] == '10 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-3</v-icon
+                          >
+                        </td>
+                        <td
+                          class="ma-0 pt-2 pb-0 pl-0 pr-3 align-middle"
+                          style="width:75px"
+                        >
+                          {{ resource["read time"] }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-container>
 
         <div class="elevation-3 my-0 py-0">
@@ -214,8 +212,16 @@ export default {
       "outterRing",
       "geometry",
       "blankActor",
-      "title"
-    ])
+      "title",
+      "generalResourceData"
+    ]),
+    generalResources() {
+      if (this.generalResourceData) {
+        return this.generalResourceData.data;
+      } else {
+        return [];
+      }
+    }
   },
   data() {
     return {
@@ -574,6 +580,7 @@ export default {
         .data(diagramData)
         .join("text")
         .classed("diagram-title-text", true)
+        .classed("no-select", true)
         .text(d => d)
         .style("text-anchor", "middle")
         .attr("startOffset", "50%")

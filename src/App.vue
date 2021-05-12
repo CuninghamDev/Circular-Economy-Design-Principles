@@ -98,12 +98,13 @@ export default {
             } else if (!isNaN(val) && val != "") {
               val = Number(val);
             }
-            rowObj[k] = val;
+            rowObj[k.toLowerCase()] = val;
           }
           dataObj.data.push(rowObj);
         }
       }
       self.setGeneralResourceData(dataObj);
+      console.log("general resource data", dataObj);
     });
   },
   methods: {
