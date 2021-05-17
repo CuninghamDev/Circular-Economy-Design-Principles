@@ -4,7 +4,7 @@
       <div
         class="col-lg-8 col-xl-6 col-md-12 grey grey lighten-4 elevation-2 rounded-lg"
       >
-        <h4>Resources to Learn More About the Circular Economy</h4>
+        <h5>Resources to Learn More About the Circular Economy</h5>
         <p>
           The filters below allow you to sort the resources by the Project Life
           Cycle they apply to, the Type of resource they link to, and by the
@@ -22,7 +22,7 @@
           class=" elevation-2 mb-2"
           outlined
           @click="navigateToRoute('/suggest-resource')"
-          >Suggest Resource</v-btn
+          >Suggest A Resource</v-btn
         >
       </div>
     </div>

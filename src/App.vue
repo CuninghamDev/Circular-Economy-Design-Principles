@@ -23,7 +23,7 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app class="brown lighten-5">
+    <v-app-bar app class="brown lighten-5 pr-0 mr-0">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Circular Economy</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -32,10 +32,11 @@
         lazy-src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
         src="http://research.cuningham.com/space-planner/assets/cuningham_logo.png"
         @click="openCgaWebsite()"
-        class="mt-1"
-        max-height="50"
-        max-width="120"
+        class="mt-1 mr-0 pr-0"
+        max-height="30"
+        max-width="20vw"
         style="cursor:pointer"
+        position="center right"
       ></v-img>
     </v-app-bar>
 
@@ -153,11 +154,38 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.v-application {
+  font-family: roboto, sans-serif;
 }
+.v-toolbar__title {
+  font-family: roboto mono;
+  font-weight: 500;
+}
+h3 {
+  font-family: roboto mono;
+}
+.h3 {
+  font-family: roboto mono;
+}
+h5 {
+  font-family: roboto mono;
+  font-weight: bold;
+}
+.h5 {
+  font-family: roboto mono;
+  font-weight: bold;
+}
+.text-h5 {
+  font-family: roboto mono;
+  font-weight: bold;
+}
+.v-card__title {
+  font-family: roboto mono !important;
+  font-weight: bold;
+}
+/* #app {
+  font-family: roboto, sans-serif;
+} */
 .pointer {
   cursor: pointer;
 }
@@ -169,5 +197,8 @@ export default {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently
             supported by Chrome, Edge, Opera and Firefox */
+}
+.roboto {
+  font-family: roboto;
 }
 </style>

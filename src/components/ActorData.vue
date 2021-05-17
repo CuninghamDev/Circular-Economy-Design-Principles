@@ -91,7 +91,7 @@
 
               <v-card>
                 <v-card-title
-                  class=" text-white pa-2 ma-0 elevation-3"
+                  class=" text-white pa-2 ma-0 border-bottom"
                   :style="'backgroundColor:' + selectedActorColor"
                   style="z-index:1000"
                 >
@@ -111,8 +111,8 @@
                         </td>
                         <td class="align-bottom text-left ma-0 pa-0">
                           <p
-                            class="h5 ma-0 pa-0 text-white"
-                            style="overflow-wrap:break-word; hyphens: auto"
+                            class="h5 ma-0 pa-0 mt-2 text-white"
+                            style="word-break:normal;"
                           >
                             {{ selectedActor.actor.toUpperCase() }}
                           </p>
@@ -120,7 +120,10 @@
                       </tr>
                       <tr class="ma-0 pa-0">
                         <td class="ma-0 pa-0 align-top">
-                          <p class="ma-0 pa-0 text-white">
+                          <p
+                            class="ma-0 mt-2 pa-0 text-white"
+                            style="word-break:normal; font-style:italic; font-weight:300; line-height:normal"
+                          >
                             Additional Resources
                           </p>
                         </td>
@@ -144,7 +147,7 @@
                         No resources are listed for this circular strategy
                       </p>
                       <p class="red--text text--darken-4">
-                        Use the "Suggest Resource" button below to suggest
+                        Use the "Suggest A Resource" button below to suggest
                         missing resources that should be added to this database
                       </p>
                     </v-col>
@@ -161,10 +164,16 @@
                         shaped
                         class="grey lighten-5"
                       >
-                        <v-card-title class="text-h5">
+                        <v-card-title
+                          class="text-h5"
+                          style="word-break:normal;"
+                        >
                           {{ resource["short name"] }}
                         </v-card-title>
-                        <v-card-subtitle v-if="resource['long name'] != ''">
+                        <v-card-subtitle
+                          v-if="resource['long name'] != ''"
+                          style="line-height:normal"
+                        >
                           <b>{{ resource["long name"] }}</b>
                         </v-card-subtitle>
                         <v-card-text>
@@ -209,7 +218,9 @@
                                   class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
                                   rowspan="2"
                                 >
-                                  <p class="h6">{{ resource["summary"] }}</p>
+                                  <p class="h6" style="font-weight:400">
+                                    {{ resource["summary"] }}
+                                  </p>
                                 </td>
                               </tr>
                               <tr class="ma-0 pa-0">
@@ -264,7 +275,7 @@
                       class="elevation-2"
                       @click="navigateToRoute('/suggest-resource')"
                       outlined
-                      >Suggest Resource</v-btn
+                      >Suggest A Resource</v-btn
                     >
                     <v-spacer></v-spacer>
                     <v-btn color="teal darken-3" text @click="dialog = false">

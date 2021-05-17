@@ -7,7 +7,7 @@
     <v-dialog v-model="dialog" width="950">
       <v-card>
         <v-card-title
-          class=" text-white pa-2 ma-0 elevation-3 brown lighten-5 bordered-bottom"
+          class=" text-white pa-2 ma-0 brown lighten-5 border-bottom"
           style="z-index:1000"
         >
           <table class="table table-borderless ma-4">
@@ -16,15 +16,18 @@
                 <td class="align-bottom text-left ma-0 pa-0">
                   <p
                     class="h5 ma-0 pa-0 text-gray"
-                    style="overflow-wrap:break-word; hyphens: auto"
+                    style="word-break:normal; hyphens: auto;"
                   >
-                    CIRCULAR ECONOMY IN THE BUILT ENVIRONMENT
+                    Circular Economy in the Built Environment
                   </p>
                 </td>
               </tr>
               <tr class="ma-0 pa-0">
                 <td class="ma-0 pa-0 align-top">
-                  <p class="ma-0 pa-0 text-gray">
+                  <p
+                    class="ma-0 pa-0 text-gray mt-2"
+                    style="word-break:normal; line-height:normal; font-style: italic; font-weight: 400"
+                  >
                     General Resources to Learn More About the Circular Economy
                   </p>
                 </td>
@@ -54,10 +57,17 @@
                 shaped
                 class="grey lighten-5"
               >
-                <v-card-title class="text-h5">
+                <v-card-title
+                  class="text-h5 text-wrap roboto"
+                  style="word-break:normal; line-height: normal;"
+                >
                   {{ resource["short name"] }}
                 </v-card-title>
-                <v-card-subtitle v-if="resource['long name'] != ''">
+                <v-card-subtitle
+                  v-if="resource['long name'] != ''"
+                  style="line-height: normal"
+                  class="pt-2"
+                >
                   <b>{{ resource["long name"] }}</b>
                 </v-card-subtitle>
                 <v-card-text>
@@ -102,7 +112,9 @@
                           class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
                           rowspan="2"
                         >
-                          <p class="h6">{{ resource["summary"] }}</p>
+                          <p class="h6" style="font-weight:400">
+                            {{ resource["summary"] }}
+                          </p>
                         </td>
                       </tr>
                       <tr class="ma-0 pa-0">
@@ -168,8 +180,8 @@ import * as d3 from "d3";
 export default {
   name: "CircularEconomyDiagram",
   created() {
-    this.recordWindowHeight();
-    window.addEventListener("resize", this.recordWindowHeight);
+    this.recordWindowDims();
+    window.addEventListener("resize", this.recordWindowDims);
   },
   mounted() {
     let backgroundSvgId = "circular-economy-background-svg";
@@ -190,7 +202,7 @@ export default {
     window.removeEventListener("resize", this.resizeDiagram);
   },
   destroyed() {
-    window.removeEventListener("resize", this.recordWindowHeight);
+    window.removeEventListener("resize", this.recordWindowDims);
   },
   computed: {
     combinedState() {
@@ -228,7 +240,8 @@ export default {
     return {
       diagram: {},
       dialog: false,
-      windowHeight: undefined
+      windowHeight: undefined,
+      windowWidth: undefined
     };
   },
   methods: {
@@ -236,9 +249,11 @@ export default {
       window.open(link, "_blank");
     },
 
-    recordWindowHeight() {
+    recordWindowDims() {
       let windowHeight = window.innerHeight;
+      let windowWidth = window.innerWidth;
       this.windowHeight = windowHeight;
+      this.windowWidth = windowWidth;
     },
 
     toggleDialog() {
@@ -281,7 +296,7 @@ export default {
 
       diagram.svg.append("defs");
 
-      this.createDropShadowFilter();
+      // this.createDropShadowFilter();
       this.generalUpdatePattern();
     },
 
@@ -289,43 +304,43 @@ export default {
     //////////// BUILDING OUT THE DATA FOR THE DIAGRAM ////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    createDropShadowFilter() {
-      let svg = this.diagram.svg;
-      let dropShadowFilter = svg
-        .select("defs")
-        .append("filter")
-        .attr("id", "dropshadow")
-        .attr("y", "-100%")
-        .attr("height", "300%")
-        .attr("x", "-100%")
-        .attr("width", "300%");
-      dropShadowFilter
-        .append("feGaussianBlur")
-        .attr("in", "SourceAlpha")
-        .attr("stdDeviation", 4)
-        .attr("result", "blur");
-      dropShadowFilter
-        .append("feOffset")
-        .attr("in", "blur")
-        .attr("dx", 5)
-        .attr("dy", 8)
-        .attr("result", "offsetBlur");
-      dropShadowFilter
-        .append("feFlood")
-        .attr("in", "offsetBlur")
-        .attr("flood-opacity", "0.5")
-        .attr("result", "offsetColor");
-      dropShadowFilter
-        .append("feComposite")
-        .attr("in", "offsetColor")
-        .attr("in2", "offsetBlur")
-        .attr("operator", "in")
-        .attr("result", "offsetBlur");
+    // createDropShadowFilter() {
+    //   let svg = this.diagram.svg;
+    //   let dropShadowFilter = svg
+    //     .select("defs")
+    //     .append("filter")
+    //     .attr("id", "dropshadow")
+    //     .attr("y", "-100%")
+    //     .attr("height", "300%")
+    //     .attr("x", "-100%")
+    //     .attr("width", "300%");
+    //   dropShadowFilter
+    //     .append("feGaussianBlur")
+    //     .attr("in", "SourceAlpha")
+    //     .attr("stdDeviation", 4)
+    //     .attr("result", "blur");
+    //   dropShadowFilter
+    //     .append("feOffset")
+    //     .attr("in", "blur")
+    //     .attr("dx", 5)
+    //     .attr("dy", 8)
+    //     .attr("result", "offsetBlur");
+    //   dropShadowFilter
+    //     .append("feFlood")
+    //     .attr("in", "offsetBlur")
+    //     .attr("flood-opacity", "0.5")
+    //     .attr("result", "offsetColor");
+    //   dropShadowFilter
+    //     .append("feComposite")
+    //     .attr("in", "offsetColor")
+    //     .attr("in2", "offsetBlur")
+    //     .attr("operator", "in")
+    //     .attr("result", "offsetBlur");
 
-      let feMerge = dropShadowFilter.append("feMerge");
-      feMerge.append("feMergeNode").attr("in", "offsetBlur");
-      feMerge.append("feMergeNode").attr("in", "SourceGraphic");
-    },
+    //   let feMerge = dropShadowFilter.append("feMerge");
+    //   feMerge.append("feMergeNode").attr("in", "offsetBlur");
+    //   feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+    // },
 
     structureData() {
       let diagram = this.diagram;
@@ -378,8 +393,8 @@ export default {
       structData.actors = [];
       for (let catAct of categorizedActorData) {
         let radialStep =
-          (catAct.endAngle - catAct.startAngle) / catAct.actorCount;
-        let firstStep = radialStep / 2;
+          (catAct.endAngle - catAct.startAngle) / (catAct.actorCount + 1);
+        let firstStep = radialStep;
         for (let i in catAct.actors) {
           let actor = catAct.actors[i];
           actor.actorAngle = catAct.startAngle + firstStep + radialStep * i;
@@ -556,21 +571,31 @@ export default {
         .attr("y", (geomData.iconDims * -1) / 2)
         .attr("width", geomData.iconDims)
         .attr("height", geomData.iconDims);
-      iconImages
-        // .transition()
-        // .delay(self.rotationTime)
-        // .duration(1)
-        .attr("transform", d => {
-          let rotationAngle = d.endAngle - Math.PI * 0.04;
-          let counterRotation = rotationAngle * -1 - self.rotationTracker;
-          return (
-            "rotate(" +
-            (counterRotation * 180) / Math.PI +
-            "," +
-            geomData.iconRadius +
-            ",0)"
-          );
+      iconImages.attr("transform", d => {
+        let rotationAngle = d.endAngle - Math.PI * 0.04;
+        let counterRotation = rotationAngle * -1 - self.rotationTracker;
+        return (
+          "rotate(" +
+          (counterRotation * 180) / Math.PI +
+          "," +
+          geomData.iconRadius +
+          ",0)"
+        );
+      });
+      iconImages.on("mouseover", function(e, d) {
+        d3.selectAll(".category-shapes").style("stroke-width", function(od) {
+          if (od.text == d.text) {
+            return geomData.heavyLineWeight * 3;
+          } else {
+            return geomData.heavyLineWeight;
+          }
         });
+      });
+      iconImages.on("mouseout", function() {
+        d3.selectAll(".category-shapes").style("stroke-width", function(od) {
+          return geomData.heavyLineWeight;
+        });
+      });
 
       svg
         .select(".diagram-title")
@@ -580,8 +605,8 @@ export default {
         );
       let buttonBackgroundData = [
         {
-          width: self.controllingDim * 0.29,
-          height: self.controllingDim * 0.11
+          width: self.controllingDim * 0.325,
+          height: self.controllingDim * 0.12
         }
       ];
       let diagramTitleButton = svg
@@ -596,10 +621,10 @@ export default {
         .attr("height", d => d.height)
         .attr("rx", self.controllingDim * 0.01)
         .attr("fill", "white")
-        .attr("stroke", "gray")
+        .attr("stroke", "white")
         .style("cursor", "pointer");
 
-      let diagramData = ["CIRCULAR ECONOMY", "IN THE BUILT", "ENVIRONMENT"];
+      let diagramData = ["Circular Economy", "in the Built", "Environment"];
       let diagramTitle = svg
         .select(".diagram-title")
         .selectAll(".diagram-title-text")
@@ -610,17 +635,17 @@ export default {
         .text(d => d)
         .style("text-anchor", "middle")
         .attr("startOffset", "50%")
-        .style("font-family", "Arial, Helvetica, sans-serif")
+        .style("font-family", "roboto mono")
+        .style("font-weight", 500)
         .style("dominant-baseline", "middle")
         .style("fill", "gray")
         .style("font-size", function() {
-          return self.controllingDim * 0.023 + "px";
+          return self.controllingDim * 0.032 + "px";
         })
-        .style("font-weight", "bold")
         .style("cursor", "pointer")
-        .attr("filter", "none")
+        // .attr("filter", "none")
         .attr("transform", (d, i) => {
-          let stepSize = self.controllingDim * 0.026;
+          let stepSize = self.controllingDim * 0.035;
           let startStep = stepSize * -1;
           let yTransform = startStep + stepSize * i;
           return "translate(0," + yTransform + ")";
@@ -629,41 +654,37 @@ export default {
       function diagramTitleMouseOver() {
         d3.select(this.parentNode)
           .selectAll(".diagram-title-text")
-          .transition()
-          .duration(150)
           .style("fill", "#303030")
-          .style("font-weight", "bolder");
+          .style("font-weight", 700);
         d3.select(this.parentNode)
           .selectAll(".diagram-title-button")
-          .transition()
-          .duration(150)
           .attr("fill", "#f5f5f5")
+          .transition()
           .attr("stroke", "#303030");
       }
 
       function diagramTitleMouseOut() {
         d3.select(this.parentNode)
           .selectAll(".diagram-title-text")
-          .transition()
-          .duration(150)
           .style("fill", "gray")
-          .style("font-weight", "bold");
+          .style("font-weight", 500);
         d3.select(this.parentNode)
           .selectAll(".diagram-title-button")
-          .transition()
-          .duration(150)
           .attr("fill", "white")
-          .attr("stroke", "gray");
+          .transition()
+          .attr("stroke", "white");
       }
       diagramTitle.on("mouseover", diagramTitleMouseOver);
       diagramTitle.on("mouseout", diagramTitleMouseOut);
       diagramTitleButton.on("mouseover", diagramTitleMouseOver);
       diagramTitleButton.on("mouseout", diagramTitleMouseOut);
 
-      diagramTitle.on("click", function() {
+      function diagramTitleClicked() {
         component.toggleDialog();
         console.log("diagram title clicked");
-      });
+      }
+      diagramTitle.on("click", diagramTitleClicked);
+      diagramTitleButton.on("click", diagramTitleClicked);
 
       //////////////////
       // OUTTER RING
@@ -775,7 +796,7 @@ export default {
             .style("text-anchor", "middle")
             .attr("startOffset", "50%")
             .text(d => d.text.toUpperCase())
-            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("font-family", "roboto")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
 
@@ -804,7 +825,7 @@ export default {
 
       //////////////////
       // CATEGORIES AND PRIMARY RING
-      console.log("category data", catData);
+      // console.log("category data", catData);
       let categoryTextData = [];
       for (let d of catData) {
         for (let i in d.ringText) {
@@ -816,7 +837,7 @@ export default {
         }
       }
 
-      console.log("category text data", categoryTextData);
+      // console.log("category text data", categoryTextData);
       svg
         .select(".category-text")
         .attr(
@@ -854,9 +875,9 @@ export default {
         .attr("d", d => categoryTextPathGenerator(d));
 
       let categoryText = categoryTextGroups
-        .selectAll(".category-text")
+        .selectAll(".category-text-text")
         .data(d => [d])
-        .join(enter => enter.append("text").classed("category-text", true))
+        .join(enter => enter.append("text").classed("category-text-text", true))
         .selectAll(".category-text-to-path")
         .data(d => [d])
         .join(enter =>
@@ -875,7 +896,7 @@ export default {
             .style("text-anchor", "middle")
             .attr("startOffset", "45%")
             .text(d => d.ringLineText.toUpperCase())
-            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("font-family", "roboto")
             .style("fill", "white")
             .style("dominant-baseline", "middle")
 
@@ -886,6 +907,21 @@ export default {
         });
       categoryText.on("click", function(e, d) {
         categoryClick(d, e, this);
+      });
+      categoryText.on("mouseover", function(e, d) {
+        d3.selectAll(".category-shapes").style("stroke-width", function(od) {
+          if (od.text == d.text) {
+            // console.log("matched");
+            return geomData.heavyLineWeight * 3;
+          } else {
+            return geomData.heavyLineWeight;
+          }
+        });
+      });
+      categoryText.on("mouseout", function(e, d) {
+        d3.selectAll(".category-shapes").style("stroke-width", function(od) {
+          return geomData.heavyLineWeight;
+        });
       });
 
       let buildCategoryPath = function(catData) {
@@ -944,6 +980,17 @@ export default {
           "transform",
           "rotate(" + (self.rotationTracker * 180) / Math.PI + ")"
         );
+      let categoryClippingMasks = categoryGroups
+        .selectAll(".category-clipping-masks")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("clipPath")
+            .classed("category-clipping-masks", true)
+            .attr("id", d => d.text.replace(/\s/g, "") + "clipping")
+            .append("use")
+            .attr("xlink:href", d => "#" + d.text.replace(/\s/g, "") + "shape")
+        );
       let categoryShapes = categoryGroups
         .selectAll(".category-shapes")
         .data(d => [d])
@@ -959,15 +1006,29 @@ export default {
             })
 
             .attr("stroke", "white")
-            .attr("filter", "none")
+            // .attr("filter", "none")
             .attr("transform", "translate(0,0)")
             .attr("opacity", 1)
+            .attr("id", d => d.text.replace(/\s/g, "") + "shape")
+            .attr(
+              "clip-path",
+              (d, i) => "url(#" + d.text.replace(/\s/g, "") + "clipping)"
+            )
         )
         .attr("stroke-width", () => geomData.heavyLineWeight)
         .attr("d", d => buildCategoryPath(d));
 
       categoryShapes.on("click", function(e, d) {
         categoryClick(d, e, this);
+      });
+      categoryShapes.on("mouseover", function(e, d) {
+        d3.select(this).style(
+          "stroke-width",
+          () => geomData.heavyLineWeight * 3 + "px"
+        );
+      });
+      categoryShapes.on("mouseout", function(e, d) {
+        d3.select(this).style("stroke-width", () => geomData.heavyLineWeight);
       });
 
       //////////////////
@@ -1033,16 +1094,16 @@ export default {
         let growY = geomData.actorArrow.growHeight;
         let growX = geomData.actorArrow.growWidth;
 
-        // pointX -= growX;
-        // edgeX -= growX;
+        pointX -= growX;
+        edgeX -= growX;
 
         if (selected) {
           topY += growY;
           bottomY -= growY;
           centerX -= growX;
-          tailX -= growX;
-          // pointX += growX;
-          // edgeX += growX;
+          // tailX -= growX;
+          pointX += growX;
+          edgeX += growX;
         }
 
         let path = d3.path();
@@ -1063,7 +1124,7 @@ export default {
         .join(enter =>
           enter
             .append("path")
-            .style("stroke", "white")
+            // .style("stroke", "white")
 
             .style("fill", d => {
               for (let cat of catData) {
@@ -1075,14 +1136,14 @@ export default {
             })
         )
         .style("stroke-width", () => geomData.lineWeight)
-        .attr("filter", function(d) {
-          let selected = d3.select(this).classed("actor-selected");
-          if (selected) {
-            return "url(#dropshadow)";
-          } else {
-            return "none";
-          }
-        })
+        // .attr("filter", function(d) {
+        //   let selected = d3.select(this).classed("actor-selected");
+        //   if (selected) {
+        //     return "url(#dropshadow)";
+        //   } else {
+        //     return "none";
+        //   }
+        // })
         .transition()
         .attr("d", function() {
           let selected = d3.select(this).classed("actor-selected");
@@ -1100,7 +1161,7 @@ export default {
           enter
             .append("text")
             .classed("no-select", true)
-            .style("font-family", "Arial, Helvetica, sans-serif")
+            .style("font-family", "roboto")
             .style("font-size", "1.4vmin")
             .style("fill", "white")
 
@@ -1122,7 +1183,8 @@ export default {
           let testAngle =
             (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
           if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 + self.controllingDim * 0.001;
+            return self.controllingDim / 2 + self.controllingDim * 0.015;
+            // ;
           } else {
             return geomData.actorArrow.radius + self.controllingDim * 0.003;
           }
@@ -1146,10 +1208,16 @@ export default {
             .classed("actor-selected");
           let testAngle =
             (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
-          if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 + self.controllingDim * 0.001;
+          if (
+            testAngle < Math.PI * 1.5 &&
+            testAngle > Math.PI * 0.5 &&
+            selected
+          ) {
+            return self.controllingDim / 2 - self.controllingDim * 0.01;
+          } else if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
+            return self.controllingDim / 2 + self.controllingDim * 0.015;
           } else if (selected) {
-            return geomData.actorArrow.radius - self.controllingDim * 0.015;
+            return geomData.actorArrow.radius + self.controllingDim * 0.001;
           } else {
             return geomData.actorArrow.radius + self.controllingDim * 0.003;
           }
@@ -1176,9 +1244,9 @@ export default {
             .classed("receding-category", false)
             .attr("opacity", 1)
             .filter(".category-shapes")
-            .transition()
-            .attr("filter", "none")
-            .attr("transform", "translate(0,0)");
+            .transition();
+          // .attr("filter", "none")
+          // .attr("transform", "translate(0,0)");
         } else {
           component.$store.commit("selectCategory", true);
           d3.selectAll(".actor-rotation-groups")
@@ -1216,15 +1284,15 @@ export default {
         }
         d3.selectAll(".receding-category")
           .transition()
-          .attr("filter", "none")
+          // .attr("filter", "none")
           .attr("transform", "translate(0,0)")
           .attr("opacity", 0.9);
 
         d3.selectAll(".selected-category")
           .filter(".category-shapes")
           .transition()
-          .attr("filter", "url(#dropshadow)")
-          .attr("transform", "translate(1,-4)")
+          // .attr("filter", "url(#dropshadow)")
+          // .attr("transform", "translate(1,-4)")
           .attr("opacity", 1);
         let allActors = d3
           .selectAll(".actor-rotation-groups")
@@ -1248,7 +1316,7 @@ export default {
           .classed("actor-selected");
         if (thisActorActive) {
           if (thisActorSelected) {
-            console.log("actor is already selected");
+            // console.log("actor is already selected");
             component.$store.commit("selectActor", component.blankActor);
             d3.selectAll(".actor-rotation-groups")
               .selectAll("path")
@@ -1267,6 +1335,10 @@ export default {
               .selectAll("path")
               .classed("actor-selected", false);
             thisActor.selectAll("path").classed("actor-selected", true);
+            if (component.windowWidth <= 991) {
+              rotateDiagram += Math.PI * 0.75;
+            }
+            //if screen width is too small, rotate so that it points downward at an angle to the left
             component.rotate(rotateDiagram);
           }
         }
@@ -1294,8 +1366,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: roboto;
 
   overflow: hidden;
   padding: 10px;
@@ -1309,8 +1380,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: roboto;
 
   /* overflow: hidden; */
   line-height: 95%;
