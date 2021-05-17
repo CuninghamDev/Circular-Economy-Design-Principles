@@ -213,7 +213,8 @@ export default {
       "geometry",
       "blankActor",
       "title",
-      "generalResourceData"
+      "generalResourceData",
+      "showDiagramInteractionAlert"
     ]),
     generalResources() {
       if (this.generalResourceData) {
@@ -231,6 +232,10 @@ export default {
     };
   },
   methods: {
+    openLink(link) {
+      window.open(link, "_blank");
+    },
+
     recordWindowHeight() {
       let windowHeight = window.innerHeight;
       this.windowHeight = windowHeight;
@@ -1136,6 +1141,9 @@ export default {
         let thisData = d;
         let thisEvent = e;
         let thisCategory = d3.select(selected);
+        if (component.showDiagramInteractionAlert) {
+          component.$store.commit("toggleShowDiagramInteractionAlert");
+        }
 
         if (thisCategory.classed("selected-category")) {
           component.$store.commit("selectCategory", false);

@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    showDiagramInteractionAlert: true,
     resourcesCsvPath: "/circular-economy/data/resources.csv",
     resourcesData: undefined,
     generalResourcesCsvPath: "/circular-economy/data/general_resources.csv",
@@ -540,6 +541,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    toggleShowDiagramInteractionAlert(state) {
+      state.showDiagramInteractionAlert = !state.showDiagramInteractionAlert;
+    },
     setResourcesData(state, resourcesData) {
       state.resourcesData = resourcesData;
     },
