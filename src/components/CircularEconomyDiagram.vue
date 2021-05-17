@@ -578,6 +578,27 @@ export default {
           "transform",
           "translate(" + geomData.centerX + "," + geomData.centerY + ")"
         );
+      let buttonBackgroundData = [
+        {
+          width: self.controllingDim * 0.29,
+          height: self.controllingDim * 0.11
+        }
+      ];
+      let diagramTitleButton = svg
+        .select(".diagram-title")
+        .selectAll(".diagram-title-button")
+        .data(buttonBackgroundData)
+        .join("rect")
+        .classed("diagram-title-button", true)
+        .attr("x", d => 0 - d.width / 2)
+        .attr("y", d => 0 - d.height / 2)
+        .attr("width", d => d.width)
+        .attr("height", d => d.height)
+        .attr("rx", self.controllingDim * 0.01)
+        .attr("fill", "white")
+        .attr("stroke", "gray")
+        .style("cursor", "pointer");
+
       let diagramData = ["CIRCULAR ECONOMY", "IN THE BUILT", "ENVIRONMENT"];
       let diagramTitle = svg
         .select(".diagram-title")
@@ -593,7 +614,7 @@ export default {
         .style("dominant-baseline", "middle")
         .style("fill", "gray")
         .style("font-size", function() {
-          return self.controllingDim * 0.026 + "px";
+          return self.controllingDim * 0.023 + "px";
         })
         .style("font-weight", "bold")
         .style("cursor", "pointer")
@@ -604,22 +625,40 @@ export default {
           let yTransform = startStep + stepSize * i;
           return "translate(0," + yTransform + ")";
         });
-      diagramTitle.on("mouseover", function() {
+
+      function diagramTitleMouseOver() {
         d3.select(this.parentNode)
           .selectAll(".diagram-title-text")
           .transition()
           .duration(150)
           .style("fill", "#303030")
           .style("font-weight", "bolder");
-      });
-      diagramTitle.on("mouseout", function() {
+        d3.select(this.parentNode)
+          .selectAll(".diagram-title-button")
+          .transition()
+          .duration(150)
+          .attr("fill", "#f5f5f5")
+          .attr("stroke", "#303030");
+      }
+
+      function diagramTitleMouseOut() {
         d3.select(this.parentNode)
           .selectAll(".diagram-title-text")
           .transition()
           .duration(150)
           .style("fill", "gray")
           .style("font-weight", "bold");
-      });
+        d3.select(this.parentNode)
+          .selectAll(".diagram-title-button")
+          .transition()
+          .duration(150)
+          .attr("fill", "white")
+          .attr("stroke", "gray");
+      }
+      diagramTitle.on("mouseover", diagramTitleMouseOver);
+      diagramTitle.on("mouseout", diagramTitleMouseOut);
+      diagramTitleButton.on("mouseover", diagramTitleMouseOver);
+      diagramTitleButton.on("mouseout", diagramTitleMouseOut);
 
       diagramTitle.on("click", function() {
         component.toggleDialog();
@@ -1115,27 +1154,6 @@ export default {
             return geomData.actorArrow.radius + self.controllingDim * 0.003;
           }
         });
-
-      // let rectData = [{ w: self.controllingDim, h: self.height, x: 0, y: 0 }];
-      // svg
-      //   .select(".stage")
-      //   .selectAll("rect")
-      //   .data(rectData)
-      //   .join("rect")
-      //   .attr("width", d => d.w)
-      //   .attr("height", d => d.h)
-      //   .attr("x", d => d.x)
-      //   .attr("y", d => d.y)
-      //   .attr("fill", "none")
-      //   .on("click", function() {
-      //     whiteSpaceClick();
-      //   });
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      ////////////////////// THIS SECTION WILL CONTAIN CODE THAT IS CALLED BY VARIOUS EVENTS //////////////////////////
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      // let whiteSpaceClick = function() {
-      //   console.log("white space clicked");
-      // };
 
       let categoryClick = function(d, e, selected) {
         let thisData = d;
