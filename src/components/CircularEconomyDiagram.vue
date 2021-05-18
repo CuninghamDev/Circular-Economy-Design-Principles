@@ -1183,44 +1183,14 @@ export default {
           let testAngle =
             (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
           if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 + self.controllingDim * 0.015;
-            // ;
+            return self.controllingDim / 2 + self.controllingDim * 0.014;
           } else {
-            return geomData.actorArrow.radius + self.controllingDim * 0.003;
+            return geomData.actorArrow.radius - self.controllingDim * 0.005;
           }
         })
         .transition()
         .style("font-size", function(d) {
-          let selected = d3
-            .select(this.parentNode)
-            .select("path")
-            .classed("actor-selected");
-          if (selected) {
-            return self.controllingDim * 0.0172 + "px";
-          } else {
-            return self.controllingDim * 0.015 + "px";
-          }
-        })
-        .attr("x", function(d) {
-          let selected = d3
-            .select(this.parentNode)
-            .select("path")
-            .classed("actor-selected");
-          let testAngle =
-            (d.actorAngle + self.rotationTracker + Math.PI * 2) % (Math.PI * 2);
-          if (
-            testAngle < Math.PI * 1.5 &&
-            testAngle > Math.PI * 0.5 &&
-            selected
-          ) {
-            return self.controllingDim / 2 - self.controllingDim * 0.01;
-          } else if (testAngle < Math.PI * 1.5 && testAngle > Math.PI * 0.5) {
-            return self.controllingDim / 2 + self.controllingDim * 0.015;
-          } else if (selected) {
-            return geomData.actorArrow.radius + self.controllingDim * 0.001;
-          } else {
-            return geomData.actorArrow.radius + self.controllingDim * 0.003;
-          }
+          return self.controllingDim * 0.016 + "px";
         });
 
       let categoryClick = function(d, e, selected) {

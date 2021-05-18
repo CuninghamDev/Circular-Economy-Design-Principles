@@ -26,15 +26,16 @@
         >
       </div>
     </div>
+
     <div class="row ml-0 mt-6">
       <div class="col-md-4 col-xl-3 mb-0 pb-0 ml-0">
         <v-select
           class="my-0 py-0"
           :items="lifeCycleFilters"
+          v-model="activeLifeCycleFilter"
           label="Life Cycle Phase"
           dense
           outlined
-          @input="setLifeCycleFilter($event)"
         >
         </v-select>
       </div>
@@ -43,22 +44,30 @@
         <v-select
           class="my-0 py-0"
           :items="typeFilters"
+          v-model="activeTypeFilter"
           label="Type of Resource"
           dense
           outlined
-          @input="setTypeFilter($event)"
         >
         </v-select>
       </div>
       <div class="col-md-4 col-xl-3 mb-0 pb-0">
         <v-select
           :items="readTimeFilters"
+          v-model="activeReadTimeFilter"
           label="Quick Reads"
           dense
           outlined
-          @input="setReadTimeFilter($event)"
         >
         </v-select>
+      </div>
+    </div>
+    <div
+      class="row ml-0 mt-0 mb-6"
+      v-if="activeReadTimeFilter || activeTypeFilter || activeLifeCycleFilter"
+    >
+      <div class="col-md-4 col-xl-3 mb-0 pb-0 ml-0">
+        <v-btn @click="clearFilters()">Clearn Filters</v-btn>
       </div>
     </div>
     <div class="row mx-2">
@@ -278,6 +287,11 @@ export default {
       if (path != currentRoute) {
         this.$router.push(path);
       }
+    },
+    clearFilters: function() {
+      this.activeReadTimeFilter = "";
+      this.activeLifeCycleFilter = "";
+      this.activeTypeFilter = "";
     }
   },
   data: () => ({
