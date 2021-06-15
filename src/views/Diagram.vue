@@ -9,7 +9,7 @@
       </div>
     </div>
     <div>
-      <v-dialog v-model="showDiagramInteractionAlert" width="1000">
+      <v-dialog :value="showDiagramInteractionAlert" width="1000">
         <v-card>
           <v-card-title class="pa-2 ma-0 border-bottom pl-4 pt-4">
             <h4>
@@ -153,7 +153,7 @@
               <v-btn
                 color="teal darken-3"
                 text
-                @click="showDiagramInteractionAlert = false"
+                @click="toggleShowDiagramInteractionAlert()"
               >
                 Go To Diagram
               </v-btn>
@@ -224,6 +224,9 @@ export default {
     recordWindowHeight() {
       let windowHeight = window.innerHeight;
       this.windowHeight = windowHeight;
+    },
+    toggleShowDiagramInteractionAlert() {
+      this.$store.commit("toggleShowDiagramInteractionAlert");
     }
   }
 };
