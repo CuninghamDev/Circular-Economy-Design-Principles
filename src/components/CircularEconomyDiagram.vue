@@ -1215,8 +1215,11 @@ export default {
             .attr("opacity", 1)
             .filter(".category-shapes")
             .transition();
-          // .attr("filter", "none")
-          // .attr("transform", "translate(0,0)");
+
+          component.$store.commit("selectActor", component.blankActor);
+          d3.selectAll(".actor-rotation-groups")
+            .selectAll("path")
+            .classed("actor-selected", false);
         } else {
           component.$store.commit("selectCategory", true);
           d3.selectAll(".actor-rotation-groups")
@@ -1251,6 +1254,19 @@ export default {
                 return true;
               }
             });
+          let catRotationCenter =
+            (d.endAngle - d.startAngle) / 2 + d.startAngle;
+          let currentPos = catRotationCenter + self.rotationTracker;
+          let rotateDiagram = Math.PI * 2 - (currentPos % (Math.PI * 2));
+
+          if (component.windowWidth <= 991) {
+            rotateDiagram += Math.PI * 0.75;
+          }
+          component.rotate(rotateDiagram);
+          component.$store.commit("selectActor", component.blankActor);
+          d3.selectAll(".actor-rotation-groups")
+            .selectAll("path")
+            .classed("actor-selected", false);
         }
         d3.selectAll(".receding-category")
           .transition()
