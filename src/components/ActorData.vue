@@ -134,7 +134,7 @@
 
                 <v-container
                   style="z-index:0"
-                  class="my-0 pb-4 pt-4 hide-scrollbar"
+                  class="my-0 pb-4 pt-4"
                   :style="
                     'max-height:' +
                       this.windowHeight * 0.5 +

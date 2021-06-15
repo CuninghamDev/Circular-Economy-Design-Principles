@@ -67,7 +67,7 @@
       v-if="activeReadTimeFilter || activeTypeFilter || activeLifeCycleFilter"
     >
       <div class="col-md-4 col-xl-3 mb-0 pb-0 ml-0">
-        <v-btn @click="clearFilters()">Clearn Filters</v-btn>
+        <v-btn @click="clearFilters()">Clear Filters</v-btn>
       </div>
     </div>
     <div class="row mx-2">
