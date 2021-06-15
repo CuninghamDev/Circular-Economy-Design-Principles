@@ -25,13 +25,11 @@
             <div class="row my-0 py-0">
               <div class="col my-0 py-0">
                 <p>
-                  This toolkit has been designed to aggregate and visualize
-                  resources related to the Circular Economy in the Built
-                  Environment, that can be used by Building Owners, Designers,
-                  Manufacturers and Contractors to gain a general understanding
-                  about the range of concepts and approaches that can be used to
-                  implement circular economy principles when doing work related
-                  to the built environment.
+                  This toolkit has been designed to aggregate the resources
+                  related to the Circular Economy in the Built Environment. It
+                  is intended to be used by Owners, Designers, Manufacturers and
+                  Contractors as an educational and resource roadmap to circular
+                  strategies.
                 </p>
               </div>
             </div>
@@ -43,12 +41,9 @@
             <div class="row my-0 py-0">
               <div class="col my-0 py-0">
                 <p>
-                  There are any number of conventional names for the various
-                  phases of a project's lifecycle. For this effort phases have
-                  been chosen to break down the project lifecycle in terms of
-                  the circular economy activities taking place during at given
-                  points in time. The four phases as defined by this effort are
-                  listed below with more detailed descriptions.
+                  The tool breaks down the project timeline in terms of the
+                  circular economy activities taking place at each lifecycle
+                  phase. The four phases are delineated below.
                 </p>
               </div>
             </div>
@@ -131,16 +126,13 @@
             <div class="row my-0 py-0 pl-5 pt-3">
               <div class="col my-0 py-0">
                 <p>
-                  To get started, click outside of this dialog window or click
-                  the "Go To Diagram" button in the bottom right. This will take
-                  you to the first page of the toolkit, the Circular Economy
-                  Diagram. This diagram will allow you to browse through the
-                  various strategies associated with the phases listed above,
-                  and view online resources associated with these different
-                  approaches to circularity. If you'd like resources associated
-                  with the Circular Economy more generally, click the button in
-                  the center of the diagram for a list of additional reading and
-                  online resources.
+                  To get started, click either outside of this dialog window or
+                  the "Go To Diagram" button in the bottom right. The diagram
+                  will allow you to browse through the various strategies and
+                  resources associated with the above phases. If you'd like a
+                  more general sense on what the Circular Economy in the Built
+                  Environment entails click the button at the center of the
+                  diagram.
                 </p>
               </div>
             </div>
