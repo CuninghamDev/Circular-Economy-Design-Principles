@@ -6,17 +6,22 @@
     <div class="row m-0 p-0">
       <div class="col-lg-8 m-0 p-0 border-top">
         <CircularEconomyDiagram :svgContainerVmin="88" v-if="currentTab == 0" />
+        <EvaluationReport v-if="currentTab == 1" :reportVmin="88" />
       </div>
     </div>
-    <div class="col m-0 p-0"></div>
+    <div class="col m-0 p-0">
+      <EvaluationForm />
+    </div>
   </div>
 </template>
 
 <script>
 import CircularEconomyDiagram from "../components/CircularEconomyDiagram.vue";
+import EvaluationReport from "../components/EvaluationReport.vue";
+import EvaluationForm from "../components/EvaluationForm.vue";
 export default {
   name: "CircularEvaluation",
-  components: { CircularEconomyDiagram },
+  components: { CircularEconomyDiagram, EvaluationReport, EvaluationForm },
   data: () => ({
     tabData: ["Diagram", "Evaluation Report"],
     currentTab: 0

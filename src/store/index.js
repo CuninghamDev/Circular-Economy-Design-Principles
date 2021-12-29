@@ -691,6 +691,16 @@ export default new Vuex.Store({
         }
       }
       return lifeCycles;
+    },
+    getActorsForEvaluation: state => {
+      let actorsForEval = state.actors.filter(actor => {
+        if ("eval" in actor && "evalPoints" in actor) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      return actorsForEval;
     }
   },
   actions: {},
