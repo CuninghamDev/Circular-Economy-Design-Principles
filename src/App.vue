@@ -135,6 +135,11 @@ export default {
           route: "/"
         },
         {
+          name: "How Circular Is Your Project?",
+          ref: "circular-evaluation",
+          route: "/circular-evaluation"
+        },
+        {
           name: "List of Resources",
           ref: "resources",
           route: "/resources"

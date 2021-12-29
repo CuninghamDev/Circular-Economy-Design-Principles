@@ -1,5 +1,9 @@
 <template>
-  <div id="svg-container" class="hide-scrollbar">
+  <div
+    id="svg-container"
+    class="hide-scrollbar"
+    :style="{ height: String(svgContainerVmin) + 'vmin' }"
+  >
     <svg id="circular-economy-background-svg"></svg>
     <div id="circular-economy-diagram-div" class="no-select"></div>
     <svg id="circular-economy-diagram-svg"></svg>
@@ -181,13 +185,19 @@ export default {
   name: "CircularEconomyDiagram",
   created() {
     this.recordWindowDims();
+    // console.log('window dimensions recorded curing creation',this.windowHeight,this.windowWidth)
     window.addEventListener("resize", this.recordWindowDims);
+    // console.log('finished created loop')
   },
   mounted() {
     let backgroundSvgId = "circular-economy-background-svg";
     let svgId = "circular-economy-diagram-svg";
     let divId = "circular-economy-diagram-div";
     let containerId = "svg-container";
+    let mountedContainerDims = document
+      .getElementById(containerId)
+      .getBoundingClientRect();
+    // console.log('mounted container dimensions',mountedContainerDims)
     this.buildDiagram(
       this.combinedState,
       backgroundSvgId,
@@ -196,6 +206,7 @@ export default {
       containerId
     );
     window.addEventListener("resize", this.resizeDiagram);
+    // console.log('finished mounted loop')
   },
   watch: {},
   beforeDestroy() {
@@ -236,6 +247,7 @@ export default {
       }
     }
   },
+  props: ["svgContainerVmin"],
   data() {
     return {
       diagram: {},
@@ -263,7 +275,7 @@ export default {
     buildDiagram(_data, _backgroundId, _svgId, _divId, _containerId) {
       let diagram = this.diagram;
 
-      console.log("building the circular economy diagram");
+      // console.log("building the circular economy diagram");
       diagram.data = _data;
       diagram.background = d3.select("#" + _backgroundId);
       diagram.svg = d3.select("#" + _svgId);
@@ -274,9 +286,11 @@ export default {
 
       diagram.width = d3.select(diagram.container).attr("width");
       diagram.height = d3.select(diagram.container).attr("height");
-
+      // console.log('build diagram recorded diagram width and height',diagram.width,diagram.height)
       this.structureData();
-      this.resizeDiagram(diagram.width, diagram.height);
+      // console.log('starting resize in build loop')
+      this.resizeDiagram();
+      // console.log('finished resizing in build loop',diagram.width,diagram.height)
       this.calcGeoms();
 
       diagram.rotationTracker = diagram.data.geometry.startRotation;
@@ -299,48 +313,6 @@ export default {
       // this.createDropShadowFilter();
       this.generalUpdatePattern();
     },
-
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    //////////// BUILDING OUT THE DATA FOR THE DIAGRAM ////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////
-
-    // createDropShadowFilter() {
-    //   let svg = this.diagram.svg;
-    //   let dropShadowFilter = svg
-    //     .select("defs")
-    //     .append("filter")
-    //     .attr("id", "dropshadow")
-    //     .attr("y", "-100%")
-    //     .attr("height", "300%")
-    //     .attr("x", "-100%")
-    //     .attr("width", "300%");
-    //   dropShadowFilter
-    //     .append("feGaussianBlur")
-    //     .attr("in", "SourceAlpha")
-    //     .attr("stdDeviation", 4)
-    //     .attr("result", "blur");
-    //   dropShadowFilter
-    //     .append("feOffset")
-    //     .attr("in", "blur")
-    //     .attr("dx", 5)
-    //     .attr("dy", 8)
-    //     .attr("result", "offsetBlur");
-    //   dropShadowFilter
-    //     .append("feFlood")
-    //     .attr("in", "offsetBlur")
-    //     .attr("flood-opacity", "0.5")
-    //     .attr("result", "offsetColor");
-    //   dropShadowFilter
-    //     .append("feComposite")
-    //     .attr("in", "offsetColor")
-    //     .attr("in2", "offsetBlur")
-    //     .attr("operator", "in")
-    //     .attr("result", "offsetBlur");
-
-    //   let feMerge = dropShadowFilter.append("feMerge");
-    //   feMerge.append("feMergeNode").attr("in", "offsetBlur");
-    //   feMerge.append("feMergeNode").attr("in", "SourceGraphic");
-    // },
 
     structureData() {
       let diagram = this.diagram;
@@ -466,10 +438,13 @@ export default {
       let svg = diagram.svg;
       let div = diagram.div;
       diagram.containerBounds = diagram.container.getBoundingClientRect();
+      // console.log("diagram container bounds", diagram.containerBounds);
       let cb = diagram.containerBounds;
       diagram.width = cb.right - cb.left;
       diagram.height = cb.bottom - cb.top;
       this.getControllingDim();
+      // console.log("controlling dim", diagram.controllingDim);
+      // console.log("diagram height", diagram.height);
       background.style("position", "absolute");
       background.attr("width", diagram.controllingDim);
       background.attr("height", diagram.height);
@@ -1335,9 +1310,9 @@ export default {
 </script>
 
 <style>
-#svg-container {
+/* #svg-container {
   height: 92vmin;
-}
+} */
 .body-class {
   padding: 0;
   margin: 0;
