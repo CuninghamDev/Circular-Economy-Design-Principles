@@ -647,6 +647,24 @@ export default new Vuex.Store({
         details: "",
         short: ""
       };
+    },
+    buildEvaluationTracking(state) {
+      let actorsCopy = JSON.parse(JSON.stringify(state.actors));
+      for (let actor of actorsCopy) {
+        if (actor.evalSelected == undefined) {
+          actor.evalSelected = false;
+        }
+      }
+      state.actors = actorsCopy;
+    },
+    actorEvalSelected(state, actorData) {
+      let actorsCopy = JSON.parse(JSON.stringify(state.actors));
+      for (let actor of actorsCopy) {
+        if (actor.actor == actorData.actor) {
+          actor.evalSelected = !actor.evalSelected;
+        }
+      }
+      state.actors = actorsCopy;
     }
   },
   getters: {

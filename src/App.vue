@@ -23,7 +23,11 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app class="brown lighten-5 pr-0 mr-0">
+    <v-app-bar
+      app
+      class="brown lighten-5 pr-0 mr-0"
+      id="vuetify-application-bar"
+    >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Circular Economy</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -40,7 +44,7 @@
       ></v-img>
     </v-app-bar>
 
-    <v-main>
+    <v-main id="vuetify-application-main">
       <router-view></router-view>
     </v-main>
   </v-app>
@@ -205,5 +209,8 @@ h5 {
 }
 .roboto {
   font-family: roboto;
+}
+.roboto-mono {
+  font-family: roboto mono;
 }
 </style>
