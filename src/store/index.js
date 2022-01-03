@@ -574,6 +574,7 @@ let categories = [
 ];
 
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== "production",
   state: {
     showDiagramInteractionAlert: true,
     resourcesCsvPath: "/circular-economy/data/resources.csv",
