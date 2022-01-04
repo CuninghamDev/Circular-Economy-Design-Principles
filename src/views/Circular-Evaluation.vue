@@ -8,11 +8,11 @@
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>
     </v-tabs>
     <div class="row m-0 p-0 border-top">
-      <div class="col-lg-8 m-0 p-0 ">
+      <div class="col-lg-7 col-xl-6 m-0 p-0 ">
         <CircularEconomyDiagram :svgContainerVmin="88" v-if="currentTab == 0" />
         <EvaluationReport v-if="currentTab == 1" :reportVmin="88" />
       </div>
-      <div class="col-lg-4 m-0 p-0" style="height:88vmin">
+      <div class="col-lg-5 col-xl-6 m-0 p-0" style="height:88vmin">
         <EvaluationForm />
       </div>
     </div>
@@ -28,6 +28,7 @@ export default {
   components: { CircularEconomyDiagram, EvaluationReport, EvaluationForm },
   beforeMount() {
     this.$store.commit("buildEvaluationTracking");
+    this.$store.commit("setState", { key: "categorySelected", val: false });
   },
   data: () => ({
     tabData: ["Diagram", "Evaluation Report"],

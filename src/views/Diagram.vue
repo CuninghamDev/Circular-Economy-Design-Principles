@@ -190,6 +190,9 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.recordWindowHeight);
   },
+  beforeMount() {
+    this.$store.commit("setState", { key: "categorySelected", val: false });
+  },
   mounted() {
     this.recordWindowWidth();
     window.addEventListener("resize", this.recordWindowWidth);

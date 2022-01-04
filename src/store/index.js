@@ -574,7 +574,7 @@ let categories = [
 ];
 
 export default new Vuex.Store({
-  strict: process.env.NODE_ENV !== "production",
+  // strict: process.env.NODE_ENV !== "production",
   state: {
     showDiagramInteractionAlert: true,
     resourcesCsvPath: "/circular-economy/data/resources.csv",
@@ -584,6 +584,9 @@ export default new Vuex.Store({
     title: "Circular Economy in the Built Environment",
     actorSelected: false,
     categorySelected: false,
+    selectedCategory: undefined,
+    categorySelectTracker: undefined,
+    categorySelectEnum: 0,
     selectedActor: {
       actor: "",
       buttons: "",
@@ -636,7 +639,12 @@ export default new Vuex.Store({
       state.selectedActor = n;
     },
     selectCategory(state, n) {
-      state.categorySelected = n;
+      state.categorySelected = n.toggle;
+      if (n.isSource) {
+        state.selectedCategory = n.data;
+        state.categorySelectTracker = n.sourceType + state.categorySelectEnum;
+        state.categorySelectEnum += 1;
+      }
     },
     resetDiagram(state) {
       state.categorySelected = false;
@@ -666,6 +674,9 @@ export default new Vuex.Store({
         }
       }
       state.actors = actorsCopy;
+    },
+    setState(state, n) {
+      state[n.key] = n.val;
     }
   },
   getters: {

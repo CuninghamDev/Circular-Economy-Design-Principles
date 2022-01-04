@@ -29,8 +29,12 @@
         Select The Strategies That Apply To Your Project
       </div>
     </div>
-    <v-expansion-panels>
-      <v-expansion-panel v-for="(cat, i) in expansionPanelCategories" :key="i">
+    <v-expansion-panels v-model="openExpansionPanel">
+      <v-expansion-panel
+        v-for="(cat, i) in expansionPanelCategories"
+        :key="i"
+        @change="selectCategory(cat, i)"
+      >
         <v-expansion-panel-header
           :color="cat.color"
           class="white--text"
@@ -119,11 +123,37 @@
 import { mapGetters, mapState } from "vuex";
 export default {
   name: "EvaluationForm",
-
+  watch: {
+    categorySelectTracker: function() {
+      if (!this.categorySelectTracker.includes("evaluation")) {
+        // console.log(
+        //   "evaluation noticed a category being selected in the diagram"
+        // );
+        if (this.categorySelected) {
+          // console.log("category selected toggle was true");
+          for (let i in this.expansionPanelCategories) {
+            let cat = this.expansionPanelCategories[i];
+            if (cat.text == this.selectedCategory.text) {
+              // console.log("category and selected category have matching text");
+              this.openExpansionPanel = Number(i);
+            }
+            // this.selectCategory(cat,i)
+          }
+        } else {
+          this.openExpansionPanel = undefined;
+        }
+      }
+    }
+  },
   props: ["containerVmin"],
   computed: {
     ...mapGetters(["getActorsForEvaluation"]),
-    ...mapState(["categories"]),
+    ...mapState([
+      "categories",
+      "categorySelected",
+      "selectedCategory",
+      "categorySelectTracker"
+    ]),
     evalActors() {
       let actorCopy = JSON.parse(
         JSON.stringify(
@@ -166,8 +196,32 @@ export default {
       return categoriesCopy;
     }
   },
-  data: () => ({}),
+  data: () => ({
+    openExpansionPanel: undefined
+  }),
   methods: {
+    selectCategory(cat, i) {
+      let isSource = true;
+      let toggle;
+      if (i != this.openExpansionPanel) {
+        toggle = true;
+      } else {
+        toggle = false;
+      }
+      let data = cat;
+      let sourceType = "evaluation";
+      if (toggle) {
+        this.openExpansionPanel = i;
+      } else {
+        this.openExpansionPanel = undefined;
+      }
+      this.$store.commit("selectCategory", {
+        data,
+        toggle,
+        sourceType,
+        isSource
+      });
+    },
     getHeaderElement(id) {
       return document.getElementById(id);
     },

@@ -208,7 +208,44 @@ export default {
     window.addEventListener("resize", this.resizeDiagram);
     // console.log('finished mounted loop')
   },
-  watch: {},
+  watch: {
+    categorySelectTracker: function() {
+      // console.log("diagram noticed category changed");
+      if (!this.categorySelectTracker.includes("diagram")) {
+        let component = this;
+        let selectedCategoryElementNode = d3
+          .selectAll(".category-ring")
+          .selectAll("g")
+          .selectAll("path")
+          .filter(d => {
+            if (d.text == component.selectedCategory.text) {
+              console.log(
+                d.text,
+                "was matched with",
+                component.selectedCategory.text
+              );
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .nodes(); //filtering a d3 list leaves empties, converting to nodes and back gets rid of this
+        let selectedCategoryElement = d3.select(selectedCategoryElementNode[0]);
+
+        // console.log("element", selectedCategoryElement);
+        let d = selectedCategoryElement.data();
+        // console.log("data", d);
+        let isSource = false;
+        let e = null;
+        // console.log(
+        //   "testing classed before click",
+        //   selectedCategoryElement.classed("selected-category")
+        // );
+
+        component.categoryClick(d[0], e, selectedCategoryElement, isSource);
+      }
+    }
+  },
   beforeDestroy() {
     window.removeEventListener("resize", this.resizeDiagram);
   },
@@ -237,7 +274,10 @@ export default {
       "blankActor",
       "title",
       "generalResourceData",
-      "showDiagramInteractionAlert"
+      "showDiagramInteractionAlert",
+      "selectedCategory",
+      "categorySelected",
+      "categorySelectTracker"
     ]),
     generalResources() {
       if (this.generalResourceData) {
@@ -270,6 +310,130 @@ export default {
 
     toggleDialog() {
       this.dialog ? (this.dialog = false) : (this.dialog = true);
+    },
+
+    categoryClick(d, e, selected, isSource) {
+      console.log("category click running", d, selected, isSource);
+      let component = this;
+      let self = component.diagram;
+      let thisData = d;
+      let thisEvent = e;
+      let thisCategory = selected;
+      // console.log("this category", thisCategory);
+      // console.log(
+      //   "this category classed",
+      //   thisCategory.classed("selected-category")
+      // );
+      if (component.showDiagramInteractionAlert) {
+        component.$store.commit("toggleShowDiagramInteractionAlert");
+      }
+
+      if (thisCategory.classed("selected-category")) {
+        if (isSource) {
+          component.$store.commit("selectCategory", {
+            data: thisData,
+            toggle: false,
+            sourceType: "diagram",
+            isSource
+          });
+        }
+
+        d3.selectAll(".actor-rotation-groups")
+          .classed("category-selected-actors", false)
+          .classed("temp-category-selected-actors", false)
+          .transition()
+          .style("opacity", "0");
+
+        d3.selectAll(".category-hover")
+          .classed("selected-category", false)
+          .classed("receding-category", false)
+          .attr("opacity", 1)
+          .filter(".category-shapes")
+          .transition();
+
+        component.$store.commit("selectActor", component.blankActor);
+        d3.selectAll(".actor-rotation-groups")
+          .selectAll("path")
+          .classed("actor-selected", false);
+      } else {
+        if (isSource) {
+          component.$store.commit("selectCategory", {
+            data: thisData,
+            toggle: true,
+            sourceType: "diagram",
+            isSource
+          });
+        }
+
+        d3.selectAll(".actor-rotation-groups")
+          .classed("category-selected-actors", d => {
+            if (d["actor data"].category == thisData.text) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .classed("pointer", d => {
+            if (d["actor data"].category == thisData.text) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .classed("temp-category-selected-actors", false);
+
+        d3.selectAll(".category-hover")
+          .classed("selected-category", function(d) {
+            if (thisData.text == d.text) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .classed("receding-category", function(d) {
+            if (thisData.text == d.text) {
+              return false;
+            } else {
+              return true;
+            }
+          });
+        let catRotationCenter = (d.endAngle - d.startAngle) / 2 + d.startAngle;
+        let currentPos = catRotationCenter + self.rotationTracker;
+        let rotateDiagram = Math.PI * 2 - (currentPos % (Math.PI * 2));
+
+        if (component.windowWidth <= 991) {
+          rotateDiagram += Math.PI * 0.75;
+        }
+        component.rotate(rotateDiagram);
+        component.$store.commit("selectActor", component.blankActor);
+        d3.selectAll(".actor-rotation-groups")
+          .selectAll("path")
+          .classed("actor-selected", false);
+      }
+      d3.selectAll(".receding-category")
+        .transition()
+        // .attr("filter", "none")
+        .attr("transform", "translate(0,0)")
+        .attr("opacity", 0.9);
+
+      d3.selectAll(".selected-category")
+        .filter(".category-shapes")
+        .transition()
+        // .attr("filter", "url(#dropshadow)")
+        // .attr("transform", "translate(1,-4)")
+        .attr("opacity", 1);
+      let allActors = d3
+        .selectAll(".actor-rotation-groups")
+        .transition()
+        .style("opacity", function(d) {
+          let loopActor = d3.select(this);
+          let isSelected = loopActor.classed("category-selected-actors");
+          if (isSelected) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
     },
 
     buildDiagram(_data, _backgroundId, _svgId, _divId, _containerId) {
@@ -881,7 +1045,8 @@ export default {
           return self.controllingDim * 0.024 + "px";
         });
       categoryText.on("click", function(e, d) {
-        categoryClick(d, e, this);
+        let selected = d3.select(this);
+        component.categoryClick(d, e, selected, true);
       });
       categoryText.on("mouseover", function(e, d) {
         d3.selectAll(".category-shapes").style("stroke-width", function(od) {
@@ -994,7 +1159,8 @@ export default {
         .attr("d", d => buildCategoryPath(d));
 
       categoryShapes.on("click", function(e, d) {
-        categoryClick(d, e, this);
+        let selected = d3.select(this);
+        component.categoryClick(d, e, selected, true);
       });
       categoryShapes.on("mouseover", function(e, d) {
         d3.select(this).style(
@@ -1167,107 +1333,6 @@ export default {
         .style("font-size", function(d) {
           return self.controllingDim * 0.016 + "px";
         });
-
-      let categoryClick = function(d, e, selected) {
-        let thisData = d;
-        let thisEvent = e;
-        let thisCategory = d3.select(selected);
-        if (component.showDiagramInteractionAlert) {
-          component.$store.commit("toggleShowDiagramInteractionAlert");
-        }
-
-        if (thisCategory.classed("selected-category")) {
-          component.$store.commit("selectCategory", false);
-          d3.selectAll(".actor-rotation-groups")
-            .classed("category-selected-actors", false)
-            .classed("temp-category-selected-actors", false)
-            .transition()
-            .style("opacity", "0");
-
-          d3.selectAll(".category-hover")
-            .classed("selected-category", false)
-            .classed("receding-category", false)
-            .attr("opacity", 1)
-            .filter(".category-shapes")
-            .transition();
-
-          component.$store.commit("selectActor", component.blankActor);
-          d3.selectAll(".actor-rotation-groups")
-            .selectAll("path")
-            .classed("actor-selected", false);
-        } else {
-          component.$store.commit("selectCategory", true);
-          d3.selectAll(".actor-rotation-groups")
-            .classed("category-selected-actors", d => {
-              if (d["actor data"].category == thisData.text) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-            .classed("pointer", d => {
-              if (d["actor data"].category == thisData.text) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-            .classed("temp-category-selected-actors", false);
-
-          d3.selectAll(".category-hover")
-            .classed("selected-category", function(d) {
-              if (thisData.text == d.text) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-            .classed("receding-category", function(d) {
-              if (thisData.text == d.text) {
-                return false;
-              } else {
-                return true;
-              }
-            });
-          let catRotationCenter =
-            (d.endAngle - d.startAngle) / 2 + d.startAngle;
-          let currentPos = catRotationCenter + self.rotationTracker;
-          let rotateDiagram = Math.PI * 2 - (currentPos % (Math.PI * 2));
-
-          if (component.windowWidth <= 991) {
-            rotateDiagram += Math.PI * 0.75;
-          }
-          component.rotate(rotateDiagram);
-          component.$store.commit("selectActor", component.blankActor);
-          d3.selectAll(".actor-rotation-groups")
-            .selectAll("path")
-            .classed("actor-selected", false);
-        }
-        d3.selectAll(".receding-category")
-          .transition()
-          // .attr("filter", "none")
-          .attr("transform", "translate(0,0)")
-          .attr("opacity", 0.9);
-
-        d3.selectAll(".selected-category")
-          .filter(".category-shapes")
-          .transition()
-          // .attr("filter", "url(#dropshadow)")
-          // .attr("transform", "translate(1,-4)")
-          .attr("opacity", 1);
-        let allActors = d3
-          .selectAll(".actor-rotation-groups")
-          .transition()
-          .style("opacity", function(d) {
-            let loopActor = d3.select(this);
-            let isSelected = loopActor.classed("category-selected-actors");
-            if (isSelected) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
-      };
 
       let actorClick = function(d, e, selected) {
         let thisActor = d3.select(selected);
