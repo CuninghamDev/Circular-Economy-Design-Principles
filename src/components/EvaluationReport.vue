@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="container-fluid ma-0 pa-0 blue"
-    style="overflow-y:auto; height:100%"
-  >
+  <div class="container-fluid ma-0 pa-0" style="overflow-y:auto;">
     <div class="row ma-0 pa-0">
       <div class="col ma-0 pa-0">
         <CircularBarChart />
