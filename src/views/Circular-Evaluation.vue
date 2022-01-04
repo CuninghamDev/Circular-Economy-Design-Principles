@@ -4,15 +4,22 @@
       v-model="currentTab"
       color="blue accent-4"
       id="vuetify-tabs-for-evaluation"
+      @change="resetCategory()"
     >
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>
     </v-tabs>
     <div class="row m-0 p-0 border-top">
-      <div class="col-lg-7 col-xl-6 m-0 p-0 ">
+      <div
+        class="col-lg-8 col-xl-6 m-0 p-0 "
+        :style="'height: ' + heightVmin + 'vh'"
+      >
         <CircularEconomyDiagram :svgContainerVmin="88" v-if="currentTab == 0" />
         <EvaluationReport v-if="currentTab == 1" :reportVmin="88" />
       </div>
-      <div class="col-lg-5 col-xl-6 m-0 p-0" style="height:88vmin">
+      <div
+        class="col-lg-4 col-xl-6 m-0 p-0"
+        :style="'height: ' + heightVmin + 'vh'"
+      >
         <EvaluationForm />
       </div>
     </div>
@@ -30,10 +37,39 @@ export default {
     this.$store.commit("buildEvaluationTracking");
     this.$store.commit("setState", { key: "categorySelected", val: false });
   },
+  mounted() {
+    this.calcContentHeight();
+    window.addEventListener("resize", this.calcContentHeight);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.calcContentHeight);
+  },
   data: () => ({
     tabData: ["Diagram", "Evaluation Report"],
-    currentTab: 0
-  })
+    currentTab: 0,
+    heightVmin: 100
+  }),
+  methods: {
+    resetCategory() {
+      console.log("reset category called");
+      this.$store.commit("selectCategory", {
+        toggle: false,
+        isSource: true,
+        data: undefined,
+        sourceType: "parent"
+      });
+    },
+    calcContentHeight() {
+      let windowHeight = window.innerHeight;
+      let appBarheight = document.getElementById("vuetify-application-bar")
+        .clientHeight;
+      let tabsHeight = document.getElementById("vuetify-tabs-for-evaluation")
+        .clientHeight;
+      let remainderHeight = windowHeight - appBarheight - tabsHeight;
+      let heightRatio = (remainderHeight / windowHeight) * 100;
+      this.heightVmin = heightRatio;
+    }
+  }
 };
 </script>
 

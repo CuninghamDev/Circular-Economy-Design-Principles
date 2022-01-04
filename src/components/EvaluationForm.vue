@@ -72,6 +72,7 @@
             class="row ma-0 pa-0 mb-2 pointer elevation-1"
             v-for="d in getCategoryFilteredActors(cat)"
             :key="d.actor"
+            :id="actorToId(d.actor)"
             :style="calculateEvalCellStyle(d)"
             @click="actorEvalSelected(d)"
             @mouseenter="
@@ -116,6 +117,7 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+    <div class="ma-0 pa-0" style="height:1000px" v-if="categorySelected"></div>
   </div>
 </template>
 
@@ -124,20 +126,26 @@ import { mapGetters, mapState } from "vuex";
 export default {
   name: "EvaluationForm",
   watch: {
+    selectedActor: function() {
+      console.log("noticed an actor changed", this.selectedActor);
+      let actorElement = document.getElementById(
+        this.actorToId(this.selectedActor.actor)
+      );
+      if (actorElement) {
+        let scrollIntoViewOptions = {
+          behavior: "smooth"
+        };
+        actorElement.scrollIntoView(scrollIntoViewOptions);
+      }
+    },
     categorySelectTracker: function() {
       if (!this.categorySelectTracker.includes("evaluation")) {
-        // console.log(
-        //   "evaluation noticed a category being selected in the diagram"
-        // );
         if (this.categorySelected) {
-          // console.log("category selected toggle was true");
           for (let i in this.expansionPanelCategories) {
             let cat = this.expansionPanelCategories[i];
             if (cat.text == this.selectedCategory.text) {
-              // console.log("category and selected category have matching text");
               this.openExpansionPanel = Number(i);
             }
-            // this.selectCategory(cat,i)
           }
         } else {
           this.openExpansionPanel = undefined;
@@ -152,7 +160,8 @@ export default {
       "categories",
       "categorySelected",
       "selectedCategory",
-      "categorySelectTracker"
+      "categorySelectTracker",
+      "selectedActor"
     ]),
     evalActors() {
       let actorCopy = JSON.parse(
@@ -258,6 +267,9 @@ export default {
       });
       filteredActors.sort((a, b) => (a.evalPoints > b.evalPoints ? -1 : 1));
       return filteredActors;
+    },
+    actorToId(str) {
+      return "expansion-panel-" + str.toLowerCase().replace(/\s/g, "-");
     }
   }
 };
