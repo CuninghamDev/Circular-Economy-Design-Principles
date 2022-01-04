@@ -155,6 +155,9 @@ export default {
         .data(self.categoryData)
         .join("path")
         .classed("ghosted-bars", true)
+        .style("fill", d => d.color)
+        .style("opacity", 0.15)
+        // .transition()
         .attr("d", d =>
           self.circularBarGenerator(
             d.rotationStart,
@@ -164,14 +167,17 @@ export default {
             self.center.x,
             self.center.y
           )
-        )
-        .style("fill", d => d.color)
-        .style("opacity", 0.15);
+        );
+
       d3.select("#" + self.ids.bars)
         .selectAll(".bars")
         .data(self.categoryData)
         .join("path")
         .classed("bars", true)
+        .style("fill", d => d.color)
+        // .transition()
+        // .ease(d3.easeSinIn)
+        // .duration(100)
         .attr("d", d =>
           self.circularBarGenerator(
             d.rotationStart,
@@ -181,8 +187,66 @@ export default {
             self.center.x,
             self.center.y
           )
-        )
-        .style("fill", d => d.color);
+        );
+
+      d3.select("#" + self.ids.barLabels)
+        .selectAll(".bar-label-paths")
+        .data(self.categoryData)
+        .join("path")
+        .classed("bar-label-paths", true)
+        .attr("id", d => {
+          return (
+            "bar-label-path-" +
+            d.text
+              .split(" ")
+              .join("-")
+              .toLowerCase()
+          );
+        })
+        .attr("fill", "none")
+        .attr("d", d =>
+          self.textPathGenerator(
+            d.rotationStart + 0.04,
+            d.rotationEnd,
+            self.labelRadius,
+            self.center.x,
+            self.center.y
+          )
+        );
+
+      d3.select("#" + self.ids.barLabels)
+        .selectAll(".bar-label-texts")
+        .data(self.categoryData)
+        .join(enter => enter.append("text").classed("bar-label-texts", true))
+        .selectAll(".bar-label-text-pathed")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("textPath")
+            .classed("bar-label-text-pathed", true)
+            .attr("xlink:href", d => {
+              return (
+                "#bar-label-path-" +
+                d.text
+                  .split(" ")
+                  .join("-")
+                  .toLowerCase()
+              );
+            })
+            .style("text-anchor", "start")
+            .style("startOffset", "10%")
+            .text(d => d.text.toUpperCase())
+            .style("font-size", self.width * 0.03 + "px")
+            .style("fill", d => d.color)
+        );
+    },
+    textPathGenerator(startAngle, endAngle, radius, centerX, centerY) {
+      let x1 = Math.cos(startAngle) * radius + centerX;
+      let y1 = Math.sin(startAngle) * radius + centerY;
+      let path = d3.path();
+      path.moveTo(x1, y1);
+      path.arc(centerX, centerY, radius, startAngle, endAngle);
+      return path.toString();
     },
     circularBarGenerator(
       startAngle,
