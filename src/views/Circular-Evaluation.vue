@@ -51,7 +51,8 @@ export default {
   data: () => ({
     tabData: ["Diagram", "Evaluation Report"],
     currentTab: 0,
-    heightVmin: 100
+    heightVmin: 100,
+    additionalResourcesDialog: false
   }),
   methods: {
     resetCategory() {

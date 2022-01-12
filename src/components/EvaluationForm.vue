@@ -2,6 +2,7 @@
   <div
     class="container-fluid ml-0 no-select"
     style="overflow-y:auto;height:100%"
+    id="evaluation-form-container"
   >
     <div class="row mt-0">
       <div class="col h5">
@@ -35,11 +36,7 @@
         :key="i"
         @change="selectCategory(cat, i)"
       >
-        <v-expansion-panel-header
-          :color="cat.color"
-          class="white--text"
-          @click="$vuetify.goTo(getHeaderElement('#category-' + i))"
-        >
+        <v-expansion-panel-header :color="cat.color" class="white--text">
           <v-container class="ma-0 pa-0">
             <v-row class="ma-0 pa-0">
               <v-col class="ma-0 pa-0">
@@ -74,22 +71,19 @@
             :key="d.actor"
             :id="actorToId(d.actor)"
             :style="calculateEvalCellStyle(d)"
-            @click="actorEvalSelected(d)"
-            @mouseenter="
-              'rotate diagram';
-
-
-            "
           >
             <div class="col px-0 py-2">
               <div class="container-fluid ma-0 pa-0 px-2">
-                <div class="row ma-0 pa-0 mb-4">
+                <div class="row ma-0 pa-0 mb-4" @click="actorEvalSelected(d)">
                   <div class="col h6 ma-0 pa-0 no-select">
                     {{ d.actor }}
                   </div>
                 </div>
                 <div class="row ma-0 pa-0 mb-2">
-                  <div class="col-xl-2 col-lg-3 col-3 h6 ma-0 pa-0 text-center">
+                  <div
+                    class="col-xl-2 col-lg-3 col-3 h6 ma-0 pa-0 text-center"
+                    @click="actorEvalSelected(d)"
+                  >
                     <v-btn
                       fab
                       small
@@ -104,8 +98,33 @@
                   <div class="col-xl-10 col-lg-9 col-9 ma-0 pa-0">
                     <div class="container-fluid ma-0 pa-0">
                       <div class="row ma-0 pa-0">
-                        <div class="col ma-0 pa-0 no-select">
+                        <div
+                          class="col-11 ma-0 pa-0 no-select"
+                          @click="actorEvalSelected(d)"
+                        >
                           {{ d.eval }}
+                        </div>
+                        <div class="col ma-0 mt-n5 pa-0 pr-2 text-right">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                color="grey lighten-1"
+                                v-on="on"
+                                icon
+                                dark
+                                small
+                                @click="activateAdditionalResources(d)"
+                              >
+                                <v-icon large dark
+                                  >mdi-information-outline</v-icon
+                                >
+                              </v-btn>
+                            </template>
+                            <span
+                              >Additional resources related to...
+                              {{ d.actor }}</span
+                            >
+                          </v-tooltip>
                         </div>
                       </div>
                     </div>
@@ -117,6 +136,200 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <v-dialog v-model="additionalResourcesDialog" width="950">
+      <v-card v-if="resourcesActor">
+        <v-card-title
+          class=" text-white pa-2 ma-0 border-bottom"
+          :style="'backgroundColor:' + resourcesActor.color"
+          style="z-index:1000"
+        >
+          <table class="table table-borderless ma-0 pa-0">
+            <tbody class="ma-0 pa-0">
+              <tr class="ma-0 pa-0">
+                <td
+                  class="align-middle ma-0 pa-0"
+                  style="width:120px"
+                  rowspan="2"
+                >
+                  <img
+                    class="ma-0 pa-0"
+                    :src="selectedCategory.whiteIconPath"
+                    style="height:100px; width:100px"
+                  />
+                </td>
+                <td class="align-bottom text-left ma-0 pa-0">
+                  <p
+                    class="h5 ma-0 pa-0 mt-2 text-white"
+                    style="word-break:normal;"
+                  >
+                    {{ resourcesActor.actor.toUpperCase() }}
+                  </p>
+                </td>
+              </tr>
+              <tr class="ma-0 pa-0">
+                <td class="ma-0 pa-0 align-top">
+                  <p
+                    class="ma-0 mt-2 pa-0 text-white"
+                    style="word-break:normal; font-style:italic; font-weight:300; line-height:normal"
+                  >
+                    Additional Resources
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </v-card-title>
+
+        <v-container
+          style="z-index:0"
+          class="my-0 pb-4 pt-4"
+          :style="'max-height:' + 650 + 'px; overflow-y: auto'"
+        >
+          <v-row class="py-1">
+            <v-col v-if="relevantResources.length == 0">
+              <p class="red--text text--darken-4">
+                No resources are listed for this circular strategy
+              </p>
+              <p class="red--text text--darken-4">
+                Use the "Suggest A Resource" button below to suggest missing
+                resources that should be added to this database
+              </p>
+            </v-col>
+            <v-col
+              v-for="resource in relevantResources"
+              :key="resource.id"
+              cols="12"
+              class="py-2"
+            >
+              <v-card
+                v-blur
+                @click="openLink(resource['external link'])"
+                hover
+                shaped
+                class="grey lighten-5"
+              >
+                <v-card-title class="text-h5" style="word-break:normal;">
+                  {{ resource["short name"] }}
+                </v-card-title>
+                <v-card-subtitle
+                  v-if="resource['long name'] != ''"
+                  style="line-height:normal"
+                >
+                  <b>{{ resource["long name"] }}</b>
+                </v-card-subtitle>
+                <v-card-text>
+                  <table class="table table-borderless ma-0 pa-0">
+                    <tbody class="ma-0 pa-0">
+                      <tr class="ma-0 pa-0">
+                        <td
+                          class="ma-0 pt-0 pb-2 pl-0 pr-4 border-bottom align-middle"
+                          style="width:50px"
+                        >
+                          <v-icon
+                            color="grey"
+                            v-if="resource['type'] == 'Resource'"
+                            large
+                            :title="resource['type']"
+                            >mdi-file-table-box-multiple-outline</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['type'] == 'Learn'"
+                            large
+                            :title="resource['type']"
+                          >
+                            mdi-book-open-page-variant-outline</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['type'] == 'Example'"
+                            large
+                            :title="resource['type']"
+                          >
+                            mdi-city-variant-outline</v-icon
+                          >
+                        </td>
+                        <td
+                          class="ma-0 pt-0 pb-2 pl-0 pr-3 border-bottom align-middle"
+                          style="width:75px"
+                        >
+                          {{ resource["type"] }}
+                        </td>
+                        <td
+                          class="ma-0 pl-3 pr-0 py-0 border-left align-middle"
+                          rowspan="2"
+                        >
+                          <p class="h6" style="font-weight:400">
+                            {{ resource["summary"] }}
+                          </p>
+                        </td>
+                      </tr>
+                      <tr class="ma-0 pa-0">
+                        <td
+                          class="ma-0 pt-2 pb-0 pl-0 pr-4 align-middle"
+                          style="width:50px"
+                        >
+                          <v-icon
+                            color="grey"
+                            v-if="resource['read time'] == '2 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-1</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['read time'] == '5 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-2</v-icon
+                          >
+                          <v-icon
+                            color="grey"
+                            v-else-if="resource['read time'] == '10 min'"
+                            large
+                            :title="resource['read time']"
+                            >mdi-circle-slice-3</v-icon
+                          >
+                        </td>
+                        <td
+                          class="ma-0 pt-2 pb-0 pl-0 pr-3 align-middle"
+                          style="width:75px"
+                        >
+                          {{ resource["read time"] }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <div class="elevation-3 my-0 py-0">
+          <v-divider class="my-0"></v-divider>
+          <v-card-actions class="py-4">
+            <v-btn
+              color="blue accent-4"
+              class="elevation-2"
+              @click="navigateToRoute('/suggest-resource')"
+              outlined
+              >Suggest A Resource</v-btn
+            >
+            <v-spacer></v-spacer>
+
+            <v-btn
+              color="teal darken-3"
+              text
+              @click="additionalResourcesDialog = false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </div>
+      </v-card>
+    </v-dialog>
     <div class="ma-0 pa-0" style="height:1000px" v-if="categorySelected"></div>
   </div>
 </template>
@@ -132,10 +345,32 @@ export default {
         this.actorToId(this.selectedActor.actor)
       );
       if (actorElement) {
-        let scrollIntoViewOptions = {
-          behavior: "smooth"
-        };
-        actorElement.scrollIntoView(scrollIntoViewOptions);
+        let actorBounds = actorElement.getBoundingClientRect();
+        let appBarHeight = document
+          .getElementById("vuetify-application-bar")
+          .getBoundingClientRect().height;
+        let evalTabsHeight = document
+          .getElementById("vuetify-tabs-for-evaluation")
+          .getBoundingClientRect().height;
+        let actorHeight = actorBounds.top - appBarHeight - evalTabsHeight;
+        let formHeight = document
+          .getElementById("evaluation-form-container")
+          .getBoundingClientRect().height;
+        let scrollTop = document.getElementById("evaluation-form-container")
+          .scrollTop;
+
+        let scrollActorHeight =
+          actorHeight + scrollTop + evalTabsHeight - formHeight / 2;
+        console.log(
+          "measures",
+          actorHeight,
+          scrollTop,
+          evalTabsHeight,
+          scrollActorHeight
+        );
+        document
+          .getElementById("evaluation-form-container")
+          .scroll({ top: scrollActorHeight, left: 0, behavior: "smooth" });
       }
     },
     categorySelectTracker: function() {
@@ -161,7 +396,8 @@ export default {
       "categorySelected",
       "selectedCategory",
       "categorySelectTracker",
-      "selectedActor"
+      "selectedActor",
+      "resourcesData"
     ]),
     evalActors() {
       let actorCopy = JSON.parse(
@@ -203,12 +439,42 @@ export default {
       }
 
       return categoriesCopy;
+    },
+    relevantResources() {
+      if (this.resourcesActor) {
+        let actorFilter = this.resourcesActor.actor.toLowerCase();
+        let relevantResources = [];
+        for (let d of this.resourcesData.data) {
+          if (actorFilter in d) {
+            if (d[actorFilter] === true) {
+              relevantResources.push(d);
+            }
+          }
+        }
+
+        return relevantResources;
+      } else {
+        return [];
+      }
     }
   },
   data: () => ({
-    openExpansionPanel: undefined
+    openExpansionPanel: undefined,
+    additionalResourcesDialog: false,
+    resourcesActor: undefined
   }),
   methods: {
+    navigateToRoute(path) {
+      let currentRoute = this.$route.path;
+      if (path != currentRoute) {
+        this.$router.push(path);
+      }
+    },
+    activateAdditionalResources(d) {
+      this.additionalResourcesDialog = true;
+      this.resourcesActor = d;
+      console.log("active additional resources called", d);
+    },
     selectCategory(cat, i) {
       let isSource = true;
       let toggle;
