@@ -13,7 +13,11 @@
         class="col-lg-8 col-xl-6 m-0 p-0 "
         :style="'height: ' + heightVmin + 'vh'"
       >
-        <CircularEconomyDiagram :svgContainerVmin="88" v-if="currentTab == 0" />
+        <CircularEconomyDiagram
+          :svgContainerVmin="88"
+          :titleClickable="false"
+          v-if="currentTab == 0"
+        />
         <EvaluationReport v-if="currentTab == 1" :reportVmin="88" />
       </div>
       <div

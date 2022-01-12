@@ -2,7 +2,7 @@
   <div class="container-fluid m-0 p-0 hide-scrollbar">
     <div class="row m-0 p-0">
       <div class=" col-lg-8 m-0 p-0">
-        <CircularEconomyDiagram :svgContainerVmin="93" />
+        <CircularEconomyDiagram :svgContainerVmin="93" :titleClickable="true" />
       </div>
       <div class="col m-0 p-0" style="">
         <actor-data></actor-data>

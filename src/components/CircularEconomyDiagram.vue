@@ -287,7 +287,7 @@ export default {
       }
     }
   },
-  props: ["svgContainerVmin"],
+  props: ["svgContainerVmin", "titleClickable"],
   data() {
     return {
       diagram: {},
@@ -748,6 +748,7 @@ export default {
           height: self.controllingDim * 0.12
         }
       ];
+
       let diagramTitleButton = svg
         .select(".diagram-title")
         .selectAll(".diagram-title-button")
@@ -761,7 +762,7 @@ export default {
         .attr("rx", self.controllingDim * 0.01)
         .attr("fill", "white")
         .attr("stroke", "white")
-        .style("cursor", "pointer");
+        .style("cursor", () => (component.titleClickable ? "pointer" : "auto"));
 
       let diagramData = ["Circular Economy", "in the Built", "Environment"];
       let diagramTitle = svg
@@ -781,7 +782,7 @@ export default {
         .style("font-size", function() {
           return self.controllingDim * 0.032 + "px";
         })
-        .style("cursor", "pointer")
+        .style("cursor", () => (component.titleClickable ? "pointer" : "auto"))
         // .attr("filter", "none")
         .attr("transform", (d, i) => {
           let stepSize = self.controllingDim * 0.035;
@@ -790,6 +791,14 @@ export default {
           return "translate(0," + yTransform + ")";
         });
 
+      if (component.titleClickable) {
+        diagramTitle.on("mouseover", diagramTitleMouseOver);
+        diagramTitle.on("mouseout", diagramTitleMouseOut);
+        diagramTitleButton.on("mouseover", diagramTitleMouseOver);
+        diagramTitleButton.on("mouseout", diagramTitleMouseOut);
+        diagramTitle.on("click", diagramTitleClicked);
+        diagramTitleButton.on("click", diagramTitleClicked);
+      }
       function diagramTitleMouseOver() {
         d3.select(this.parentNode)
           .selectAll(".diagram-title-text")
@@ -813,18 +822,11 @@ export default {
           .transition()
           .attr("stroke", "white");
       }
-      diagramTitle.on("mouseover", diagramTitleMouseOver);
-      diagramTitle.on("mouseout", diagramTitleMouseOut);
-      diagramTitleButton.on("mouseover", diagramTitleMouseOver);
-      diagramTitleButton.on("mouseout", diagramTitleMouseOut);
 
       function diagramTitleClicked() {
         component.toggleDialog();
         console.log("diagram title clicked");
       }
-      diagramTitle.on("click", diagramTitleClicked);
-      diagramTitleButton.on("click", diagramTitleClicked);
-
       //////////////////
       // OUTTER RING
       svg
