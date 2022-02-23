@@ -12,6 +12,8 @@ let actors = [
     buttons: [],
     category: "Resource Exchange",
     eval: "Have you utilized or contributed to open source design?",
+    conventional:
+      "Building design is proprietary and duplication of its approach, details, and construction is not encouraged",
     evalPoints: 1
   },
   {
@@ -23,6 +25,8 @@ let actors = [
     category: "Resource Exchange",
     eval:
       "Are you creating and or using material passports to keep the buildings materials in use?",
+    conventional:
+      "Buildings do not make use of material passports to track the lifecycle of materials and components",
     evalPoints: 5
   },
   {
@@ -34,6 +38,7 @@ let actors = [
     category: "Resource Exchange",
     eval:
       "Are any of your project materials coming from a storage and distribution facility?",
+    conventional: "Materials are sourced directly from manufacturers",
     evalPoints: 3
   },
   {
@@ -53,6 +58,8 @@ let actors = [
     category: "Resource Exchange",
     eval:
       "Are you capturing salvaged material to create new material for your project?",
+    conventional:
+      "All salvage material is removed from site during demolition and either landfilled or recycled",
     evalPoints: 4
   },
   {
@@ -71,6 +78,8 @@ let actors = [
     buttons: [],
     category: "Resource Exchange",
     eval: "Is your building site a brownfield?",
+    conventional:
+      "Construction takes place on a site with minimal challenges posed by previous use or hazardous waste",
     evalPoints: 3
   },
   {
@@ -82,6 +91,8 @@ let actors = [
     category: "Resource Exchange",
     eval:
       "Is there a plan in place for any of your building materials to be taken back by the manufacturer after the end of their design life?",
+    conventional:
+      "There are no plans or strategies in place to guide decision making at the end of a building material's lifecycle",
     evalPoints: 3
   },
   {
@@ -92,6 +103,8 @@ let actors = [
     buttons: ["Leased Materials"],
     category: "Resource Exchange",
     eval: "Does your project utilize leased material agreements?",
+    conventional:
+      "No materials will be returned to their original supplier or manufacturer at the end of their lifecycle, instead making use of conventional waste streams.",
     evalPoints: 4
   },
   {
@@ -102,6 +115,8 @@ let actors = [
     buttons: ["Product as a service"],
     category: "Resource Exchange",
     eval: "Does your project utilize Product-as-Service agreements?",
+    conventional:
+      "The building owner owns all materials and assemblies in their building, and does not pay a rental fee or usage fee for the functions of the building.",
     evalPoints: 4
   },
   {
@@ -112,6 +127,8 @@ let actors = [
     buttons: ["Product as a service"],
     category: "Resource Exchange",
     eval: "Is your project utilizing local materials where possible?",
+    conventional:
+      "A project will make no additional effort to specify local materials, instead encouraging the builders to source the most cost effective products and materials.",
     evalPoints: 2
   },
   {
@@ -123,6 +140,8 @@ let actors = [
     category: "Design and Deliver",
     eval:
       "Does your project avoid the use of adhesives/use mechanical fasteners to enable various materials to be demounted, separated, and reused?",
+    conventional:
+      "Adhesives and permanent fasteners are used extensively throughout construction as they are an economical and effective solution to connecting elements of the building.",
     evalPoints: 5
   },
   {
@@ -133,6 +152,8 @@ let actors = [
     buttons: ["Desinging for mixed-use"],
     category: "Design and Deliver",
     eval: "Does your building have more than one program use?",
+    conventional:
+      "A building will have one very specific use and would perform poorly if used in any other way.",
     evalPoints: 3
   },
   {
@@ -144,6 +165,8 @@ let actors = [
     category: "Design and Deliver",
     eval:
       "Does your project utilize standardized dimensions to reduce waste and/or optimize the reuse of the material at the end of its design life?",
+    conventional:
+      "Buildings will make no effort to enforce common assembly sizes, and will make use of prefabrication / standardization only when there is a clear economic benifit.",
     evalPoints: 4
   },
   {
@@ -154,6 +177,8 @@ let actors = [
     buttons: ["Desinging for adaptive reuse"],
     category: "Design and Deliver",
     eval: "Is your building designed to adapt to potential future uses?",
+    conventional:
+      "No plan will be made regarding potential future uses that future owners may have for a building, and no little thought will be given to the building's odds of surviving to its end of life.",
     evalPoints: 4
   },
   {
@@ -164,6 +189,8 @@ let actors = [
     buttons: [],
     category: "Design and Deliver",
     eval: "Is your floorplan using all of your square footage efficiently?",
+    conventional:
+      "When buildings have generous lot and zoning restrictions, efficiency will become a lower priority metric for design and construction, and more building may be constructed than necessary.",
     evalPoints: 2
   },
   {
@@ -175,6 +202,8 @@ let actors = [
     category: "Design and Deliver",
     eval:
       "Is your building designed to keep materials in their off-the-shelf dimensions?",
+    conventional:
+      "Only a minimal amount of design consideration will be given to reducing or preventing cut dimensions throughout the building and its components and assemblies.",
     evalPoints: 3
   },
   {
@@ -185,6 +214,7 @@ let actors = [
     category: "Design and Deliver",
     eval:
       "Does your project utilize 3D printing in its construction or materials to minimize construction waste?",
+    conventional: "3D printing will not be utilized in construction",
     evalPoints: 1
   },
   {
@@ -196,6 +226,8 @@ let actors = [
     category: "Design and Deliver",
     eval:
       "Are any of your material components prefabricated to elevate their performance and reduce construction waste?",
+    conventional:
+      "Prefabricated components will not be utilized, and if they are their selection will be driven primarily by economic factors.",
     evalPoints: 2
   },
   {
@@ -206,6 +238,8 @@ let actors = [
     category: "Intelligent Built Environment",
     eval:
       "Does your building create a surplus of energy to sell back to the grid?",
+    conventional:
+      "A building will be entirely reliant on the grid for electricity",
     evalPoints: 1
   },
   {
@@ -217,6 +251,8 @@ let actors = [
     category: "Intelligent Built Environment",
     eval:
       "Does your project utilize sensors, tracking systems, and management software to assist more effective operations and maintenance?",
+    conventional:
+      "The building will rely on simple sensors like thermostats and respond in a 1:1 manner (ie it's cold so turn on the heat).",
     evalPoints: 3
   },
   {
@@ -228,6 +264,8 @@ let actors = [
     category: "Intelligent Built Environment",
     eval:
       "Is there a plan in place to keep this building occupied outside of its regular operational hours?",
+    conventional:
+      "Buildings will be used only for the hours in which their primary functions take place, then will sit empty between these primary functions.",
     evalPoints: 2
   },
   {
@@ -238,6 +276,8 @@ let actors = [
     buttons: ["Existing structure"],
     category: "Intelligent Built Environment",
     eval: "Does your project utilize the structure of an existing building?",
+    conventional:
+      "Existing structures on the site will be demolished before construction on the new building begins.",
     evalPoints: 5
   },
   {
@@ -249,6 +289,8 @@ let actors = [
     category: "Intelligent Built Environment",
     eval:
       "Are you designing within an existing building core, shell, and structure?",
+    conventional:
+      "Existing building shell, core and structure on the site will be demolished before construction on the new building begins.",
     evalPoints: 5
   },
   {
@@ -259,6 +301,8 @@ let actors = [
     buttons: ["Harvesting grey water"],
     category: "Intelligent Built Environment",
     eval: "Does your building harvest grey water?",
+    conventional:
+      "Grey water will be sent back to the municipal waste water management system.",
     evalPoints: 2
   },
   {
@@ -269,6 +313,8 @@ let actors = [
     buttons: ["Harvesting runoff"],
     category: "Intelligent Built Environment",
     eval: "Does your building harvest site runoff?",
+    conventional:
+      "Site runoff will be directed to the municipal storm water management system.",
     evalPoints: 3
   },
   {
@@ -280,6 +326,8 @@ let actors = [
     category: "Intelligent Built Environment",
     eval:
       "Does your building utilize natural lighting and ventilation to cut back on use of HVAC mechanical systems?",
+    conventional:
+      "Building will make no effort to maximize natural lighting beyond viewshed considerations, and all ventilation will be handled mechanically by the HVAC system.",
     evalPoints: 1
   },
   {
@@ -291,6 +339,8 @@ let actors = [
     category: "End of Design Life",
     eval:
       "Does you project incorporate upcycled material? And/or Have you planned upcycling into any of your materials?",
+    conventional:
+      "No upcycled materials will be used in the building's construction.",
     evalPoints: 4
   },
   {
@@ -302,6 +352,8 @@ let actors = [
     category: "End of Design Life",
     eval:
       "Does you project incorporate downcycled material? And/or does the waste management plan for demolition incorporate downcycling measures?",
+    conventional:
+      "Downcycled materials may be used, but this will not be coincidental, and will have minimal impact on the overall design of the building.",
     evalPoints: 1
   },
   {
@@ -313,6 +365,8 @@ let actors = [
     category: "End of Design Life",
     eval:
       "Does your project utilize material directly from a different site undergoing demolition?",
+    conventional:
+      "Projects will use only new materials directly from a manufacturer.",
     evalPoints: 3
   }
 ];

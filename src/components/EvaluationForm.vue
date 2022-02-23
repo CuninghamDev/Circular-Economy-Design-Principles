@@ -11,18 +11,12 @@
     </div>
     <div class="row mt-0">
       <div class="col roboto">
-        This is where a description of the evaluation will be included
-      </div>
-    </div>
-    <div class="row mt-0">
-      <div class="col roboto">
-        Placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder placeholder
-        placeholder placeholder placeholder placeholder placeholder
+        The comparable potential impact (on a scale of one to five) of various
+        strategies signifies their potential to retain material value, reduce
+        waste, and regenerate the natural environment. The higher the number the
+        more impactful the strategy. Strategies with an impact rating of 4 or 5
+        are considered High Impact strategies. High Impact strategies are
+        critical to shaping how the industry transitions to a Circular Economy.
       </div>
     </div>
     <div class="row mb-0">
@@ -99,10 +93,10 @@
                     <div class="container-fluid ma-0 pa-0">
                       <div class="row ma-0 pa-0">
                         <div
-                          class="col-11 ma-0 pa-0 no-select"
+                          class="col-11 ma-0 pa-0 no-select h6"
                           @click="actorEvalSelected(d)"
                         >
-                          {{ d.eval }}
+                          Circular Approach
                         </div>
                         <div class="col ma-0 mt-n5 pa-0 pr-2 text-right">
                           <v-tooltip top>
@@ -125,6 +119,30 @@
                               {{ d.actor }}</span
                             >
                           </v-tooltip>
+                        </div>
+                      </div>
+                      <div class="row ma-0 pa-0">
+                        <div
+                          class="col-11 ma-0 pa-0 no-select"
+                          @click="actorEvalSelected(d)"
+                        >
+                          {{ d.eval }}
+                        </div>
+                      </div>
+                      <div class="row ma-0 pa-0">
+                        <div
+                          class="col-11 ma-0 mt-4 pa-0 no-select h6"
+                          @click="actorEvalSelected(d)"
+                        >
+                          Conventional Approach
+                        </div>
+                      </div>
+                      <div class="row ma-0 pa-0">
+                        <div
+                          class="col-11 ma-0 pa-0 no-select"
+                          @click="actorEvalSelected(d)"
+                        >
+                          {{ d.conventional }}
                         </div>
                       </div>
                     </div>
