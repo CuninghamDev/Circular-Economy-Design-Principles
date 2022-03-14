@@ -1,12 +1,45 @@
 <template>
   <div class="container-fluid m-0 ml-0 p-0 hide-scrollbar">
+    <v-toolbar
+      id="circular-evaluation-toolbar"
+      elevation="1"
+      color="grey lighten-3"
+      dense
+    >
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            color="brown lighten-5"
+            class="ml-0 pa-1 px-2 mr-2"
+            style="min-width: 0"
+          >
+            <v-icon color="grey darken-2">mdi-content-save-outline</v-icon>
+          </v-btn>
+        </template>
+        <span class="">Save file as JSON</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            color="brown lighten-5"
+            class="ml-0 pa-1 px-2 mr-2"
+            style="min-width: 0"
+          >
+            <v-icon color="grey darken-2">mdi-folder-open-outline</v-icon>
+          </v-btn>
+        </template>
+        <span class="">Open JSON file</span>
+      </v-tooltip>
+    </v-toolbar>
     <v-tabs
+      class="mt-1"
       v-model="currentTab"
       color="blue accent-4"
       id="vuetify-tabs-for-evaluation"
     >
-      <!-- @change="resetCategory()"
-    > -->
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>
     </v-tabs>
     <div class="row m-0 p-0 border-top">
@@ -15,11 +48,12 @@
         :style="'height: ' + heightVmin + 'vh'"
       >
         <CircularEconomyDiagram
-          :svgContainerVmin="88"
+          class="ml-9"
+          :svgContainerVmin="82"
           :titleClickable="false"
           v-if="currentTab == 0"
         />
-        <EvaluationReport v-if="currentTab == 1" :reportVmin="88" />
+        <EvaluationReport v-if="currentTab == 1" :reportVmin="82" />
       </div>
       <div
         class="col-lg-4 col-xl-6 m-0 p-0"
@@ -66,11 +100,14 @@ export default {
     },
     calcContentHeight() {
       let windowHeight = window.innerHeight;
-      let appBarheight = document.getElementById("vuetify-application-bar")
+      let appbarHeight = document.getElementById("vuetify-application-bar")
         .clientHeight;
       let tabsHeight = document.getElementById("vuetify-tabs-for-evaluation")
         .clientHeight;
-      let remainderHeight = windowHeight - appBarheight - tabsHeight;
+      let toolbarHeight = document.getElementById("circular-evaluation-toolbar")
+        .clientHeight;
+      let remainderHeight =
+        windowHeight - appbarHeight - tabsHeight - toolbarHeight - 10;
       let heightRatio = (remainderHeight / windowHeight) * 100;
       this.heightVmin = heightRatio;
     }
