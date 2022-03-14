@@ -65,19 +65,17 @@
             :key="d.actor"
             :id="actorToId(d.actor)"
             :style="calculateEvalCellStyle(d)"
+            @click="actorEvalSelected(d, $event)"
           >
             <div class="col px-0 py-2">
               <div class="container-fluid ma-0 pa-0 px-2">
-                <div class="row ma-0 pa-0 mb-4" @click="actorEvalSelected(d)">
+                <div class="row ma-0 pa-0 mb-4">
                   <div class="col h6 ma-0 pa-0 no-select">
                     {{ d.actor }}
                   </div>
                 </div>
                 <div class="row ma-0 pa-0 mb-2">
-                  <div
-                    class="col-xl-2 col-lg-3 col-3 h6 ma-0 pa-0 text-center"
-                    @click="actorEvalSelected(d)"
-                  >
+                  <div class="col-xl-2 col-lg-3 col-3 h6 ma-0 pa-0 text-center">
                     <v-btn
                       fab
                       small
@@ -94,7 +92,11 @@
                       <div class="row ma-0 pa-0">
                         <div
                           class="col-11 ma-0 pa-0 no-select h6"
-                          @click="actorEvalSelected(d)"
+                          :style="
+                            d.evalSelected
+                              ? { color: d.color, fontWeight: 'bold' }
+                              : {}
+                          "
                         >
                           Circular Approach
                         </div>
@@ -102,6 +104,7 @@
                           <v-tooltip top>
                             <template v-slot:activator="{ on }">
                               <v-btn
+                                class="info-button"
                                 color="grey lighten-1"
                                 v-on="on"
                                 icon
@@ -109,7 +112,7 @@
                                 small
                                 @click="activateAdditionalResources(d)"
                               >
-                                <v-icon large dark
+                                <v-icon large dark class="info-button"
                                   >mdi-information-outline</v-icon
                                 >
                               </v-btn>
@@ -124,7 +127,11 @@
                       <div class="row ma-0 pa-0">
                         <div
                           class="col-11 ma-0 pa-0 no-select"
-                          @click="actorEvalSelected(d)"
+                          :style="
+                            d.evalSelected
+                              ? { color: d.color, fontWeight: 'bold' }
+                              : {}
+                          "
                         >
                           {{ d.eval }}
                         </div>
@@ -132,7 +139,7 @@
                       <div class="row ma-0 pa-0">
                         <div
                           class="col-11 ma-0 mt-4 pa-0 no-select h6"
-                          @click="actorEvalSelected(d)"
+                          :style="d.evalSelected ? { color: 'lightgrey' } : {}"
                         >
                           Conventional Approach
                         </div>
@@ -140,7 +147,7 @@
                       <div class="row ma-0 pa-0">
                         <div
                           class="col-11 ma-0 pa-0 no-select"
-                          @click="actorEvalSelected(d)"
+                          :style="d.evalSelected ? { color: 'lightgrey' } : {}"
                         >
                           {{ d.conventional }}
                         </div>
@@ -538,8 +545,10 @@ export default {
       }
       return styleObj;
     },
-    actorEvalSelected(actorData) {
-      this.$store.commit("actorEvalSelected", actorData);
+    actorEvalSelected(actorData, event) {
+      if (!event.srcElement.classList.contains("info-button")) {
+        this.$store.commit("actorEvalSelected", actorData);
+      }
     },
     getCategoryFilteredActors(cat) {
       let filteredActors = this.evalActors.filter(a => {
