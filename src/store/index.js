@@ -79,7 +79,7 @@ let actors = [
     category: "Resource Exchange",
     eval: "Is your building site a brownfield?",
     conventional:
-      "Construction takes place on a site with minimal challenges posed by previous use or hazardous waste",
+      "Construction takes place on a site with minimal challenges posed by previous use or hazardous waste or on a plot of land rich in existing ecosystems and biodiversity",
     evalPoints: 3
   },
   {
@@ -178,7 +178,7 @@ let actors = [
     category: "Design and Deliver",
     eval: "Is your building designed to adapt to potential future uses?",
     conventional:
-      "No plan will be made regarding potential future uses that future owners may have for a building, and no little thought will be given to the building's odds of surviving to its end of life.",
+      "No plan will be made regarding potential future uses that future owners may have for a building, and little to no thought will be given to the building's odds of surviving to its end of life.",
     evalPoints: 4
   },
   {
@@ -353,7 +353,7 @@ let actors = [
     eval:
       "Does you project incorporate downcycled material? And/or does the waste management plan for demolition incorporate downcycling measures?",
     conventional:
-      "Downcycled materials may be used, but this will not be coincidental, and will have minimal impact on the overall design of the building.",
+      "Some downcycled materials may be used, but will have minimal impact on the overall design or environmental impact of the building.",
     evalPoints: 1
   },
   {

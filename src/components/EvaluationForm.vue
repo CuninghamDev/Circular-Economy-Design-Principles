@@ -399,19 +399,19 @@ export default {
       }
     },
     categorySelectTracker: function() {
-      if (!this.categorySelectTracker.includes("evaluation")) {
-        if (this.categorySelected) {
-          for (let i in this.expansionPanelCategories) {
-            let cat = this.expansionPanelCategories[i];
-            if (cat.text == this.selectedCategory.text) {
-              this.openExpansionPanel = Number(i);
-            }
+      // if (!this.categorySelectTracker.includes("evaluation")) {
+      if (this.categorySelected) {
+        for (let i in this.expansionPanelCategories) {
+          let cat = this.expansionPanelCategories[i];
+          if (cat.text == this.selectedCategory.text) {
+            this.openExpansionPanel = Number(i);
           }
-        } else {
-          this.openExpansionPanel = undefined;
         }
+      } else {
+        this.openExpansionPanel = undefined;
       }
     }
+    // }
   },
   props: ["containerVmin"],
   computed: {
@@ -489,6 +489,9 @@ export default {
     resourcesActor: undefined
   }),
   methods: {
+    openLink(link) {
+      window.open(link, "_blank");
+    },
     navigateToRoute(path) {
       let currentRoute = this.$route.path;
       if (path != currentRoute) {

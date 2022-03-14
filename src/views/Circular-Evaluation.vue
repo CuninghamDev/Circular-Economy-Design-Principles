@@ -4,8 +4,9 @@
       v-model="currentTab"
       color="blue accent-4"
       id="vuetify-tabs-for-evaluation"
-      @change="resetCategory()"
     >
+      <!-- @change="resetCategory()"
+    > -->
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>
     </v-tabs>
     <div class="row m-0 p-0 border-top">
@@ -39,7 +40,6 @@ export default {
   components: { CircularEconomyDiagram, EvaluationReport, EvaluationForm },
   beforeMount() {
     this.$store.commit("buildEvaluationTracking");
-    this.$store.commit("setState", { key: "categorySelected", val: false });
   },
   mounted() {
     this.calcContentHeight();
