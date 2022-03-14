@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid ma-0 pa-0" style="overflow-y:auto;">
     <div class="row ma-0 pa-0">
-      <div class="col ma-0 pa-0">
+      <div class="col-xl-10 ma-0 pa-0">
         <!-- <CircularBarChart /> -->
         <CircularStackedBarChart />
       </div>

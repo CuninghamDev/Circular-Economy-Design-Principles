@@ -56,6 +56,7 @@
           v-if="currentTab == 0"
         />
         <EvaluationReport v-if="currentTab == 1" :reportVmin="82" />
+        <EvaluationWrittenSummary v-if="currentTab == 2" :reportVmin="82" />
       </div>
       <div
         class="col-lg-4 col-xl-6 m-0 p-0"
@@ -72,9 +73,15 @@
 import CircularEconomyDiagram from "../components/CircularEconomyDiagram.vue";
 import EvaluationReport from "../components/EvaluationReport.vue";
 import EvaluationForm from "../components/EvaluationForm.vue";
+import EvaluationWrittenSummary from "../components/EvaluationWrittenSummary.vue";
 export default {
   name: "CircularEvaluation",
-  components: { CircularEconomyDiagram, EvaluationReport, EvaluationForm },
+  components: {
+    CircularEconomyDiagram,
+    EvaluationReport,
+    EvaluationForm,
+    EvaluationWrittenSummary
+  },
   beforeMount() {
     this.$store.commit("buildEvaluationTracking");
   },
@@ -93,7 +100,7 @@ export default {
     window.removeEventListener("resize", this.calcContentHeight);
   },
   data: () => ({
-    tabData: ["Diagram", "Evaluation Report"],
+    tabData: ["Diagram", "Evaluation Report", "Written Summary"],
     currentTab: 0,
     heightVmin: 100,
     additionalResourcesDialog: false

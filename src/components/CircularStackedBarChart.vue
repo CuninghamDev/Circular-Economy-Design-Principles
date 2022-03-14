@@ -53,7 +53,7 @@ export default {
     labelOffsetFromBar: 10,
     labelAxisLength: 90,
     labelAxisInset: 20,
-    angularExtension: Math.PI * (1 / 40),
+    angularExtension: Math.PI * (1 / 50),
     labelAxisData: [
       {
         name: "Conventional",
