@@ -53,6 +53,7 @@ export default {
     labelOffsetFromBar: 10,
     labelAxisLength: 90,
     labelAxisInset: 20,
+    angularExtension: Math.PI * (1 / 40),
     labelAxisData: [
       {
         name: "Conventional",
@@ -115,7 +116,7 @@ export default {
           return false;
         }
       });
-      return categoryBarData;
+      return categoryBarData.reverse();
     },
     styleSvg() {
       let svgStyleObj = {};
@@ -302,13 +303,24 @@ export default {
       centerX,
       centerY
     ) {
+      let self = this;
+      let angularExtension = self.angularExtension;
       let x1 = Math.cos(startAngle) * innerRadius + centerX;
       let y1 = Math.sin(startAngle) * innerRadius + centerY;
       let x2 = Math.cos(endAngle) * innerRadius + centerX;
       let y2 = Math.sin(endAngle) * innerRadius + centerY;
+      let arrowPointX =
+        Math.cos(endAngle + angularExtension) *
+          (innerRadius + self.barWidth / 2) +
+        centerX;
+      let arrowPointY =
+        Math.sin(endAngle + angularExtension) *
+          (innerRadius + self.barWidth / 2) +
+        centerY;
       let path = d3.path();
       path.moveTo(x1, y1);
       path.arc(centerX, centerY, outterRadius, startAngle, endAngle);
+      path.lineTo(arrowPointX, arrowPointY);
       path.lineTo(x2, y2);
       path.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
       return path.toString();
