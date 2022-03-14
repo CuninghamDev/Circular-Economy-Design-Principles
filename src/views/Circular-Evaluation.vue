@@ -13,6 +13,7 @@
             color="brown lighten-5"
             class="ml-0 pa-1 px-2 mr-2"
             style="min-width: 0"
+            @click="saveEvaluation"
           >
             <v-icon color="grey darken-2">mdi-content-save-outline</v-icon>
           </v-btn>
@@ -27,6 +28,7 @@
             color="brown lighten-5"
             class="ml-0 pa-1 px-2 mr-2"
             style="min-width: 0"
+            @click="openEvaluation"
           >
             <v-icon color="grey darken-2">mdi-folder-open-outline</v-icon>
           </v-btn>
@@ -62,6 +64,7 @@
         <EvaluationForm />
       </div>
     </div>
+    <input id="file-input" type="file" name="name" style="display: none" />
   </div>
 </template>
 
@@ -78,6 +81,13 @@ export default {
   mounted() {
     this.calcContentHeight();
     window.addEventListener("resize", this.calcContentHeight);
+    let inputElement = document.getElementById("file-input");
+    inputElement.addEventListener("change", handleFiles, false);
+    let self = this;
+    function handleFiles() {
+      const fileList = this.files;
+      self.activateOpenedFile(fileList);
+    }
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.calcContentHeight);
@@ -110,6 +120,24 @@ export default {
         windowHeight - appbarHeight - tabsHeight - toolbarHeight - 10;
       let heightRatio = (remainderHeight / windowHeight) * 100;
       this.heightVmin = heightRatio;
+    },
+    saveEvaluation() {
+      this.$store.commit("saveEvaluation");
+    },
+    openEvaluation() {
+      // console.log('opening evaluation')
+      document.getElementById("file-input").click();
+    },
+    activateOpenedFile(fileList) {
+      let self = this;
+      // console.log('activated opened file', fileList[0])
+      let reader = new FileReader();
+      reader.addEventListener("load", function() {
+        // console.log('reader results', reader.results)
+        let loadedData = JSON.parse(reader.result);
+        self.$store.commit("openEvaluation", loadedData);
+      });
+      reader.readAsText(fileList[0]);
     }
   }
 };

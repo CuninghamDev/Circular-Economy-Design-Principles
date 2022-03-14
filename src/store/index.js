@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import * as fs from "file-saver";
 
 Vue.use(Vuex);
 
@@ -731,6 +732,29 @@ export default new Vuex.Store({
     },
     setState(state, n) {
       state[n.key] = n.val;
+    },
+    saveEvaluation(state) {
+      console.log("saving evaluation");
+      let now = new Date();
+      let year = String(now.getFullYear());
+      let month = String(now.getMonth() + 1).padStart(2, "0");
+      let day = String(now.getDate()).padStart(2, "0");
+      let hour = String(now.getHours()).padStart(2, "0");
+      let minute = String(now.getMinutes()).padStart(2, "0");
+      let dateText = year + month + day + "-" + hour + minute + "-";
+      let saveData = state;
+      let jsonOut = JSON.stringify(saveData, null, 2);
+      let blob = new Blob([jsonOut], { type: "text/plain;charset=utf-8" });
+      fs.saveAs(blob, dateText + "circular-evaluation" + ".json");
+    },
+    openEvaluation(state, n) {
+      console.log("opening evaluation");
+      let skipKeys = [];
+      for (let k in n) {
+        if (k in state && !skipKeys.includes(k)) {
+          state[k] = n[k];
+        }
+      }
     }
   },
   getters: {
