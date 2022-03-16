@@ -175,8 +175,9 @@ export default {
         {
           startRotation: Math.PI / -2,
           endRotation: Math.PI * 1.95 + Math.PI / -2,
-          arrowHeadLength: 20,
-          arrowHeadAngle: Math.PI * 0.5
+          arrowHeadWidth: 22,
+          arrowHeadRadians:
+            Math.PI * 1.95 + Math.PI / -2 - self.angularExtension
         }
       ];
       d3.select("#" + self.ids.primaryAxis)
@@ -196,12 +197,31 @@ export default {
             self.center.y
           );
         });
+      d3.select("#" + self.ids.primaryAxis)
+        .selectAll(".axis-main-path-arrow-head")
+        .data(arrowData)
+        .join("path")
+        .classed("axis-main-path-arrow-head", true)
+        .style("fill", "none")
+        .style("stroke", "black")
+        .style("stroke-width", "3px")
+        .attr("d", d => {
+          return self.arrowHeadGenerator(
+            d.endRotation,
+            d.arrowHeadRadians,
+            self.halfRadius,
+            d.arrowHeadWidth,
+            self.center.x,
+            self.center.y
+          );
+        });
 
       d3.select("#" + self.ids.labelAxes)
         .selectAll("line")
         .data(self.labelAxisData)
         .join("line")
         .style("stroke", "black")
+        .style('stroke-width','2px')
         .attr("x1", d => {
           return (
             Math.cos(d.rotation) * self.labelAxisInteriorRadius + self.center.x
@@ -256,6 +276,8 @@ export default {
         .join("path")
         .classed("bars", true)
         .style("fill", d => d.color)
+        .style("stroke", "white")
+        .style("stroke-width", "2px")
         .attr("d", d =>
           self.circularBarGenerator(
             d.rotationStart,
@@ -293,6 +315,30 @@ export default {
       let path = d3.path();
       path.moveTo(x1, y1);
       path.arc(centerX, centerY, radius, startAngle, endAngle);
+      return path.toString();
+    },
+    arrowHeadGenerator(
+      radialPoint,
+      radialTailEnd,
+      centerRadius,
+      arrowWidth,
+      centerX,
+      centerY
+    ) {
+      let x1 =
+        Math.cos(radialTailEnd) * (centerRadius + arrowWidth / 2) + centerX;
+      let y1 =
+        Math.sin(radialTailEnd) * (centerRadius + arrowWidth / 2) + centerY;
+      let x2 = Math.cos(radialPoint) * centerRadius + centerX;
+      let y2 = Math.sin(radialPoint) * centerRadius + centerY;
+      let x3 =
+        Math.cos(radialTailEnd) * (centerRadius - arrowWidth / 2) + centerX;
+      let y3 =
+        Math.sin(radialTailEnd) * (centerRadius - arrowWidth / 2) + centerY;
+      let path = d3.path();
+      path.moveTo(x1, y1);
+      path.lineTo(x2, y2);
+      path.lineTo(x3, y3);
       return path.toString();
     },
     circularBarGenerator(
