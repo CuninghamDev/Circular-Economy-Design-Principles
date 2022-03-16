@@ -221,7 +221,7 @@ export default {
         .data(self.labelAxisData)
         .join("line")
         .style("stroke", "black")
-        .style('stroke-width','2px')
+        .style("stroke-width", "2px")
         .attr("x1", d => {
           return (
             Math.cos(d.rotation) * self.labelAxisInteriorRadius + self.center.x
@@ -248,27 +248,56 @@ export default {
         });
 
       d3.select("#" + self.ids.labels)
-        .selectAll("text")
+        .selectAll(".category-label-paths")
         .data(self.labelAxisData)
-        .join("text")
-        .text(d => d.name)
-        .attr("x", d => {
+        .join("path")
+        .classed("category-label-paths", true)
+        .attr("id", d => {
           return (
-            Math.cos(d.rotation) *
-              (self.labelAxisInteriorRadius + (self.labelAxisLength / 3) * 2) +
-            self.center.x +
-            5
+            "category-label-path-" +
+            d.name
+              .split(" ")
+              .join("-")
+              .toLowerCase()
           );
         })
-        .attr("y", d => {
-          return (
-            Math.sin(d.rotation) *
-              (self.labelAxisInteriorRadius + (self.labelAxisLength / 3) * 2) +
-            self.center.x -
-            5
-          );
-        })
-        .attr("text-anchor", d => d.textAnchor);
+        .attr("fill", "none")
+        .attr("d", d =>
+          self.arcPathGenerator(
+            d.rotation + Math.PI / 70,
+            d.rotation + Math.PI / 2,
+            self.labelAxisInteriorRadius + (self.labelAxisLength / 3) * 2,
+            self.center.x,
+            self.center.y
+          )
+        );
+
+      d3.select("#" + self.ids.labels)
+        .selectAll(".category-label-texts")
+        .data(self.labelAxisData)
+        .join(enter =>
+          enter.append("text").classed("category-label-texts", true)
+        )
+        .selectAll(".category-label-text-pathed")
+        .data(d => [d])
+        .join(enter =>
+          enter
+            .append("textPath")
+            .classed("category-label-text-pathed", true)
+            .classed("no-select", true)
+            .attr("xlink:href", d => {
+              return (
+                "#category-label-path-" +
+                d.name
+                  .split(" ")
+                  .join("-")
+                  .toLowerCase()
+              );
+            })
+            .style("text-anchor", "start")
+            .text(d => d.name)
+            .style("font-size", self.width * 0.035 + "px")
+        );
 
       d3.select("#" + self.ids.bars)
         .selectAll(".bars")
