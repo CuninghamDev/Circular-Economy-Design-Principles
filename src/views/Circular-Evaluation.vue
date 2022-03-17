@@ -44,7 +44,10 @@
     >
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>
     </v-tabs>
-    <div class="row m-0 p-0 border-top">
+    <div
+      class="row m-0 p-0 border-top"
+      v-if="currentTab == 0 || currentTab == 1"
+    >
       <div
         class="col-lg-8 col-xl-6 m-0 p-0 "
         :style="'height: ' + heightVmin + 'vh'"
@@ -56,13 +59,17 @@
           v-if="currentTab == 0"
         />
         <EvaluationReport v-if="currentTab == 1" :reportVmin="82" />
-        <EvaluationWrittenSummary v-if="currentTab == 2" :reportVmin="82" />
       </div>
       <div
         class="col-lg-4 col-xl-6 m-0 p-0"
         :style="'height: ' + heightVmin + 'vh'"
       >
         <EvaluationForm />
+      </div>
+    </div>
+    <div class="row m-0 p-0 border-top" v-if="currentTab == 2">
+      <div class="col-xl-8 col-lg-10">
+        <EvaluationWrittenSummary :reportVmin="82" />
       </div>
     </div>
     <input id="file-input" type="file" name="name" style="display: none" />

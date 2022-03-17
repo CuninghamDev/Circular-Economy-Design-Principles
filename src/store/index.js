@@ -637,6 +637,7 @@ export default new Vuex.Store({
     generalResourcesCsvPath: "/circular-economy/data/general_resources.csv",
     generalResourceData: undefined,
     title: "Circular Economy in the Built Environment",
+    projectName: "New Project",
     actorSelected: false,
     categorySelected: false,
     selectedCategory: undefined,
@@ -745,7 +746,7 @@ export default new Vuex.Store({
       let saveData = state;
       let jsonOut = JSON.stringify(saveData, null, 2);
       let blob = new Blob([jsonOut], { type: "text/plain;charset=utf-8" });
-      fs.saveAs(blob, dateText + "circular-evaluation" + ".json");
+      fs.saveAs(blob, dateText + state.projectName + ".json");
     },
     openEvaluation(state, n) {
       console.log("opening evaluation");

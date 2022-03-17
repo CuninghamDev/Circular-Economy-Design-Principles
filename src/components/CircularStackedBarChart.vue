@@ -7,10 +7,11 @@
     <svg :style="styleSvg" :id="ids.svg" class="elevation-2">
       <g :id="ids.primaryAxis" />
 
-      <g :id="ids.bars" />
       <g :id="ids.labelAxes" />
       <g :id="ids.dividingLines" />
       <g :id="ids.labels" />
+
+      <g :id="ids.bars" />
       <g :id="ids.overlay" />
     </svg>
   </div>
@@ -52,7 +53,7 @@ export default {
     barWidth: 30,
     labelOffsetFromBar: 10,
     labelAxisLength: 90,
-    labelAxisInset: 20,
+    labelAxisInset: 30,
     angularExtension: Math.PI * (1 / 50),
     labelAxisData: [
       {
