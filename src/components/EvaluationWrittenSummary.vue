@@ -2,6 +2,7 @@
   <div class="container-fluid" :style="{}">
     <!-- The next div makes sure that some strategies are selected before creating a report (otherwise it would look pretty weird) -->
     <div class="ma-0 pa-0" v-if="totalSelectedPoints > 0">
+      <v-btn @click="testPrintingFunction()">Test Print</v-btn>
       <div class="row">
         <div class="col h2 mb-1 pb-0">
           {{ projectName }}
@@ -166,6 +167,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { jsPDF } from "jspdf";
 export default {
   name: "WrittenSummary",
   computed: {
@@ -230,6 +232,157 @@ export default {
         }
       }
       return totalSelectedPoints;
+    }
+  },
+  methods: {
+    testPrintingFunction() {
+      let self = this;
+
+      let paperX = 8.5;
+      let paperY = 11;
+      let doc = new jsPDF({
+        orientation: "portrait",
+        unit: "in",
+        format: [paperX, paperY]
+      });
+
+      let xMargin = 0.5;
+      let topMargin = 0.75;
+      let bottomMargin = 0.5;
+      let titleLeftMargin = 0.1;
+
+      class Cursor {
+        constructor(
+          pdfDocument,
+          xMargin,
+          topMargin,
+          bottomMargin,
+          paperX,
+          paperY
+        ) {
+          this.doc = pdfDocument;
+          this.x = xMargin;
+          this.y = topMargin;
+          this.xMargin = xMargin;
+          this.topMargin = topMargin;
+          this.bottomMargin = bottomMargin;
+          this.paperX = paperX;
+          this.paperY = paperY;
+          this.typicalReturn = 0.2;
+        }
+
+        shiftCursor([x, y]) {
+          this.x += x;
+          this.y += y;
+          if (this.x > this.paperX - this.xMargin) {
+            this.x = 0;
+            this.y += 0.2;
+          }
+          if (this.y > this.paperY - this.bottomMargin) {
+            this.doc.addPage();
+            this.x = this.xMargin;
+            this.y = this.topMargin;
+          }
+        }
+      }
+      let cursor = new Cursor(
+        doc,
+        xMargin,
+        topMargin,
+        bottomMargin,
+        paperX,
+        paperY
+      );
+
+      console.log(doc.getFontList());
+      let titleFormat = {
+        font: "Helvetica",
+        style: "Bold",
+        size: 24
+      };
+      let subtitleFormat = {
+        font: "Helvetica",
+        style: "",
+        size: 14
+      };
+      let bodyTextFormat = {
+        font: "Helvetica",
+        style: "",
+        size: 11
+      };
+      let typicalFontColor = "#4a4a4a";
+
+      let cats = self.categoryData;
+
+      for (let cat of cats) {
+        //For each category
+        if (cat.selectedPoints > 0) {
+          //Create a rectangle that is the color of that category
+          doc.setTextColor("#ffffff");
+          doc.setFillColor(cat.color);
+          doc.rect(cursor.x, cursor.y, paperX - xMargin * 2, 0.76, "F");
+          cursor.shiftCursor([0, 0.33]);
+
+          //Create a title for the category
+          doc.setFont(titleFormat.font, titleFormat.style);
+          doc.setFontSize(titleFormat.size);
+          doc.text(cat.text, cursor.x + titleLeftMargin, cursor.y);
+          cursor.shiftCursor([0, 0.3]);
+
+          //Create a subtitle for the category
+          doc.setFont(subtitleFormat.font, subtitleFormat.style);
+          doc.setFontSize(subtitleFormat.size);
+          doc.text(
+            "Strategies Related to this Phase in the Project Lifecycle",
+            cursor.x + titleLeftMargin,
+            cursor.y
+          );
+          cursor.shiftCursor([0, 0.12]);
+
+          doc.setTextColor(typicalFontColor);
+          //For each selected actor related to the category
+          for (let act of cat.actors) {
+            if (act.evalSelected) {
+              doc.setFont(subtitleFormat.font, subtitleFormat.style);
+              doc.setFontSize(subtitleFormat.size);
+              cursor.shiftCursor([0, 0.35]);
+              doc.text(act.actor, cursor.x, cursor.y);
+
+              cursor.shiftCursor([0, 0.11]);
+              doc.setDrawColor(cat.color);
+              doc.setLineWidth(0.01);
+              doc.line(cursor.x, cursor.y, cursor.x + 6, cursor.y);
+              cursor.shiftCursor([0, 0.02]);
+
+              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+              doc.setFontSize(bodyTextFormat.size);
+              let details = doc.splitTextToSize(
+                act.details,
+                paperX - xMargin * 2
+              );
+              for (let d of details) {
+                cursor.shiftCursor([0, 0.2]);
+                doc.text(d, cursor.x, cursor.y);
+              }
+            }
+          }
+
+          //final spacing to prepare for the next category
+          cursor.shiftCursor([0, 0.4]);
+        }
+      }
+
+      //Add an indicator of points
+      //Add an indicator if it is high impact
+      //Add the description of the circular approach
+      //Add a description of the criteria
+      //If there are other relevant lifecycle stages
+      //For each relevant lifecycle stage
+      //Add a dividing element
+      //Add a title of the associated lifecycle stage
+      //Add a description of the relationship to that other lifecycle stage
+
+      doc.save("Circular Evaluation Written Report.pdf");
     }
   }
 };
