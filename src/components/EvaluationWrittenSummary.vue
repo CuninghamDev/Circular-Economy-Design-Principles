@@ -2,9 +2,11 @@
   <div class="container-fluid" :style="{}">
     <!-- The next div makes sure that some strategies are selected before creating a report (otherwise it would look pretty weird) -->
     <div class="ma-0 pa-0" v-if="totalSelectedPoints > 0">
-      <v-btn @click="testPrintingFunction()">Test Print</v-btn>
+      <v-btn fab absolute style="right:20px;top:20px" @click="printPdfReport()">
+        <v-icon color="grey darken-3" large>mdi-printer</v-icon>
+      </v-btn>
       <div class="row">
-        <div class="col h2 mb-1 pb-0">
+        <div class="col-10 h2 mb-1 pb-0">
           {{ projectName }}
         </div>
       </div>
@@ -244,7 +246,7 @@ export default {
         })
         .join(" ");
     },
-    testPrintingFunction() {
+    printPdfReport() {
       let self = this;
 
       let paperX = 8.5;
