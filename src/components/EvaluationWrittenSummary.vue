@@ -235,6 +235,15 @@ export default {
     }
   },
   methods: {
+    toTitleCase(str) {
+      return str
+        .toLowerCase()
+        .split(" ")
+        .map(function(word) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    },
     testPrintingFunction() {
       let self = this;
 
@@ -249,7 +258,8 @@ export default {
       let xMargin = 0.5;
       let topMargin = 0.75;
       let bottomMargin = 0.5;
-      let titleLeftMargin = 0.1;
+      let titleLeftMargin = 0.15;
+      let rightMargin = paperX - xMargin;
 
       class Cursor {
         constructor(
@@ -310,18 +320,59 @@ export default {
         style: "",
         size: 11
       };
+      let bodyTextBoldFormat = {
+        font: "Helvetica",
+        style: "Bold",
+        size: 11
+      };
       let typicalFontColor = "#4a4a4a";
 
       let cats = self.categoryData;
+
+      doc.setTextColor(typicalFontColor);
+      doc.setFont(titleFormat.font, titleFormat.style);
+      doc.setFontSize(titleFormat.size);
+      doc.text(self.projectName, cursor.x, cursor.y);
+      cursor.shiftCursor([0, 0.28]);
+
+      doc.setFontSize(subtitleFormat.size);
+      doc.setFont(subtitleFormat.font, subtitleFormat.style);
+      doc.text("Circular Strategies", cursor.x, cursor.y);
+      cursor.shiftCursor([0, 0.3]);
+
+      doc.setFontSize(bodyTextFormat.size);
+      doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+      let introTextSource =
+        "The following circular economy strategies will be pursued for " +
+        self.projectName +
+        ".  These strategies have been sorted by the primary building life cycle stage that they impact.";
+      let introText = doc.splitTextToSize(
+        introTextSource,
+        paperX - xMargin * 2
+      );
+      for (let d of introText) {
+        doc.text(d, cursor.x, cursor.y);
+        cursor.shiftCursor([0, 0.25]);
+      }
 
       for (let cat of cats) {
         //For each category
         if (cat.selectedPoints > 0) {
           //Create a rectangle that is the color of that category
-          doc.setTextColor("#ffffff");
-          doc.setFillColor(cat.color);
-          doc.rect(cursor.x, cursor.y, paperX - xMargin * 2, 0.76, "F");
-          cursor.shiftCursor([0, 0.33]);
+
+          let rectHeight = 0.76;
+          if (cursor.y + rectHeight <= paperY - bottomMargin) {
+            doc.setTextColor("#ffffff");
+            doc.setFillColor(cat.color);
+            doc.rect(cursor.x, cursor.y, paperX - xMargin * 2, rectHeight, "F");
+            cursor.shiftCursor([0, 0.35]);
+          } else {
+            cursor.shiftCursor([0, rectHeight]);
+            doc.setTextColor("#ffffff");
+            doc.setFillColor(cat.color);
+            doc.rect(cursor.x, cursor.y, paperX - xMargin * 2, rectHeight, "F");
+            cursor.shiftCursor([0, 0.35]);
+          }
 
           //Create a title for the category
           doc.setFont(titleFormat.font, titleFormat.style);
@@ -343,27 +394,138 @@ export default {
           //For each selected actor related to the category
           for (let act of cat.actors) {
             if (act.evalSelected) {
-              doc.setFont(subtitleFormat.font, subtitleFormat.style);
+              console.log(act);
+              let titleHeight = 0.4 + 0.11 + 0.25;
+              if (cursor.y + titleHeight > paperY - bottomMargin) {
+                cursor.shiftCursor([0, titleHeight]);
+              }
+              doc.setFont(subtitleFormat.font, bodyTextBoldFormat.style);
               doc.setFontSize(subtitleFormat.size);
-              cursor.shiftCursor([0, 0.35]);
-              doc.text(act.actor, cursor.x, cursor.y);
+              cursor.shiftCursor([0, 0.4]);
+              doc.text(self.toTitleCase(act.actor), cursor.x, cursor.y);
 
               cursor.shiftCursor([0, 0.11]);
               doc.setDrawColor(cat.color);
-              doc.setLineWidth(0.01);
-              doc.line(cursor.x, cursor.y, cursor.x + 6, cursor.y);
-              cursor.shiftCursor([0, 0.02]);
+              doc.setLineWidth(0.04);
+              doc.line(cursor.x, cursor.y, rightMargin, cursor.y);
 
-              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
-              doc.setFontSize(bodyTextFormat.size);
+              cursor.shiftCursor([0, 0.25]);
+              doc.setFont(subtitleFormat.font, bodyTextBoldFormat.style);
+              doc.setFontSize(subtitleFormat.size);
+              doc.setTextColor(cat.color);
+              doc.text(act.evalPoints + " Points", cursor.x, cursor.y);
+              if (act.evalPoints >= 4) {
+                cursor.shiftCursor([1.2, 0]);
+                doc.setTextColor("#ff6d00");
+                doc.text("High Impact Strategy", cursor.x, cursor.y);
+                cursor.shiftCursor([-1.2, 0]);
+              }
+
+              doc.setTextColor(typicalFontColor);
+              /////////////////////
+              cursor.shiftCursor([0, 0.25]);
               let details = doc.splitTextToSize(
                 act.details,
                 paperX - xMargin * 2
               );
+              let detailsHeight = details.length * 0.2 + 0.05;
+              if (cursor.y + detailsHeight > paperY - bottomMargin) {
+                cursor.shiftCursor([0, detailsHeight]);
+              }
+
+              doc.setFont(bodyTextBoldFormat.font, bodyTextBoldFormat.style);
+              doc.setFontSize(bodyTextBoldFormat.size);
+              doc.text("Description of Circular Approach", cursor.x, cursor.y);
+              cursor.shiftCursor([0, 0.05]);
+
+              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+              doc.setFontSize(bodyTextFormat.size);
+
               for (let d of details) {
                 cursor.shiftCursor([0, 0.2]);
                 doc.text(d, cursor.x, cursor.y);
               }
+
+              /////////////////////
+              cursor.shiftCursor([0, 0.3]);
+              let criteria = doc.splitTextToSize(
+                act.eval,
+                paperX - xMargin * 2
+              );
+              let criteriaHeight = 0.05 + criteria.length * 0.2;
+              if (cursor.y + criteriaHeight > paperY - bottomMargin) {
+                cursor.shiftCursor([0, criteriaHeight]);
+              }
+              doc.setFont(bodyTextBoldFormat.font, bodyTextBoldFormat.style);
+              doc.setFontSize(bodyTextBoldFormat.size);
+              doc.text("Criteria", cursor.x, cursor.y);
+              cursor.shiftCursor([0, 0.05]);
+
+              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+              doc.setFontSize(bodyTextFormat.size);
+
+              for (let d of criteria) {
+                cursor.shiftCursor([0, 0.2]);
+                doc.text(d, cursor.x, cursor.y);
+              }
+
+              /////////////////////
+              if (act.buttonData.length > 0) {
+                doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+                doc.setFontSize(bodyTextFormat.size);
+                cursor.shiftCursor([0, 0.3]);
+
+                doc.setFont(bodyTextBoldFormat.font, bodyTextBoldFormat.style);
+                doc.text("Other Relevent Lifecycle Stages", cursor.x, cursor.y);
+                cursor.shiftCursor([0, 0.05]);
+              }
+              let buttonXOffset = 0.2;
+
+              for (let b of act.buttonData) {
+                let buttonDetails = doc.splitTextToSize(
+                  b.details,
+                  paperX - xMargin * 2
+                );
+                let buttonDetailLineHeight = 0.25;
+                let buttonStageLineHeight = 0.25;
+                let buttonDataHeight =
+                  buttonStageLineHeight +
+                  buttonDetails.length * buttonDetailLineHeight;
+                if (buttonDataHeight + cursor.y > paperY - bottomMargin) {
+                  cursor.shiftCursor([0, buttonDataHeight]);
+                }
+                let buttonColor = self.categoryColorLookup[b.stage];
+                doc.setDrawColor(buttonColor);
+                doc.setLineWidth(0.06);
+                let shiftY = 0.07;
+                let shiftX = 0.05;
+                let spacing = 0.04;
+                doc.line(
+                  cursor.x + shiftX,
+                  cursor.y + shiftY + spacing,
+                  cursor.x + shiftX,
+                  cursor.y + shiftY + buttonDataHeight - spacing
+                );
+
+                cursor.shiftCursor([buttonXOffset, 0]);
+
+                // console.log("button data", b);
+                cursor.shiftCursor([0, buttonStageLineHeight]);
+                doc.setTextColor(buttonColor);
+                doc.setFont(bodyTextBoldFormat.font, bodyTextBoldFormat.style);
+                doc.text(b.stage, cursor.x, cursor.y);
+
+                doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+                doc.setTextColor(typicalFontColor);
+
+                for (let d of buttonDetails) {
+                  cursor.shiftCursor([0, buttonDetailLineHeight]);
+                  doc.text(d, cursor.x, cursor.y);
+                }
+                cursor.shiftCursor([buttonXOffset * -1, 0]);
+              }
+
+              cursor.shiftCursor([0, 0.3]);
             }
           }
 
@@ -374,13 +536,6 @@ export default {
 
       //Add an indicator of points
       //Add an indicator if it is high impact
-      //Add the description of the circular approach
-      //Add a description of the criteria
-      //If there are other relevant lifecycle stages
-      //For each relevant lifecycle stage
-      //Add a dividing element
-      //Add a title of the associated lifecycle stage
-      //Add a description of the relationship to that other lifecycle stage
 
       doc.save("Circular Evaluation Written Report.pdf");
     }
