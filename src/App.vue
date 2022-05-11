@@ -134,23 +134,28 @@ export default {
       drawer: false,
       routes: [
         {
-          name: "Interactive Diagram",
-          ref: "diagram",
+          name: "Home",
+          ref: "Home",
           route: "/"
         },
         {
-          name: "How Circular Is Your Project?",
-          ref: "circular-evaluation",
-          route: "/circular-evaluation"
+          name: "Discover Circular Strategies",
+          ref: "discover",
+          route: "/discover"
         },
         {
-          name: "List of Resources",
-          ref: "resources",
+          name: "Evaluate a Project",
+          ref: "Evaluation",
+          route: "/evaluation"
+        },
+        {
+          name: "Browse Resources",
+          ref: "Resources",
           route: "/resources"
         },
         {
           name: "About",
-          ref: "about",
+          ref: "About",
           route: "/about"
         }
       ]

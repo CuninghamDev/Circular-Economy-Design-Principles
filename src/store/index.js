@@ -594,6 +594,8 @@ let categories = [
     text: "Design and Deliver",
     ringText: ["Design and", "Deliver"],
     color: "#358BB0",
+    textDescription:
+      "One of the most impactful stages for creating a circular journey in the built environment. Working off of the Circular Economy pillar to “Design out Waste”, this phase is where we identify and coordinate the tangible strategies to be used during design.",
     iconPath:
       "http://research.cuningham.com/circular-economy/assets/DesignAndDeliver.svg",
     whiteIconPath:
@@ -603,6 +605,8 @@ let categories = [
     text: "Intelligent Built Environment",
     ringText: ["Intelligent Built", "Environment"],
     color: "#A6D08F",
+    textDescription:
+      "During this phase, ideas are implemented and tracked. We are now using/reusing the design to its maximized potential. This is where we would see the third Circular Economy principle to “regenerate natural systems” at work.",
     iconPath:
       "http://research.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment.svg",
     whiteIconPath:
@@ -612,6 +616,8 @@ let categories = [
     text: "End of Design Life",
     ringText: ["End of", "Design Life"],
     color: "#90B47D",
+    textDescription:
+      "The follow through, with an emphasis on another Circular Economy principle to “Keep Materials in Use”. This phase is where materials make their way back to being exchanged or headed to their next site for reuse.",
     iconPath:
       "http://research.cuningham.com/circular-economy/assets/EndOfDesignLife.svg",
     whiteIconPath:
@@ -621,6 +627,8 @@ let categories = [
     text: "Resource Exchange",
     ringText: ["Resource", "Exchange"],
     color: "#61BAE0",
+    textDescription:
+      "This tool itself is part of resource exchange. This is where we learn about new strategies, and find all the information and materials to then design the built environment. This is the pond of resources, tangible and intangible.",
     iconPath:
       "http://research.cuningham.com/circular-economy/assets/BridgingMaterialsAndData.svg",
     whiteIconPath:

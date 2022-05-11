@@ -1,38 +1,39 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Diagram from "../views/Diagram.vue";
-import About from "../views/About.vue";
-import Resources from "../views/Resources.vue";
+import goTo from "vuetify/lib/services/goto";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Diagram",
+    name: "Home",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Diagram.vue")
+    component: () => import("../views/Home.vue")
   },
+
   {
     path: "/about",
     name: "About",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+    component: () => import("../views/About.vue")
   },
   {
-    path: "/circular-evaluation",
-    name: "How Circular Is Your Project",
+    path: "/discover",
+    name: "Discover",
+    component: () => import("../views/Diagram.vue")
+  },
+  {
+    path: "/evaluation",
+    name: "Evaluation",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Circular-Evaluation.vue")
+    component: () => import("../views/Circular-Evaluation.vue")
   },
   {
     path: "/resources",
@@ -47,7 +48,18 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
+  scrollBehavior: (to, from, savedPosition) => {
+    let scrollTo = 0;
+
+    if (to.hash) {
+      scrollTo = to.hash;
+    } else if (savedPosition) {
+      scrollTo = savedPosition.y;
+    }
+
+    return goTo(scrollTo);
+  }
 });
 
 export default router;
