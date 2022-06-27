@@ -87,7 +87,7 @@
                             <v-chip
                               v-if="act.evalPoints >= 4"
                               class="mr-2"
-                              color="orange accent-4"
+                              color="#A80051"
                               dark
                             >
                               High Impact
@@ -418,7 +418,7 @@ export default {
               doc.text(act.evalPoints + " Points", cursor.x, cursor.y);
               if (act.evalPoints >= 4) {
                 cursor.shiftCursor([1.2, 0]);
-                doc.setTextColor("#ff6d00");
+                doc.setTextColor("#A80051");
                 doc.text("High Impact Strategy", cursor.x, cursor.y);
                 cursor.shiftCursor([-1.2, 0]);
               }

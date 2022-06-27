@@ -938,7 +938,7 @@ export default {
             .attr("startOffset", "50%")
             .text(d => d.text.toUpperCase())
             .style("font-family", "roboto")
-            .style("fill", "white")
+            .style("fill", d => d.textColor)
             .style("dominant-baseline", "middle")
 
             .style("opacity", 1)

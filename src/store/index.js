@@ -593,7 +593,7 @@ let categories = [
   {
     text: "Design and Deliver",
     ringText: ["Design and", "Deliver"],
-    color: "#358BB0",
+    color: "#0095CB",
     textDescription:
       "One of the most impactful stages for creating a circular journey in the built environment. Working off of the Circular Economy pillar to “Design out Waste”, this phase is where we identify and coordinate the tangible strategies to be used during design.",
     iconPath:
@@ -604,7 +604,7 @@ let categories = [
   {
     text: "Intelligent Built Environment",
     ringText: ["Intelligent Built", "Environment"],
-    color: "#A6D08F",
+    color: "#57929A",
     textDescription:
       "During this phase, ideas are implemented and tracked. We are now using/reusing the design to its maximized potential. This is where we would see the third Circular Economy principle to “regenerate natural systems” at work.",
     iconPath:
@@ -615,7 +615,7 @@ let categories = [
   {
     text: "End of Design Life",
     ringText: ["End of", "Design Life"],
-    color: "#90B47D",
+    color: "#035C67",
     textDescription:
       "The follow through, with an emphasis on another Circular Economy principle to “Keep Materials in Use”. This phase is where materials make their way back to being exchanged or headed to their next site for reuse.",
     iconPath:
@@ -626,7 +626,7 @@ let categories = [
   {
     text: "Resource Exchange",
     ringText: ["Resource", "Exchange"],
-    color: "#61BAE0",
+    color: "#55B8DC",
     textDescription:
       "This tool itself is part of resource exchange. This is where we learn about new strategies, and find all the information and materials to then design the built environment. This is the pond of resources, tangible and intangible.",
     iconPath:
@@ -675,8 +675,8 @@ export default new Vuex.Store({
       { text: "Re-Use", color: "#61BAE0" }
     ],
     outterRing: [
-      { text: "Compose", color: "#358BB0" },
-      { text: "Optimize", color: "#90B47D" }
+      { text: "Compose", color: "#AADCEE", textColor: "#0095CB" },
+      { text: "Optimize", color: "#81ADB3", textColor: "#035C67" }
     ],
     geometry: {
       startRotation: (-1 * Math.PI) / 4 + 0.01,

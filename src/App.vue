@@ -29,7 +29,7 @@
       id="vuetify-application-bar"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Circular Economy</v-toolbar-title>
+      <v-toolbar-title>Circular Economy Strategies</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-img
         contain

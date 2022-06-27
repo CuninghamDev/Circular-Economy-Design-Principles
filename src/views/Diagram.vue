@@ -9,7 +9,7 @@
       </div>
     </div>
     <div>
-      <v-dialog :value="showDiagramInteractionAlert" width="1000">
+      <!-- <v-dialog :value="showDiagramInteractionAlert" width="1000">
         <v-card>
           <v-card-title class="pa-2 ma-0 border-bottom pl-4 pt-4">
             <h4>
@@ -152,7 +152,7 @@
             </v-card-actions>
           </div>
         </v-card>
-      </v-dialog>
+      </v-dialog> -->
     </div>
     <!-- <v-alert
       v-if="showDiagramInteractionAlert"

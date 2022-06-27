@@ -336,7 +336,7 @@
           <v-divider class="my-0"></v-divider>
           <v-card-actions class="py-4">
             <v-btn
-              color="blue accent-4"
+              color="#A80051"
               class="elevation-2"
               @click="navigateToRoute('/suggest-resource')"
               outlined
@@ -345,7 +345,7 @@
             <v-spacer></v-spacer>
 
             <v-btn
-              color="teal darken-3"
+              color="#06262D"
               text
               @click="additionalResourcesDialog = false"
             >

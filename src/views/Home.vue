@@ -21,6 +21,12 @@
               <h6>
                 What is this toolkit?
               </h6>
+              <p class="text-justify">
+                This toolkit aggregates high level information about circular
+                economy design and construction strategies. It makes it possible
+                to explore information related to these strategies, and track
+                the strategies that may apply to your own projects.
+              </p>
             </v-col>
             <v-col lg="2" md="0" sm="0" cols="0" class="py-0 my-0" />
             <v-col lg="5" cols="12">
@@ -28,6 +34,10 @@
               <h6>
                 Who is this toolkit for?
               </h6>
+              <p class="text-justify">
+                This toolkit is for anyone involved in the design, construction,
+                procurement or ownership of buildings.
+              </p>
             </v-col>
 
             <v-col lg="5" cols="12">

@@ -39,7 +39,7 @@
     <v-tabs
       class="mt-1"
       v-model="currentTab"
-      color="blue accent-4"
+      color="#A80051"
       id="vuetify-tabs-for-evaluation"
     >
       <v-tab v-for="(d, i) in tabData" :key="i">{{ d }}</v-tab>

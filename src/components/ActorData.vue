@@ -79,7 +79,7 @@
             <v-dialog v-model="dialog" width="950">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  color="teal darken-3"
+                  color="#A80051"
                   outlined
                   v-bind="attrs"
                   v-on="on"
@@ -271,14 +271,14 @@
                   <v-divider class="my-0"></v-divider>
                   <v-card-actions class="py-4">
                     <v-btn
-                      color="blue accent-4"
+                      color="#A80051"
                       class="elevation-2"
                       @click="navigateToRoute('/suggest-resource')"
                       outlined
                       >Suggest A Resource</v-btn
                     >
                     <v-spacer></v-spacer>
-                    <v-btn color="teal darken-3" text @click="dialog = false">
+                    <v-btn color="#06262D" text @click="dialog = false">
                       Close
                     </v-btn>
                   </v-card-actions>
