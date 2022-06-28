@@ -739,6 +739,15 @@ export default new Vuex.Store({
       }
       state.actors = actorsCopy;
     },
+    actorCommentsUpdated(state, actorData) {
+      let actorsCopy = JSON.parse(JSON.stringify(state.actors));
+      for (let actor of actorsCopy) {
+        if (actor.actor == actorData.actor) {
+          actor.comments = actorData.comments;
+        }
+      }
+      state.actors = actorsCopy;
+    },
     setState(state, n) {
       state[n.key] = n.val;
     },

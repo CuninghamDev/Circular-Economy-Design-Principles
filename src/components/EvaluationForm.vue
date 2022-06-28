@@ -90,66 +90,121 @@
                   <div class="col-xl-10 col-lg-9 col-9 ma-0 pa-0">
                     <div class="container-fluid ma-0 pa-0">
                       <div class="row ma-0 pa-0">
-                        <div
-                          class="col-11 ma-0 pa-0 no-select h6"
-                          :style="
-                            d.evalSelected
-                              ? { color: d.color, fontWeight: 'bold' }
-                              : {}
-                          "
-                        >
-                          Circular Approach
+                        <div class="col-11">
+                          <div class="container ma-0 pa-0">
+                            <div class="row">
+                              <div
+                                class="col ma-0 pa-0 no-select h6"
+                                :style="
+                                  d.evalSelected
+                                    ? { color: d.color, fontWeight: 'bold' }
+                                    : {}
+                                "
+                              >
+                                Circular Approach
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div
+                                class="col ma-0 pa-0 no-select"
+                                :style="
+                                  d.evalSelected
+                                    ? { color: d.color, fontWeight: 'bold' }
+                                    : {}
+                                "
+                              >
+                                {{ d.eval }}
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div
+                                class="col ma-0 mt-4 pa-0 no-select h6"
+                                :style="
+                                  d.evalSelected ? { color: 'lightgrey' } : {}
+                                "
+                              >
+                                Conventional Approach
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div
+                                class="col ma-0 pa-0 no-select"
+                                :style="
+                                  d.evalSelected ? { color: 'lightgrey' } : {}
+                                "
+                              >
+                                {{ d.conventional }}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div class="col ma-0 mt-n5 pa-0 pr-2 text-right">
-                          <v-tooltip top>
-                            <template v-slot:activator="{ on }">
-                              <v-btn
-                                class="info-button"
-                                color="grey lighten-1"
-                                v-on="on"
-                                icon
-                                dark
-                                small
-                                @click="activateAdditionalResources(d)"
-                              >
-                                <v-icon large dark class="info-button"
-                                  >mdi-information-outline</v-icon
-                                >
-                              </v-btn>
-                            </template>
-                            <span
-                              >Additional resources related to...
-                              {{ d.actor }}</span
-                            >
-                          </v-tooltip>
-                        </div>
-                      </div>
-                      <div class="row ma-0 pa-0">
-                        <div
-                          class="col-11 ma-0 pa-0 no-select"
-                          :style="
-                            d.evalSelected
-                              ? { color: d.color, fontWeight: 'bold' }
-                              : {}
-                          "
-                        >
-                          {{ d.eval }}
-                        </div>
-                      </div>
-                      <div class="row ma-0 pa-0">
-                        <div
-                          class="col-11 ma-0 mt-4 pa-0 no-select h6"
-                          :style="d.evalSelected ? { color: 'lightgrey' } : {}"
-                        >
-                          Conventional Approach
-                        </div>
-                      </div>
-                      <div class="row ma-0 pa-0">
-                        <div
-                          class="col-11 ma-0 pa-0 no-select"
-                          :style="d.evalSelected ? { color: 'lightgrey' } : {}"
-                        >
-                          {{ d.conventional }}
+                          <div class="container-fluid ma-0 pa-0">
+                            <div class="row">
+                              <div class="col" style="height:100%">
+                                <v-tooltip top>
+                                  <template v-slot:activator="{ on }">
+                                    <v-btn
+                                      class="info-button"
+                                      color="grey lighten-1"
+                                      v-on="on"
+                                      icon
+                                      dark
+                                      small
+                                      @click="activateAdditionalResources(d)"
+                                    >
+                                      <v-icon large dark class="info-button"
+                                        >mdi-information-outline</v-icon
+                                      >
+                                    </v-btn>
+                                  </template>
+                                  <span
+                                    >Additional resources related to...
+                                    {{ d.actor }}</span
+                                  >
+                                </v-tooltip>
+                              </div>
+                            </div>
+
+                            <div class="row pt-0" v-if="d.evalSelected">
+                              <div class="col">
+                                <v-tooltip top>
+                                  <template v-slot:activator="{ on }">
+                                    <v-btn
+                                      class="info-button"
+                                      color="grey lighten-1"
+                                      v-on="on"
+                                      icon
+                                      dark
+                                      small
+                                      @click="activateCommentDialog(d)"
+                                    >
+                                      <v-icon
+                                        large
+                                        dark
+                                        class="info-button"
+                                        v-if="!d.comments"
+                                      >
+                                        mdi-comment-outline
+                                      </v-icon>
+                                      <v-icon
+                                        large
+                                        dark
+                                        class="info-button"
+                                        color="#FFC72C"
+                                        v-else
+                                        >mdi-comment</v-icon
+                                      >
+                                    </v-btn>
+                                  </template>
+                                  <span
+                                    >Add comments to describe how your project
+                                    is meeting these criteria</span
+                                  >
+                                </v-tooltip>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -355,6 +410,114 @@
         </div>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      v-model="commentsDialog"
+      width="950"
+      @click:outside="actorCommentsUpdated(resourcesActor)"
+    >
+      <v-card v-if="resourcesActor">
+        <v-card-title
+          class="text-white pa-2 ma-0 border-bottom"
+          :style="'backgroundColor:' + resourcesActor.color"
+          style="z-index:1000"
+        >
+          <table class="table table-borderless ma-0 pa-0">
+            <tbody class="ma-0 pa-0">
+              <tr class="ma-0 pa-0">
+                <td
+                  class="align-middle ma-0 pa-0"
+                  style="width:120px"
+                  rowspan="2"
+                >
+                  <img
+                    class="ma-0 pa-0"
+                    :src="selectedCategory.whiteIconPath"
+                    style="height:100px; width:100px"
+                  />
+                </td>
+                <td class="align-bottom text-left ma-0 pa-0">
+                  <p
+                    class="h5 ma-0 pa-0 mt-2 text-white"
+                    style="word-break:normal;"
+                  >
+                    {{ resourcesActor.actor.toUpperCase() }}
+                  </p>
+                </td>
+              </tr>
+              <tr class="ma-0 pa-0">
+                <td class="ma-0 pa-0 align-top">
+                  <p
+                    class="ma-0 mt-2 pa-0 text-white"
+                    style="word-break:normal; font-style:italic; font-weight:300; line-height:normal"
+                  >
+                    Comments About Implementation
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </v-card-title>
+
+        <v-container
+          style="z-index:0;"
+          class="my-0 pb-4 pt-4"
+          :style="'max-height:' + 650 + 'px; overflow-y: auto'"
+        >
+          <v-row class="pt-1">
+            <v-col class="pb-0 mb-0">
+              <h4>Comments</h4>
+            </v-col>
+          </v-row>
+          <v-row class="py-0">
+            <v-col class="pt-0 pb-0 mb-0">
+              <p>
+                Write your comments about implementing this Circular Economy
+                design strategy in the dialog box below
+              </p>
+            </v-col>
+          </v-row>
+          <v-row class="py-0 mb-0 mt-0">
+            <v-col class="pb-0 mb-0">
+              <v-textarea
+                outlined
+                class="pt-0 mt-0"
+                v-model="resourcesActor.comments"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <div class="elevation-3 my-0 py-0">
+          <v-divider class="my-0"></v-divider>
+          <v-card-actions class="py-4">
+            <v-btn
+              color="#A80051"
+              class="elevation-2"
+              @click="
+                actorCommentsUpdated(resourcesActor);
+                commentsDialog = false;
+              "
+              outlined
+              >Save</v-btn
+            >
+            <v-spacer></v-spacer>
+
+            <v-btn
+              color="#06262D"
+              text
+              @click="
+                resourcesActor.comments = tempComments;
+                commentsDialog = false;
+              "
+            >
+              Cancel
+            </v-btn>
+          </v-card-actions>
+        </div>
+      </v-card>
+    </v-dialog>
+
     <div class="ma-0 pa-0" style="height:1000px" v-if="categorySelected"></div>
   </div>
 </template>
@@ -486,7 +649,9 @@ export default {
   data: () => ({
     openExpansionPanel: undefined,
     additionalResourcesDialog: false,
-    resourcesActor: undefined
+    resourcesActor: undefined,
+    commentsDialog: false,
+    tempComments: ""
   }),
   methods: {
     openLink(link) {
@@ -502,6 +667,16 @@ export default {
       this.additionalResourcesDialog = true;
       this.resourcesActor = d;
       console.log("active additional resources called", d);
+    },
+    activateCommentDialog(d) {
+      this.commentsDialog = true;
+      if (d.comments == undefined) {
+        d.comments = "";
+      }
+      this.tempComments = d.comments;
+      this.resourcesActor = d;
+
+      console.log("activate comment dialog called", d);
     },
     selectCategory(cat, i) {
       let isSource = true;
@@ -552,6 +727,11 @@ export default {
       if (!event.srcElement.classList.contains("info-button")) {
         this.$store.commit("actorEvalSelected", actorData);
       }
+    },
+    actorCommentsUpdated(actorData) {
+      console.log("actors comments updated");
+      this.tempComments = actorData.comments;
+      this.$store.commit("actorCommentsUpdated", actorData);
     },
     getCategoryFilteredActors(cat) {
       let filteredActors = this.evalActors.filter(a => {
