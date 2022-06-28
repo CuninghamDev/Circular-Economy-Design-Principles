@@ -25,11 +25,12 @@
     </v-navigation-drawer>
     <v-app-bar
       app
+      dense
       class="brown lighten-5 pr-0 mr-0"
       id="vuetify-application-bar"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Circular Economy Strategies</v-toolbar-title>
+      <v-toolbar-title>{{ $route.name }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-img
         contain

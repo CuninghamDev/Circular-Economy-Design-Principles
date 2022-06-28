@@ -597,7 +597,7 @@ let categories = [
     textDescription:
       "One of the most impactful stages for creating a circular journey in the built environment. Working off of the Circular Economy pillar to “Design out Waste”, this phase is where we identify and coordinate the tangible strategies to be used during design.",
     iconPath:
-      "http://research.cuningham.com/circular-economy/assets/DesignAndDeliver.svg",
+      "http://research.cuningham.com/circular-economy/assets/DesignAndDeliver-Updated.svg",
     whiteIconPath:
       "http://research.cuningham.com/circular-economy/assets/DesignAndDeliver-White.svg"
   },
@@ -608,7 +608,7 @@ let categories = [
     textDescription:
       "During this phase, ideas are implemented and tracked. We are now using/reusing the design to its maximized potential. This is where we would see the third Circular Economy principle to “regenerate natural systems” at work.",
     iconPath:
-      "http://research.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment.svg",
+      "http://research.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment-Updated.svg",
     whiteIconPath:
       "http://research.cuningham.com/circular-economy/assets/IntelligentBuiltEnvironment-White.svg"
   },
@@ -619,7 +619,7 @@ let categories = [
     textDescription:
       "The follow through, with an emphasis on another Circular Economy principle to “Keep Materials in Use”. This phase is where materials make their way back to being exchanged or headed to their next site for reuse.",
     iconPath:
-      "http://research.cuningham.com/circular-economy/assets/EndOfDesignLife.svg",
+      "http://research.cuningham.com/circular-economy/assets/EndOfDesignLife-Updated.svg",
     whiteIconPath:
       "http://research.cuningham.com/circular-economy/assets/EndOfDesignLife-White.svg"
   },
@@ -630,7 +630,7 @@ let categories = [
     textDescription:
       "This tool itself is part of resource exchange. This is where we learn about new strategies, and find all the information and materials to then design the built environment. This is the pond of resources, tangible and intangible.",
     iconPath:
-      "http://research.cuningham.com/circular-economy/assets/BridgingMaterialsAndData.svg",
+      "http://research.cuningham.com/circular-economy/assets/BridgingMaterialsAndData-Updated.svg",
     whiteIconPath:
       "http://research.cuningham.com/circular-economy/assets/BridgingMaterialsAndData-White.svg"
   }
