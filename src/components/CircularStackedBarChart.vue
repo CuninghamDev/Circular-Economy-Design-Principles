@@ -4,7 +4,11 @@
     :id="ids.container"
     :style="styleContainer"
   >
-    <svg :style="styleSvg" :id="ids.svg" class="elevation-2">
+    <svg
+      :style="{ width: svgWidth, height: svgHeight }"
+      :id="ids.svg"
+      class="elevation-2"
+    >
       <g :id="ids.primaryAxis" />
 
       <g :id="ids.labelAxes" />
@@ -76,7 +80,9 @@ export default {
         rotation: Math.PI,
         textAnchor: "end"
       }
-    ]
+    ],
+    svgWidth: 400,
+    svgHeight: 400
   }),
   computed: {
     ...mapState(["categories", "actors"]),
@@ -120,6 +126,7 @@ export default {
       return categoryBarData.reverse();
     },
     styleSvg() {
+      console.log("svg style updated");
       let svgStyleObj = {};
       svgStyleObj.width = this.width;
       svgStyleObj.height = this.height;
@@ -157,6 +164,8 @@ export default {
   },
   methods: {
     resize() {
+      console.log("resize called");
+      console.log(this);
       let calculatedDim;
       let containerWidth = document.getElementById(this.ids.container)
         .clientWidth;
@@ -167,9 +176,15 @@ export default {
       }
       this.width = calculatedDim - this.margin * 2;
       this.height = calculatedDim - this.margin * 2;
+      let svg = d3.select("#" + this.ids.svg);
+      svg.attr("height", this.height);
+      svg.attr("width", this.width);
+      this.svgWidth = this.width;
+      this.svgHeight = this.height;
       this.drawUpdate();
     },
     drawUpdate() {
+      console.log("draw update called");
       let self = this;
 
       let arrowData = [

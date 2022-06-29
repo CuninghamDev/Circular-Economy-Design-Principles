@@ -71,7 +71,7 @@
           v-if="currentTab == 0"
           id="project-name-input"
           class="ml-6 mt-3 h4 invisible-form"
-          style="position:absolute; z-index:1000; width:80%"
+          style="position:absolute; width:80%"
           :value="projectName"
           @input="updateProjectName($event)"
         />

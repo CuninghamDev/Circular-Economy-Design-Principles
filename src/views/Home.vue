@@ -8,7 +8,8 @@
     ></v-img>
     <v-container
       class="elevation-5 mt-16 mb-16 pt-0 rounded-lg"
-      style="background-color: rgba(255,255,255,0.95); position:relative; "
+      style="background-color: rgba(255,255,255,0.95); position:relative"
+      :style="{ width: articleWidth }"
     >
       <div>
         <v-row
@@ -296,7 +297,8 @@ export default {
       borderStyle: "solid",
       borderRadius: "10px",
       borderColor: "lightgray"
-    }
+    },
+    articleWidth: "80%"
   }),
   computed: {
     ...mapGetters([
@@ -316,6 +318,15 @@ export default {
   methods: {
     resize() {
       this.windowWidth = window.innerWidth;
+      if (this.windowWidth > 2000) {
+        this.articleWidth = "58%";
+      } else if (this.windowWidth > 1264) {
+        this.articleWidth = "72%";
+      } else if (this.windowWidth > 900) {
+        this.articleWidth = "82%";
+      } else {
+        this.articleWidth = "92%";
+      }
     },
     alignmentClass(i) {
       if (i % 2 == 0 && !this.isDense) {
