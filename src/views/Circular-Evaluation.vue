@@ -35,6 +35,21 @@
         </template>
         <span class="">Open JSON file</span>
       </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            color="brown lighten-5"
+            class="ml-0 pa-1 px-2 mr-2"
+            style="min-width:0"
+            @click="toggleProjectInfoDialog()"
+          >
+            <v-icon color="grey darken-2">mdi-cog-outline</v-icon>
+          </v-btn>
+        </template>
+        <span class="">Edit Project Information</span>
+      </v-tooltip>
     </v-toolbar>
     <v-tabs
       class="mt-1"
@@ -83,6 +98,46 @@
       </div>
     </div>
     <input id="file-input" type="file" name="name" style="display: none" />
+
+    <v-dialog v-model="projectInfoDialog" width="600">
+      <v-card>
+        <v-card-title
+          class="pa-2 ma-0 pl-4 py-3 border-bottom"
+          style="backgroundColor:lightgray; z-index: 1000;"
+        >
+          <h5>Project Information</h5>
+        </v-card-title>
+
+        <v-container>
+          <v-row class="pt-1">
+            <v-col class="pb-0 mb-0">
+              <h4>Project Name</h4>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1">
+            <v-col class="pb-0 mb-0">
+              <v-text-field
+                outlined
+                :value="projectName"
+                @change="alternateUpdateProjectName($event)"
+              >
+              </v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <div class="elevation-3 my-0 py-0">
+          <v-divider class="my-0"></v-divider>
+          <v-card-actions class="py-1">
+            <v-spacer></v-spacer>
+
+            <v-btn color="#06262D" text @click="projectInfoDialog = false">
+              Close
+            </v-btn>
+          </v-card-actions>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -124,13 +179,23 @@ export default {
     tabData: ["Diagram", "Evaluation Report", "Written Summary"],
     currentTab: 0,
     heightVmin: 100,
-    additionalResourcesDialog: false
+    additionalResourcesDialog: false,
+    projectInfoDialog: false
   }),
   methods: {
+    toggleProjectInfoDialog() {
+      this.projectInfoDialog = !this.projectInfoDialog;
+    },
     updateProjectName(e) {
       this.$store.commit("setState", {
         key: "projectName",
         val: e.target.value
+      });
+    },
+    alternateUpdateProjectName(d) {
+      this.$store.commit("setState", {
+        key: "projectName",
+        val: d
       });
     },
     resetCategory() {
