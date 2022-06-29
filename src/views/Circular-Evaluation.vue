@@ -52,12 +52,22 @@
         class="col-lg-8 col-xl-6 m-0 p-0 "
         :style="'height: ' + heightVmin + 'vh'"
       >
+        <input
+          v-if="currentTab == 0"
+          id="project-name-input"
+          class="ml-6 mt-3 h4 invisible-form"
+          style="position:absolute; z-index:1000; width:80%"
+          :value="projectName"
+          @input="updateProjectName($event)"
+        />
+
         <CircularEconomyDiagram
           class="ml-9"
           :svgContainerVmin="82"
           :titleClickable="false"
           v-if="currentTab == 0"
         />
+
         <EvaluationReport v-if="currentTab == 1" :reportVmin="82" />
       </div>
       <div
@@ -81,6 +91,7 @@ import CircularEconomyDiagram from "../components/CircularEconomyDiagram.vue";
 import EvaluationReport from "../components/EvaluationReport.vue";
 import EvaluationForm from "../components/EvaluationForm.vue";
 import EvaluationWrittenSummary from "../components/EvaluationWrittenSummary.vue";
+import { mapState } from "vuex";
 export default {
   name: "CircularEvaluation",
   components: {
@@ -106,6 +117,9 @@ export default {
   beforeDestroy() {
     window.removeEventListener("resize", this.calcContentHeight);
   },
+  computed: {
+    ...mapState(["projectName"])
+  },
   data: () => ({
     tabData: ["Diagram", "Evaluation Report", "Written Summary"],
     currentTab: 0,
@@ -113,6 +127,12 @@ export default {
     additionalResourcesDialog: false
   }),
   methods: {
+    updateProjectName(e) {
+      this.$store.commit("setState", {
+        key: "projectName",
+        val: e.target.value
+      });
+    },
     resetCategory() {
       console.log("reset category called");
       this.$store.commit("selectCategory", {
@@ -164,5 +184,10 @@ export default {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.invisible-form {
+  border: none;
+  cursor: pointer;
+  height: 40px;
 }
 </style>

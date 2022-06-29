@@ -7,7 +7,13 @@
       </v-btn>
       <div class="row">
         <div class="col-10 h2 mb-1 pb-0">
-          {{ projectName }}
+          <!-- {{ projectName }} -->
+          <input
+            id="project-name-input"
+            class="h4 invisible-form w-100"
+            :value="projectName"
+            @input="updateProjectName($event)"
+          />
         </div>
       </div>
 
@@ -106,6 +112,16 @@
                           <div class="p">
                             {{ act.eval }}
                           </div>
+
+                          <div class="h6 mt-2">
+                            Comments on Implementation
+                          </div>
+                          <v-textarea
+                            @change="actorCommentsUpdated(act)"
+                            outlined
+                            v-model="act.comments"
+                          >
+                          </v-textarea>
 
                           <div class="h6 mt-2" v-if="act.buttonData.length > 0">
                             Other Relevant Lifecycle Stages
@@ -237,6 +253,15 @@ export default {
     }
   },
   methods: {
+    actorCommentsUpdated(actorData) {
+      this.$store.commit("actorCommentsUpdated", actorData);
+    },
+    updateProjectName(e) {
+      this.$store.commit("setState", {
+        key: "projectName",
+        val: e.target.value
+      });
+    },
     toTitleCase(str) {
       return str
         .toLowerCase()
@@ -426,11 +451,13 @@ export default {
               doc.setTextColor(typicalFontColor);
               /////////////////////
               cursor.shiftCursor([0, 0.25]);
+              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+              doc.setFontSize(bodyTextFormat.size);
               let details = doc.splitTextToSize(
                 act.details,
                 paperX - xMargin * 2
               );
-              let detailsHeight = details.length * 0.2 + 0.05;
+              let detailsHeight = 0.05 + details.length * 0.2;
               if (cursor.y + detailsHeight > paperY - bottomMargin) {
                 cursor.shiftCursor([0, detailsHeight]);
               }
@@ -450,6 +477,8 @@ export default {
 
               /////////////////////
               cursor.shiftCursor([0, 0.3]);
+              doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+              doc.setFontSize(bodyTextFormat.size);
               let criteria = doc.splitTextToSize(
                 act.eval,
                 paperX - xMargin * 2
@@ -472,6 +501,32 @@ export default {
               }
 
               /////////////////////
+              if (act.comments) {
+                cursor.shiftCursor([0, 0.3]);
+                doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+                doc.setFontSize(bodyTextFormat.size);
+                let comments = doc.splitTextToSize(
+                  act.comments,
+                  paperX - xMargin * 2
+                );
+                let commentsHeight = 0.05 + comments.length * 0.2;
+                if (cursor.y + commentsHeight > paperY - bottomMargin) {
+                  cursor.shiftCursor([0, commentsHeight]);
+                }
+                doc.setFont(bodyTextBoldFormat.font, bodyTextBoldFormat.style);
+                doc.setFontSize(bodyTextBoldFormat.size);
+                doc.text("Comments on Implementation", cursor.x, cursor.y);
+                cursor.shiftCursor([0, 0.05]);
+
+                doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
+                doc.setFontSize(bodyTextFormat.size);
+                for (let d of comments) {
+                  cursor.shiftCursor([0, 0.2]);
+                  doc.text(d, cursor.x, cursor.y);
+                }
+              }
+
+              /////////////////////
               if (act.buttonData.length > 0) {
                 doc.setFont(bodyTextFormat.font, bodyTextFormat.style);
                 doc.setFontSize(bodyTextFormat.size);
@@ -486,7 +541,7 @@ export default {
               for (let b of act.buttonData) {
                 let buttonDetails = doc.splitTextToSize(
                   b.details,
-                  paperX - xMargin * 2
+                  paperX - xMargin * 2 - buttonXOffset
                 );
                 let buttonDetailLineHeight = 0.25;
                 let buttonStageLineHeight = 0.25;
@@ -545,4 +600,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.invisible-form {
+  border: none;
+  cursor: pointer;
+  height: 40px;
+}
+</style>

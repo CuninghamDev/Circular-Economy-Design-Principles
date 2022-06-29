@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-img
-      style="position:fixed; height:100%; width:100%; opacity: 80%; z-index: 0;"
+      style="position:fixed; height:100%; width:100%; opacity: 60%; z-index: 0;"
       class="mt-n16"
       lazy-src="http://research.cuningham.com/circular-economy/assets/CE_Backdrop_Web.jpg"
       src="http://research.cuningham.com/circular-economy/assets/CE_Backdrop.JPG"
