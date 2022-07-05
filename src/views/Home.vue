@@ -1,10 +1,10 @@
 <template>
   <div>
     <v-img
-      style="position:fixed; height:100%; width:100%; opacity: 60%; z-index: 0;"
+      style="position:fixed; height:100%; width:100%; opacity: 90%; z-index: 0;"
       class="mt-n16"
-      lazy-src="http://research.cuningham.com/circular-economy/assets/CE_Backdrop_Web.jpg"
-      src="http://research.cuningham.com/circular-economy/assets/CE_Backdrop.JPG"
+      lazy-src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-low.jpg"
+      src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-high.jpg"
     ></v-img>
     <v-container
       class="elevation-5 mt-16 mb-16 pt-0 rounded-lg"
@@ -16,15 +16,15 @@
           class="mt-0 pt-3 pb-0 rounded-lg rounded-b-0"
           style="background-color: rgba(0,149,203,1)"
         >
-          <v-col xl="0" lg="0" cols="0" />
-          <v-col xl="12" lg="12" cols="12">
+          <v-col xl="1" lg="1" cols="0" />
+          <v-col xl="10" lg="10" cols="12">
             <h1 class="text-center white--text" style="font-weight:1100">
               Circular Economy and the Built Environment
             </h1>
-            <h5 class=" px-12 text-center white--text">
+            <p class=" px-12 text-center white--text">
               Discover design strategies, evaluate projects and learn more about
               how circular thinking can be applied to the built environment
-            </h5>
+            </p>
           </v-col>
         </v-row>
 
@@ -35,13 +35,29 @@
             <v-hover v-slot="{ hover }">
               <div
                 class="pa-4 pointer"
-                :class="hover ? 'elevation-5' : 'elevation-3'"
+                :class="
+                  hover ? 'elevation-6 grey lighten-5' : 'elevation-4 white'
+                "
                 :style="topLinkBorderStyle"
                 style=""
                 @click="linkClicked('discover')"
               >
-                <h2 class="">Discover</h2>
-                <h6>Circular Design Strategies</h6>
+                <div class="container ma-0 pa-0">
+                  <div class="row ma-0 pa-0">
+                    <div class="col-10 ma-0 pa-0">
+                      <h2 class="">Discover</h2>
+                      <h6>Circular Design Strategies</h6>
+                    </div>
+                    <div class="col-2 ma-0 pa-0 pt-4 text-right">
+                      <v-icon
+                        x-large
+                        :color="hover ? '#FFC72C' : 'grey darken-1'"
+                        >mdi-magnify</v-icon
+                      >
+                    </div>
+                  </div>
+                </div>
+
                 <hr
                   style="border-width: 5px;"
                   :style="
@@ -58,6 +74,12 @@
                   ties into other stages in the lifecycle, and where more
                   information about the strategy can be found online.
                 </p>
+                <hr />
+                <div class="text-right ma-0 pa-0">
+                  <v-icon large :color="hover ? '#FFC72C' : 'grey lighten-1'"
+                    >mdi-arrow-right-thick</v-icon
+                  >
+                </div>
               </div>
             </v-hover>
           </v-col>
@@ -65,13 +87,29 @@
             <v-hover v-slot="{ hover }">
               <div
                 class="pa-4 pointer"
-                :class="hover ? 'elevation-5' : 'elevation-3'"
+                :class="
+                  hover ? 'elevation-6 grey lighten-5' : 'elevation-4 white'
+                "
                 :style="topLinkBorderStyle"
                 style=""
                 @click="linkClicked('evaluation')"
               >
-                <h2 class="">Evaluate</h2>
-                <h6>A Project’s Circular Approach</h6>
+                <div class="container ma-0 pa-0">
+                  <div class="row ma-0 pa-0">
+                    <div class="col-10 ma-0 pa-0">
+                      <h2 class="">Evaluate</h2>
+                      <h6>A Project’s Circular Approach</h6>
+                    </div>
+                    <div class="col-2 ma-0 pa-0 pt-4 text-right">
+                      <v-icon
+                        x-large
+                        :color="hover ? '#FFC72C' : 'grey darken-1'"
+                        >mdi-format-list-checkbox</v-icon
+                      >
+                    </div>
+                  </div>
+                </div>
+
                 <hr
                   style="border-width: 5px;"
                   :style="
@@ -91,6 +129,12 @@
                   strategies and sparking conversations about the value circular
                   economy strategies can bring to your project.
                 </p>
+                <hr />
+                <div class="text-right ma-0 pa-0">
+                  <v-icon large :color="hover ? '#FFC72C' : 'grey lighten-1'"
+                    >mdi-arrow-right-thick</v-icon
+                  >
+                </div>
               </div>
             </v-hover>
           </v-col>
@@ -98,13 +142,29 @@
             <v-hover v-slot="{ hover }">
               <div
                 class="pa-4 pointer"
-                :class="hover ? 'elevation-5' : 'elevation-3'"
+                :class="
+                  hover ? 'elevation-6 grey lighten-5' : 'elevation-4 white'
+                "
                 :style="topLinkBorderStyle"
                 style=""
                 @click="linkClicked('resources')"
               >
-                <h2 class="">Resources</h2>
-                <h6>To Learn More</h6>
+                <div class="container ma-0 pa-0">
+                  <div class="row ma-0 pa-0">
+                    <div class="col-10 ma-0 pa-0">
+                      <h2 class="">Resources</h2>
+                      <h6>To Learn More</h6>
+                    </div>
+                    <div class="col-2 ma-0 pa-0 pt-4 text-right">
+                      <v-icon
+                        x-large
+                        :color="hover ? '#FFC72C' : 'grey darken-1'"
+                        >mdi-book-open-page-variant-outline</v-icon
+                      >
+                    </div>
+                  </div>
+                </div>
+
                 <hr
                   style="border-width: 5px;"
                   :style="
@@ -121,6 +181,12 @@
                   and broaden your knowledge on the topic of design strategies
                   and the Circular Economy.
                 </p>
+                <hr />
+                <div class="text-right ma-0 pa-0">
+                  <v-icon large :color="hover ? '#FFC72C' : 'grey lighten-1'"
+                    >mdi-arrow-right-thick</v-icon
+                  >
+                </div>
               </div>
             </v-hover>
           </v-col>
@@ -163,46 +229,48 @@
                       {{ cat.text }}
                     </h6>
                   </v-card-title>
-                  <v-card-text class="px-0">
-                    <v-container class="ma-0 pa-0">
-                      <v-row class="ma-0 pa-0">
-                        <v-col
-                          cols="12"
-                          sm="4"
-                          md="3"
-                          class="ma-0 pa-0 pl-3 text-center"
-                          v-if="!imageToggle(i)"
-                        >
-                          <v-img
-                            contain
-                            :src="cat.iconPath"
-                            max-height="140"
-                          ></v-img>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="8"
-                          md="9"
-                          class="ma-0 pa-0 pt-3 px-3 text-justify"
-                        >
+                  <!-- <v-card-text class="px-0"> -->
+                  <v-container class="ma-0 pa-0">
+                    <v-row class="ma-0 pa-0">
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        md="3"
+                        class="ma-0 pa-0 pl-3 text-center"
+                        v-if="!imageToggle(i)"
+                      >
+                        <v-img
+                          contain
+                          :src="cat.iconPath"
+                          max-height="140"
+                        ></v-img>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="8"
+                        md="9"
+                        class="ma-0 pa-0 pt-3 px-3 text-justify"
+                      >
+                        <p class="">
                           {{ cat.textDescription }}
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="4"
-                          md="3"
-                          class="ma-0 pa-0 pr-3 text-center"
-                          v-if="imageToggle(i)"
-                        >
-                          <v-img
-                            contain
-                            :src="cat.iconPath"
-                            max-height="140"
-                          ></v-img>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
+                        </p>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="4"
+                        md="3"
+                        class="ma-0 pa-0 pr-3 text-center"
+                        v-if="imageToggle(i)"
+                      >
+                        <v-img
+                          contain
+                          :src="cat.iconPath"
+                          max-height="140"
+                        ></v-img>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <!-- </v-card-text> -->
                 </v-card>
               </v-timeline-item>
             </v-timeline>
