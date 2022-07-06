@@ -1,11 +1,17 @@
 <template>
   <div>
-    <v-img
-      style="position:fixed; height:100%; width:100%; opacity: 90%; z-index: 0;"
-      class="mt-n16"
-      lazy-src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-low.jpg"
-      src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-high.jpg"
-    ></v-img>
+    <div class="ma-0 pa-0" style="position:fixed; height:100%; width:100%;">
+      <div
+        style="position:fixed; z-index:1; top:0%; height:100%; width:100%; background-color:rgba(255,199,44,0.45)"
+        class="ma-0 pa-0"
+      ></div>
+      <v-img
+        style=" opacity: 100%; z-index: 0; height:100%; width:100%"
+        class="mt-n16"
+        lazy-src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-low.jpg"
+        src="http://research.cuningham.com/regen-planning/assets/EloiseBoardwalk-high.jpg"
+      ></v-img>
+    </div>
     <v-container
       class="elevation-5 mt-16 mb-16 pt-0 rounded-lg"
       style="background-color: rgba(255,255,255,0.95); position:relative"
@@ -13,8 +19,8 @@
     >
       <div>
         <v-row
-          class="mt-0 pt-3 pb-0 rounded-lg rounded-b-0"
-          style="background-color: rgba(0,149,203,1)"
+          class="mt-0 pt-3 pb-0 rounded-lg rounded-b-0 elevation-3"
+          style="background-color: #005D68"
         >
           <v-col xl="1" lg="1" cols="0" />
           <v-col xl="10" lg="10" cols="12">
@@ -28,9 +34,75 @@
           </v-col>
         </v-row>
 
-        <v-row class="" style="background-color: #035C67; height:10px"></v-row>
+        <!-- <v-row class="" style="background-color: #035C67; height:10px"></v-row> -->
 
-        <v-row class="px-9 pt-6">
+        <v-row class="mt-4">
+          <v-col cols="12">
+            <h2 class="grey--text text--darken-3 mx-8">
+              About This Toolkit of Resources
+            </h2>
+          </v-col>
+        </v-row>
+        <v-row class="">
+          <v-col class="ma-0 pa-0">
+            <v-container fluid class="px-12">
+              <v-row>
+                <v-col lg="12" cols="12">
+                  <h5>What is it?</h5>
+                  <p class="text-justify">
+                    This Toolkit aggregates high level information about
+                    circular economy design and construction strategies. It
+                    makes it possible to explore information related to these
+                    strategies and track the strategies that may apply to your
+                    own projects.
+                  </p>
+                </v-col>
+                <v-col lg="12" cols="12">
+                  <h5>Who is it for?</h5>
+                  <p class="text-justify">
+                    This Toolkit is for designers, building owners and
+                    manufacturers of building related products and components.
+                  </p>
+                </v-col>
+
+                <v-col lg="12" cols="12">
+                  <h5>Why is it useful?</h5>
+                  <p class="text-justify">
+                    By making information about the Circular Economy more easily
+                    accessible and readily available, this Toolkit helps design
+                    teams to take these strategies into consideration and acts
+                    as a starting point for design decision making. It helps
+                    building owners understand how their building can
+                    participate in the Circular Economy over the course of its
+                    lifecycle, and it helps manufacturers understand how their
+                    products exist and interact with the Circular Economy beyond
+                    their initial installation.
+                  </p>
+                </v-col>
+                <v-col lg="12" cols="12">
+                  <h5>How can you get started?</h5>
+                  <p class="text-justify">
+                    You can browse the design strategies using an interactive
+                    diagram here, or use the same strategies to quickly get a
+                    general evaluation of your project’s degree of circularity
+                    here.
+                  </p>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class="ml-7 mb-8 mt-0">
+            <v-btn to="about" color="#FFC72C"
+              >Learn More About this Project</v-btn
+            >
+          </v-col>
+        </v-row>
+
+        <hr />
+
+        <v-row class="px-9 pt-6 mb-5">
           <v-col cols="12" lg="4">
             <v-hover v-slot="{ hover }">
               <div
@@ -189,155 +261,6 @@
                 </div>
               </div>
             </v-hover>
-          </v-col>
-        </v-row>
-
-        <hr class="my-8" />
-
-        <v-row>
-          <v-col cols="12" lg="12" class="px-12 ma-0 text-justify">
-            <h2 class="mb-4">Project Lifecycle Phases</h2>
-            <p class="">
-              The graphics used throughout this toolkit organize circular
-              economy design strategies by the phase in a typical project
-              lifecycle at which they are most relevant. The four phases are
-              described below. Their color scheme and icons are used throughout
-              the toolkit for visual consistency and continuity.
-            </p>
-          </v-col>
-        </v-row>
-        <v-row class="ma-0 pa-0">
-          <v-col class="px-8 ma-0">
-            <v-timeline :dense="isDense">
-              <v-timeline-item
-                v-for="(cat, i) in categories"
-                :key="cat.text"
-                :color="cat.color"
-                :left="i % 2 == 0"
-                :right="i % 2 != 0"
-              >
-                <v-card class="px-0">
-                  <v-card-title
-                    class="py-2 mb-0"
-                    :style="{ background: cat.color }"
-                  >
-                    <h6
-                      class=" mb-0 w-100 text-white"
-                      :class="alignmentClass(i)"
-                      style="word-break: break-word;"
-                    >
-                      {{ cat.text }}
-                    </h6>
-                  </v-card-title>
-                  <!-- <v-card-text class="px-0"> -->
-                  <v-container class="ma-0 pa-0">
-                    <v-row class="ma-0 pa-0">
-                      <v-col
-                        cols="12"
-                        sm="4"
-                        md="3"
-                        class="ma-0 pa-0 pl-3 text-center"
-                        v-if="!imageToggle(i)"
-                      >
-                        <v-img
-                          contain
-                          :src="cat.iconPath"
-                          max-height="140"
-                        ></v-img>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="8"
-                        md="9"
-                        class="ma-0 pa-0 pt-3 px-3 text-justify"
-                      >
-                        <p class="">
-                          {{ cat.textDescription }}
-                        </p>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="4"
-                        md="3"
-                        class="ma-0 pa-0 pr-3 text-center"
-                        v-if="imageToggle(i)"
-                      >
-                        <v-img
-                          contain
-                          :src="cat.iconPath"
-                          max-height="140"
-                        ></v-img>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                  <!-- </v-card-text> -->
-                </v-card>
-              </v-timeline-item>
-            </v-timeline>
-          </v-col>
-        </v-row>
-        <hr />
-        <v-row class="mt-4">
-          <v-col cols="12">
-            <h2 class="grey--text text--darken-3 mx-8">
-              About This Toolkit of Resources
-            </h2>
-          </v-col>
-        </v-row>
-        <v-row class="">
-          <v-col class="ma-0 pa-0">
-            <v-container fluid class="px-12">
-              <v-row>
-                <v-col lg="12" cols="12">
-                  <h5>What is it?</h5>
-                  <p class="text-justify">
-                    This Toolkit aggregates high level information about
-                    circular economy design and construction strategies. It
-                    makes it possible to explore information related to these
-                    strategies and track the strategies that may apply to your
-                    own projects.
-                  </p>
-                </v-col>
-                <v-col lg="12" cols="12">
-                  <h5>Who is it for?</h5>
-                  <p class="text-justify">
-                    This Toolkit is for designers, building owners and
-                    manufacturers of building related products and components.
-                  </p>
-                </v-col>
-
-                <v-col lg="12" cols="12">
-                  <h5>Why is it useful?</h5>
-                  <p class="text-justify">
-                    By making information about the Circular Economy more easily
-                    accessible and readily available, this Toolkit helps design
-                    teams to take these strategies into consideration and acts
-                    as a starting point for design decision making. It helps
-                    building owners understand how their building can
-                    participate in the Circular Economy over the course of its
-                    lifecycle, and it helps manufacturers understand how their
-                    products exist and interact with the Circular Economy beyond
-                    their initial installation.
-                  </p>
-                </v-col>
-                <v-col lg="12" cols="12">
-                  <h5>How can you get started?</h5>
-                  <p class="text-justify">
-                    You can browse the design strategies using an interactive
-                    diagram here, or use the same strategies to quickly get a
-                    general evaluation of your project’s degree of circularity
-                    here.
-                  </p>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="ml-7 mb-8 mt-0">
-            <v-btn to="about" color="#FFC72C"
-              >Learn More About this Project</v-btn
-            >
           </v-col>
         </v-row>
       </div>
