@@ -935,12 +935,8 @@ export default {
         .select(".interior-highlight")
         .selectAll(".inner-ring-shapes")
         .data(innerRingData)
-        .join(enter =>
-          enter
-            .append("path")
-            .classed("inner-ring-shapes", true)
-            .attr("d", innerRingShapeGenerator())
-        )
+        .join(enter => enter.append("path").classed("inner-ring-shapes", true))
+        .attr("d", innerRingShapeGenerator())
         .attr("fill", d => d.color);
 
       //////////////////
