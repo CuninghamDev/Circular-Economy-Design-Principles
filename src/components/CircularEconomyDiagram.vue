@@ -762,9 +762,9 @@ export default {
         .selectAll(".diagram-title-button")
         .data(() => {
           if (component.categorySelected) {
-            return component.selectedCategory.ringText;
-          } else {
             return emptyTitleData;
+          } else {
+            return buttonBackgroundData;
           }
         })
         .join("rect")
