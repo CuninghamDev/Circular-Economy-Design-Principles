@@ -434,6 +434,9 @@ export default {
             return 0;
           }
         });
+      // console.log("category selected", this.categorySelected);
+
+      this.generalUpdatePattern();
     },
 
     buildDiagram(_data, _backgroundId, _svgId, _divId, _containerId) {
@@ -462,6 +465,8 @@ export default {
       diagram.rotationTime = 100;
 
       diagram.svg.append("g").attr("class", "stage");
+      diagram.svg.append("g").attr("class", "interior-highlight");
+      diagram.svg.append("g").attr("class", "diagram-category-title");
       diagram.svg.append("g").attr("class", "diagram-title");
 
       diagram.svg.append("g").attr("class", "outter-ring");
@@ -548,7 +553,7 @@ export default {
           ringData.startAngle + structData.geometry.outterRingArc;
         structData.outterRing.push(ringData);
       }
-      console.log("diagram data structured");
+      // console.log("diagram data structured");
     },
 
     calcGeoms() {
@@ -563,6 +568,8 @@ export default {
       geo.radius = (diagram.controllingDim / 2) * (6 / 16);
       geo.radiusWidth = (diagram.controllingDim / 2) * (5 / 22);
       geo.categoryTextInset = (geo.radiusWidth * 4) / 7;
+
+      geo.innerRingWidth = (diagram.controllingDim / 2) * (1 / 22);
 
       geo.outterRingWidth = (diagram.controllingDim / 2) * (1 / 14);
       geo.outterRingOffset = (diagram.controllingDim / 2) * (1 / 75);
@@ -748,11 +755,18 @@ export default {
           height: self.controllingDim * 0.12
         }
       ];
+      let emptyTitleData = [];
 
       let diagramTitleButton = svg
         .select(".diagram-title")
         .selectAll(".diagram-title-button")
-        .data(buttonBackgroundData)
+        .data(() => {
+          if (component.categorySelected) {
+            return component.selectedCategory.ringText;
+          } else {
+            return emptyTitleData;
+          }
+        })
         .join("rect")
         .classed("diagram-title-button", true)
         .attr("x", d => 0 - d.width / 2)
@@ -765,10 +779,17 @@ export default {
         .style("cursor", () => (component.titleClickable ? "pointer" : "auto"));
 
       let diagramData = ["Circular Economy", "in the Built", "Environment"];
+
       let diagramTitle = svg
         .select(".diagram-title")
         .selectAll(".diagram-title-text")
-        .data(diagramData)
+        .data(() => {
+          if (component.categorySelected) {
+            return emptyTitleData;
+          } else {
+            return diagramData;
+          }
+        })
         .join("text")
         .classed("diagram-title-text", true)
         .classed("no-select", true)
@@ -787,6 +808,47 @@ export default {
         .attr("transform", (d, i) => {
           let stepSize = self.controllingDim * 0.035;
           let startStep = stepSize * -1;
+          let yTransform = startStep + stepSize * i;
+          return "translate(0," + yTransform + ")";
+        });
+
+      svg
+        .select(".diagram-category-title")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+
+      let categoryTitleData = [];
+      if (component.categorySelected) {
+        for (let text of component.selectedCategory.ringText) {
+          let textData = {};
+          textData.text = text;
+          textData.color = component.selectedCategory.color;
+          categoryTitleData.push(textData);
+        }
+      }
+      // console.log(categoryTitleData, "category title data");
+      let categoryTitle = svg
+        .select(".diagram-category-title")
+        .selectAll(".diagram-category-title-text")
+        .data(categoryTitleData)
+        .join("text")
+        .classed("no-select", true)
+        .classed("diagram-category-title-text", true)
+        .text(d => d.text)
+        .style("text-anchor", "middle")
+        .attr("startOffset", "50%")
+        .style("font-family", "roboto mono")
+        .style("font-weight", 500)
+        .style("dominant-baseline", "middle")
+        .style("fill", d => d.color)
+        .style("font-size", () => {
+          return self.controllingDim * 0.032 + "px";
+        })
+        .attr("transform", (d, i) => {
+          let stepSize = self.controllingDim * 0.035;
+          let startStep = stepSize * 0;
           let yTransform = startStep + stepSize * i;
           return "translate(0," + yTransform + ")";
         });
@@ -825,8 +887,62 @@ export default {
 
       function diagramTitleClicked() {
         component.toggleDialog();
-        console.log("diagram title clicked");
+        // console.log("diagram title clicked");
       }
+
+      //////////////////
+      // INNER RING OF SELECTED CATEGORY COLOR
+
+      svg
+        .select(".interior-highlight")
+        .attr(
+          "transform",
+          "translate(" + geomData.centerX + "," + geomData.centerY + ")"
+        );
+
+      let innerRingData;
+      if (component.categorySelected) {
+        innerRingData = [component.selectedCategory];
+      } else {
+        innerRingData = [
+          {
+            color: "#FFFFFF"
+          }
+        ];
+      }
+
+      let innerRingShapeGenerator = function() {
+        let startAngle = 0;
+        let endAngle = 2 * Math.PI;
+        let innerRadius = geomData.radius - geomData.innerRingWidth;
+        let outterRadius = geomData.radius;
+        // console.log(innerRadius, outterRadius, "building shapes");
+        let centerX = 0;
+        let centerY = 0;
+        let x1 = Math.cos(startAngle) * innerRadius + centerX;
+        let y1 = Math.sin(startAngle) * innerRadius + centerY;
+        let x2 = Math.cos(endAngle) * outterRadius + centerX;
+        let y2 = Math.sin(endAngle) * outterRadius + centerY;
+        let path = d3.path();
+        path.moveTo(x1, y1);
+        path.arc(centerX, centerY, outterRadius, startAngle, endAngle);
+        path.lineTo(x2, y2);
+        path.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
+        let pathData = path.toString();
+        return pathData;
+      };
+      let innerRingShapes = svg
+        .select(".interior-highlight")
+        .selectAll(".inner-ring-shapes")
+        .data(innerRingData)
+        .join(enter =>
+          enter
+            .append("path")
+            .classed("inner-ring-shapes", true)
+            .attr("d", innerRingShapeGenerator())
+        )
+        .attr("fill", d => d.color);
+
       //////////////////
       // OUTTER RING
       svg

@@ -197,9 +197,9 @@
                   how well your project’s circular design intent is performing
                   at the various stages in that building’s lifecycle. This tool
                   is designed to be fast and easy to use at the earliest stages
-                  of design, to set the stage for bringing detail to these
-                  strategies and sparking conversations about the value circular
-                  economy strategies can bring to your project.
+                  of design. It will help teams decipher how and where they can
+                  make a bigger circular impact on their projects and set the
+                  stage for value conversations among strategies.
                 </p>
                 <hr />
                 <div class="text-right ma-0 pa-0">
