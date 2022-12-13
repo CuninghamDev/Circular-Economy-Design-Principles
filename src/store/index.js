@@ -133,6 +133,19 @@ let actors = [
     evalPoints: 2
   },
   {
+    actor: "Consider lifespan of interacting systems",
+    short: "System Lifespans",
+    details:
+      "Some building systems like technology have much shorter lifespans than the building.  Longer lasting systems should not need to be altered or modified when these systems are updated.",
+    buttons: ["System lifespans"],
+    category: "Design and Deliver",
+    eval:
+      "Does your project avoid creating built-ins for technology?  Does your project use structural systems that will interfere with TI retrofits?",
+    conventional:
+      "All systems are designed in terms of their interaction on the day of move-in, with little consideration given to what happens when one system requires modification or updates.",
+    evalPoints: 3
+  },
+  {
     actor: "Demountable design",
     short: "Demountable Design",
     details:
@@ -373,6 +386,13 @@ let actors = [
 ];
 
 let buttons = [
+  {
+    title: "System lifespans",
+    sourceActor: "Consider lifespan of interacting systems",
+    stage: "Intelligent Built Environment",
+    details:
+      "As building owners make changes to systems with shorter life cycles (technology, interiors, furniture, etc) they will not need to modify systems with longer lifecycles (interior, architectural or structural elements) to accomodate these changes."
+  },
   {
     title: "Material passports",
     sourceActor: "Material passports",
